@@ -5,6 +5,7 @@
 	<ul class="nav_list">
 		{% if request.user.is_authenticated %}
 		<li><a class="nav_item" href="/machine_usage/logout">Log Out ({{request.user.get_username}})</a></li>
+		<li><a class="nav_item" href="/machine_usage/myforge">My Forge</a></li> {# Replace with (name)'s forge? #}
 		{% else %}
 		<li><a class="nav_item" href="/machine_usage/login">Log In</a></li>
 		{% endif %}
