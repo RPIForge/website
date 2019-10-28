@@ -9,6 +9,15 @@ header {
   height: 5.55vh;
   width: 100%;
   z-index: 100;
+  background: transparent;
+}
+
+header::after {
+  background: transparent;
+}
+
+#nav_logo {
+  display: none;
 }
 
 .nav_list {

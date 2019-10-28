@@ -1,7 +1,8 @@
-{% extends "generic.html" %}
+{% extends "machine_usage/generic.html" %}
+{% load static %}
 
 {% block custom_styles %}
-	<link rel="stylesheet" type="text/css" href="{% static machine_usage/css/frontpage.css %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/homepage.css' %}">
 {% endblock custom_styles %}
 
 {% block main %}
@@ -14,7 +15,7 @@
 					We promote communication and critical thinking, as well as STEAM (Science, Technology, Engineering, Arts, Mathematics) ideals.
 					We provide easy everyday access to tools that help with rapid prototyping and communication/collaboration, as well as a casual area to work.
 					We also hold workshops, design competitions, and outreach events; and host speakers involved in the maker movement.</p><br />
-				 	<img id="cover_logo" src="/img/logo_no_text.png" />
+				 	<img id="cover_logo" src="{% static 'machine_usage/img/logo_no_text.png' %}" />
 	    			</div>
 	    			<div class="show_on_mobile">
 				 	<p>We are Rensselaer Polytechnic Institutes only interdisciplinary makerspace, and are 100% student run!</p><br />

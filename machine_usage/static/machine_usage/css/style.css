@@ -134,7 +134,7 @@ header::after {
 
 .home_main {
   padding-top: 5.55vh;
-  background-image: url("/img/cover_lowres.png");
+  background-image: url("http://localhost:8000/static/machine_usage/img/cover_lowres.png");
   background-size: cover;
   background-position: center center;
 
