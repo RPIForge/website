@@ -1,0 +1,45 @@
+#login_form {
+  width: 25%;
+  border-radius: 5px;
+  /*border: 2px solid #AF0909;*/
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.25);
+  padding: 10px;
+  text-align: center;
+  background: #FFF;
+}
+
+#login_form h1 {
+  font-weight: normal;
+}
+
+#login_form input[type=text] {
+  width: 80%;
+  height: 3.5vh;
+  margin-bottom: 5px;
+}
+
+#login_form input[type=password] {
+  width: 80%;
+  height: 3.5vh;
+  margin-bottom: 15px;
+}
+
+#login_form button {
+  font: inherit;
+  padding: 5px 20px;
+  width: 35%;
+  border-radius: 5px;
+}
+
+#sign_in_button {
+  color: #FFF;
+  background-color: #AF0909;
+  margin-right: 10%;
+  border: none;
+}
+
+#create_account_button {
+  background-color: #FFF;
+  border: 2px solid #AF0909;
+  color: #AF0909;
+}

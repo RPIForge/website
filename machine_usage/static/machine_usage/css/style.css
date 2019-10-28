@@ -78,19 +78,10 @@ input[type=password] {
 }
 
 header {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  height: 5.55vh;
-  width: 100%;
-  z-index: 100;
-}
-
-.separated_header {
   background: #FFF;
 }
 
-.separated_header::after {
+header::after {
   /*background: linear-gradient(to right,  #AF0909 0%,#AF0909 66%,#606464 66%,#606464 100%);*/
   background: #AF0909;
   height: 4px;
@@ -131,7 +122,6 @@ header {
 
 .nav_light:hover .nav_item:hover {
   color: rgba(255, 255, 255, 0.75);
-;
 }
 
 #nav_logo {
@@ -195,104 +185,6 @@ main {
   height: 100vh;
 }
 
-/*
-	FRONTPAGE -> COVER
-*/
 
-#cover {
-  margin-top: 5.55vh;
-  height: 94.45vh;
-}
 
-#cover_text img {
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-}
 
-#cover_logo {
-  height: 10vh;
-}
-
-#cover_text {
-  color: #FFF;
-  padding: 10%;
-  max-width: 1000px;
-  height: auto;
-  text-align: center;
-}
-
-#cover_text h1 {
-  font-size: 6vw;
-  font-family: 'Montserrat', sans-serif;
-  margin-bottom: 0px;
-}
-
-#cover_text {
-  font-size: 1.2em;
-  /*font-family: 'Roboto', sans-serif;*/
-  text-decoration: none;
-  font-weight: normal;
-  
-}
-
-#cover_text h1::after { /*Horizontal red line under "THE FORGE"*/
-  display: block;
-  height: 4px;
-  width: 100px;
-  background: #AF0909;
-  content: '';
-
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/*
-  LOGIN -> FORM
-*/
-
-#login_form {
-  width: 25%;
-  border-radius: 5px;
-  /*border: 2px solid #AF0909;*/
-  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.25);
-  padding: 10px;
-  text-align: center;
-  background: #FFF;
-}
-
-#login_form h1 {
-  font-weight: normal;
-}
-
-#login_form input[type=text] {
-  width: 80%;
-  height: 3.5vh;
-  margin-bottom: 5px;
-}
-
-#login_form input[type=password] {
-  width: 80%;
-  height: 3.5vh;
-  margin-bottom: 15px;
-}
-
-#login_form button {
-  font: inherit;
-  padding: 5px 20px;
-  width: 35%;
-  border-radius: 5px;
-}
-
-#sign_in_button {
-  color: #FFF;
-  background-color: #AF0909;
-  margin-right: 10%;
-  border: none;
-}
-
-#create_account_button {
-  background-color: #FFF;
-  border: 2px solid #AF0909;
-  color: #AF0909;
-}

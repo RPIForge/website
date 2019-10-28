@@ -1,0 +1,48 @@
+<html>
+	{% block head %}
+	<head>
+		<link rel="icon" href="{% static machine_usage/img/favicon/favicon.ico %}" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="{% static machine_usage/css/style.css %}">
+		{% block custom_styles %}
+		{% endblock custom_styles %}
+
+		{% block meta %}
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+		{% endblock meta %}
+
+		{% block title %}
+		<title>{{page_title}}</title>
+		{% endblock title %}
+	</head>
+	{% endblock head %}
+	
+	{% block body %}
+	<body>
+		{% block header %}
+		{% include "components/header.html" %}
+		{% endblock header %}
+
+		{% block main %}
+		<main>
+		</main>
+		{% endblock main %}
+
+		{% block footer %}
+		<footer>
+		</footer>
+		{% endblock footer %}
+
+	</body>
+	{% endblock body %}
+
+	{# Load scripts and fonts at the end of the page to improve load time. #}
+
+	{% block scripts %}
+	{% include "components/scripts.html" %}
+	{% endblock scripts %}
+
+	{% block fonts %}
+	{% include "components/fonts.html" %}
+	{% endblock fonts %}
+
+</html>
