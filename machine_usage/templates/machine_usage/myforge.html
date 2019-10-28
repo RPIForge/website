@@ -1,63 +1,34 @@
-<html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="css/style.css">
-		<link rel="stylesheet" type="text/css" href="css/myforge.css">
-		<link rel="icon" href="img/favicon/favicon.ico" type="image/x-icon" />
-	</head>
-	
-	<body>
-		<header class="separated_header">
-			<a href="index.html"><img id="nav_logo" src="/img/logo_no_text.png" /></a>
-			<ul class="nav_list">
-				<li><a class="nav_item" href="login.html">Login</a></li>
-				<li><a class="nav_item" href="contact.html">Contact</a></li>
-				<li><a class="nav_item" href="about.html">Hours</a></li>
-				<li><a class="nav_item" href="news.html">News</a></li>
-				<li><a class="nav_item" href="gallery.html">Gallery</a></li>
-				<li><a class="nav_item" href="equipment.html">Equipment</a></li>
-			</ul>
-		</header>
+{% extends "generic.html" %}
 
-		<section id="myforge_sidebar">
-			<ul class="block_list">
-				<li class="block_list_header">User Functions</li>
-				<li>Use A Machine</li>
-				<li>View Your Projects</li>
-				<li>Send Feedback</li>
+{% block custom_styles %}
+	<link rel="stylesheet" type="text/css" href="{% static machine_usage/css/myforge.css %}">
+{% endblock custom_styles %}
 
-				<li class="block_list_header">Volunteer Functions</li>
-				<li>Clear A Machine</li>
-				<li>Mark Machine Failure</li>
-				<li>Edit Machine Status</li>
+{% block pre_main %}
+	<section id="myforge_sidebar">
+		<ul class="block_list">
+			<li class="block_list_header">User Functions</li>
+			<li>Use A Machine</li>
+			<li>View Your Projects</li>
+			<li>Send Feedback</li>
 
-				<li class="block_list_header">Manager Functions</li>
-				<li>Add/Edit Machine Types</li>
-				<li>Add/Edit Machines</li>
-				<li>Add/Edit Resources</li>
-				<li>Add/Edit Users</li>
-				<li>View Statistics</li>
-				<li>Generate Reports</li>
+			<li class="block_list_header">Volunteer Functions</li>
+			<li>Clear A Machine</li>
+			<li>Mark Machine Failure</li>
+			<li>Edit Machine Status</li>
 
-				<li class="block_list_header">Administrator Functions</li>
-				<li>View Manager Logs</li>
-				<li>End Semester</li>
-				<li>Edit Database (ADVANCED)</li>
-			</ul>
-		</section>
+			<li class="block_list_header">Manager Functions</li>
+			<li>Add/Edit Machine Types</li>
+			<li>Add/Edit Machines</li>
+			<li>Add/Edit Resources</li>
+			<li>Add/Edit Users</li>
+			<li>View Statistics</li>
+			<li>Generate Reports</li>
 
-		<main class="bg_shade">
-		</main>
-
-		<footer>
-		</footer>
-	</body>
-
-	<!-- Load scripts and fonts at the end of the page to improve load time. -->
-	
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
-
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Archivo+Narrow" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Lato:700|Montserrat:700|Open+Sans:700|Oswald:700|Roboto:700" rel="stylesheet">
-
-</html>
+			<li class="block_list_header">Administrator Functions</li>
+			<li>View Manager Logs</li>
+			<li>End Semester</li>
+			<li>Edit Database (ADVANCED)</li>
+		</ul>
+	</section>
+{% endblock pre_main %}

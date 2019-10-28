@@ -1,50 +1,25 @@
-<html>
-	<head>
-		<link rel="stylesheet" type="text/css" href="css/style.css">
-		<link rel="icon" href="img/favicon/favicon.ico" type="image/x-icon" />
-        	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-	</head>
-	
-	<body>
-		<header>
-			<ul class="nav_list nav_light">
-				<li><a class="nav_item" href="login.html">Login</a></li>
-				<li><a class="nav_item" href="contact.html">Contact</a></li>
-				<li><a class="nav_item" href="about.html">Hours</a></li>
-				<li><a class="nav_item" href="news.html">News</a></li>
-				<li><a class="nav_item" href="gallery.html">Gallery</a></li>
-				<li><a class="nav_item" href="equipment.html">Equipment</a></li>
-			</ul>
-		</header>
+{% extends "generic.html" %}
 
-		<main class="home_main">
-			<div id="cover" class="center_children fill_parent_horiz fill_screen_vert">
-				<div id="cover_text">
-					<h1>THE FORGE</h1> <br/>
-                    			<div class="show_on_desktop">
-					 	<p>The Forge provides a collaborative environment for RPI's design community.
-						We promote communication and critical thinking, as well as STEAM (Science, Technology, Engineering, Arts, Mathematics) ideals.
-						We provide easy everyday access to tools that help with rapid prototyping and communication/collaboration, as well as a casual area to work.
-						We also hold workshops, design competitions, and outreach events; and host speakers involved in the maker movement.</p><br />
-					 	<img id="cover_logo" src="/img/logo_no_text.png" />
-                    			</div>
-                    			<div class="show_on_mobile">
-					 	<p>We are Rensselaer Polytechnic Institutes only interdisciplinary makerspace, and are 100% student run!</p><br />
-                    			</div>
-				</div>
+{% block custom_styles %}
+	<link rel="stylesheet" type="text/css" href="{% static machine_usage/css/frontpage.css %}">
+{% endblock custom_styles %}
+
+{% block main %}
+	<main class="home_main">
+		<div id="cover" class="center_children fill_parent_horiz fill_screen_vert">
+			<div id="cover_text">
+				<h1>THE FORGE</h1> <br/>
+	    			<div class="show_on_desktop">
+				 	<p>The Forge provides a collaborative environment for RPI's design community.
+					We promote communication and critical thinking, as well as STEAM (Science, Technology, Engineering, Arts, Mathematics) ideals.
+					We provide easy everyday access to tools that help with rapid prototyping and communication/collaboration, as well as a casual area to work.
+					We also hold workshops, design competitions, and outreach events; and host speakers involved in the maker movement.</p><br />
+				 	<img id="cover_logo" src="/img/logo_no_text.png" />
+	    			</div>
+	    			<div class="show_on_mobile">
+				 	<p>We are Rensselaer Polytechnic Institutes only interdisciplinary makerspace, and are 100% student run!</p><br />
+	    			</div>
 			</div>
-		</main>
-
-		<footer>
-		</footer>
-	</body>
-
-	<!-- Load scripts and fonts at the end of the page to improve load time. -->
-	
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
-
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Archivo+Narrow" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Lato:700|Montserrat:700|Open+Sans:700|Oswald:700|Roboto:700" rel="stylesheet">
-
-</html>
+		</div>
+	</main>
+{% endblock main %}
