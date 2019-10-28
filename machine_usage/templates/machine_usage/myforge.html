@@ -1,13 +1,14 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<link rel="stylesheet" type="text/css" href="css/myforge.css">
 		<link rel="icon" href="img/favicon/favicon.ico" type="image/x-icon" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 	</head>
 	
 	<body>
-		<header>
-			<ul class="nav_list nav_light">
+		<header class="separated_header">
+			<a href="index.html"><img id="nav_logo" src="/img/logo_no_text.png" /></a>
+			<ul class="nav_list">
 				<li><a class="nav_item" href="login.html">Login</a></li>
 				<li><a class="nav_item" href="contact.html">Contact</a></li>
 				<li><a class="nav_item" href="about.html">Hours</a></li>
@@ -17,19 +18,34 @@
 			</ul>
 		</header>
 
-		<main class="home_main">
-			<div id="cover" class="center_children fill_parent_horiz fill_screen_vert">
-				<div id="cover_text">
-					<h1>THE FORGE</h1> <br/>
-                    <div class="show_on_desktop">
-					   <p>The Forge provides a collaborative environment for RPI's design community. We promote communication and critical thinking, as well as STEAM (Science, Technology, Engineering, Arts, Mathematics) ideals. We provide easy everyday access to tools that help with rapid prototyping and communication/collaboration, as well as a casual area to work. We also hold workshops, design competitions, and outreach events; and host speakers involved in the maker movement.</p><br />
-					   <img id="cover_logo" src="/img/logo_no_text.png" />
-                    </div>
-                    <div class="show_on_mobile">
-					   <p>We are Rensselaer Polytechnic Institutes only interdisciplinary makerspace, and are 100% student run!</p><br />
-                    </div>
-				</div>
-			</div>
+		<section id="myforge_sidebar">
+			<ul class="block_list">
+				<li class="block_list_header">User Functions</li>
+				<li>Use A Machine</li>
+				<li>View Your Projects</li>
+				<li>Send Feedback</li>
+
+				<li class="block_list_header">Volunteer Functions</li>
+				<li>Clear A Machine</li>
+				<li>Mark Machine Failure</li>
+				<li>Edit Machine Status</li>
+
+				<li class="block_list_header">Manager Functions</li>
+				<li>Add/Edit Machine Types</li>
+				<li>Add/Edit Machines</li>
+				<li>Add/Edit Resources</li>
+				<li>Add/Edit Users</li>
+				<li>View Statistics</li>
+				<li>Generate Reports</li>
+
+				<li class="block_list_header">Administrator Functions</li>
+				<li>View Manager Logs</li>
+				<li>End Semester</li>
+				<li>Edit Database (ADVANCED)</li>
+			</ul>
+		</section>
+
+		<main class="bg_shade">
 		</main>
 
 		<footer>
