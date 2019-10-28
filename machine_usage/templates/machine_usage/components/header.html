@@ -3,7 +3,11 @@
 <header>
 	<a href="/"><img id="nav_logo" src="{% static 'machine_usage/img/logo_no_text.png' %}" /></a>
 	<ul class="nav_list">
-		<li><a class="nav_item" href="/machine_usage/login">Login</a></li>
+		{% if request.user.is_authenticated %}
+		<li><a class="nav_item" href="/machine_usage/logout">Log Out ({{request.user.get_username}})</a></li>
+		{% else %}
+		<li><a class="nav_item" href="/machine_usage/login">Log In</a></li>
+		{% endif %}
 		<li><a class="nav_item" href="/machine_usage/hours">Hours</a></li>
 		<li><a class="nav_item" href="/machine_usage/news">News</a></li>
 		<li><a class="nav_item" href="/machine_usage/status">Status</a></li>

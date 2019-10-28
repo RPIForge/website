@@ -3,11 +3,13 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('our_space', views.index, name='our_space'),
-    path('equipment', views.index, name='equipment'),
-    path('status', views.index, name='status'),
-    path('news', views.index, name='news'),
-    path('hours', views.index, name='hours'),
-    path('login', views.index, name='login'),
+    path('', views.render_index, name='index'),
+    path('our_space', views.render_index, name='our_space'),
+    path('equipment', views.render_equipment, name='equipment'),
+    path('status', views.render_status, name='status'),
+    path('news', views.render_news, name='news'),
+    path('hours', views.render_hours, name='hours'),
+    path('login', views.render_login, name='login'),
+    path('logout', views.log_out, name='logout'),
+    path('myforge', views.render_myforge, name='myforge'),
 ]

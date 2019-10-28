@@ -78,6 +78,12 @@ input[type=password] {
 }
 
 header {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 5.55vh;
+  width: 100%;
+  z-index: 100;
   background: #FFF;
 }
 
@@ -97,7 +103,7 @@ header::after {
   margin: 0;
   padding: 0;
   margin-right: 50px;
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
 .nav_list li {
