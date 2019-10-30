@@ -14,6 +14,7 @@ Before running the app for the first time, you should set up the database throug
 Note that `create_superuser` creates a user `admin` with password `password` for development. Don't do this in prod.
 	
 Afterwards, you can run the app by simply typing:
+
 	- python manage.py runserver
 
 The site will be accessible at localhost:8000 (unless you specify another port as an argument to runserver). To access the Django admin panel, point your browser to localhost:8000/admin. To access the site, go to localhost:8000/machine_usage/. This behavior will soon change to hosting the site at the site root.
