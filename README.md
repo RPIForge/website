@@ -1,4 +1,4 @@
-# website
+# RPIForge/website
 The Forge's website - tracks machine usage and calculates charges for members.
 
 To install the app, you must have a working Python 3.7.x installation and PostgreSQL. Required Python libraries: psycopg2, argon2-cffi, django. Optional (but recommended): bcrypt.
@@ -15,3 +15,5 @@ Note that `create_superuser` creates a user `admin` with password `password` for
 	
 Afterwards, you can run the app by simply typing:
 	- python manage.py runserver
+
+The site will be accessible at localhost:8000 (unless you specify another port as an argument to runserver). To access the Django admin panel, point your browser to localhost:8000/admin. To access the site, go to localhost:8000/machine_usage/. This behavior will soon change to hosting the site at the site root.
