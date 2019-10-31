@@ -1,7 +1,17 @@
 # RPIForge/website
 The Forge's website - tracks machine usage and calculates charges for members.
 
-To install the app, you must have a working Python 3.7.x installation and PostgreSQL. Required Python libraries: psycopg2, argon2-cffi, django. Optional (but recommended): bcrypt.
+To install the app, you must have a working Python 3.7.x installation and PostgreSQL.
+
+Required Python libraries:
+
+- psycopg2
+- argon2-cffi
+- django
+
+Recommended:
+
+- bcrypt
 
 The app currently expects a database user `postgresql@localhost:5432` with password `password`. This behavior will be changed shortly to use environment variables to store database credentials. The program also currently expects a `forge_devel` database to have already been created. These settings can be found in `forge/settings.py`.
 
