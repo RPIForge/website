@@ -2,34 +2,34 @@
 {% load static %}
 
 {% block custom_styles %}
-	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/myforge.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/myforge.css' %}">
 {% endblock custom_styles %}
 
 {% block pre_main %}
-	<section id="myforge_sidebar">
-		<ul class="block_list">
-			<li class="block_list_header">User Functions</li>
-			<li>Use A Machine</li>
-			<li>View Your Projects</li>
-			<li>Send Feedback</li>
+  <section id="myforge_sidebar">
+    <ul class="block_list">
+      <li class="block_list_header">User Functions</li>
+      <li><a href="#">Use A Machine</a></li>
+      <li><a href="#">View Your Projects</a></li>
+      <li><a href="#">Send Feedback</a></li>
 
-			<li class="block_list_header">Volunteer Functions</li>
-			<li>Clear A Machine</li>
-			<li>Mark Machine Failure</li>
-			<li>Edit Machine Status</li>
+      <li class="block_list_header">Volunteer Functions</li>
+      <li><a href="#">Clear A Machine</a></li>
+      <li><a href="#">Mark Machine Failure</a></li>
+      <li><a href="#">Edit Machine Status</a></li>
 
-			<li class="block_list_header">Manager Functions</li>
-			<li>Add/Edit Machine Types</li>
-			<li>Add/Edit Machines</li>
-			<li>Add/Edit Resources</li>
-			<li>Add/Edit Users</li>
-			<li>View Statistics</li>
-			<li>Generate Reports</li>
+      <li class="block_list_header">Manager Functions</li>
+      <li><a href="#">Add/Edit Machine Types</a></li>
+      <li><a href="#">Add/Edit Machines</a></li>
+      <li><a href="#">Add/Edit Resources</a></li>
+      <li><a href="#">Add/Edit Users</a></li>
+      <li><a href="#">View Statistics</a></li>
+      <li><a href="#">Generate Reports</a></li>
 
-			<li class="block_list_header">Administrator Functions</li>
-			<li>View Manager Logs</li>
-			<li>End Semester</li>
-			<li>Edit Database (ADVANCED)</li>
-		</ul>
-	</section>
+      <li class="block_list_header">Administrator Functions</li>
+      <li><a href="#">View Manager Logs</a></li>
+      <li><a href="#">End Semester</a></li>
+      <li><a href="#">Edit Database (ADVANCED)</a></li>
+    </ul>
+  </section>
 {% endblock pre_main %}
