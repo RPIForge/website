@@ -3,24 +3,24 @@
 */
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    margin: 0px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	margin: 0px;
 }
 
 input[type=text] {
-  padding: 12px 20px;
-  display: inline-block;
-  border: 1px solid #000;
-  border-radius: 5px;
-  box-sizing: border-box;
+	padding: 12px 20px;
+	display: inline-block;
+	border: 1px solid #000;
+	border-radius: 5px;
+	box-sizing: border-box;
 }
 
 input[type=password] {
-  padding: 12px 20px;
-  display: inline-block;
-  border: 1px solid #000;
-  border-radius: 5px;
-  box-sizing: border-box;
+	padding: 12px 20px;
+	display: inline-block;
+	border: 1px solid #000;
+	border-radius: 5px;
+	box-sizing: border-box;
 }
 
 /*
@@ -29,123 +29,123 @@ input[type=password] {
 
 
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 2px;
+	width: 5px;
+	height: 2px;
 }
 ::-webkit-scrollbar-button {
-  width: 0px;
-  height: 0px;
+	width: 0px;
+	height: 0px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #e1e1e1;
-  border: 0px none #ffffff;
-  border-radius: 50px;
+	background: #e1e1e1;
+	border: 0px none #ffffff;
+	border-radius: 50px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #ffffff;
+	background: #ffffff;
 }
 ::-webkit-scrollbar-thumb:active {
-  background: #;
+	background: #;
 }
 ::-webkit-scrollbar-track {
-  background: #333333;
-  border: 0px none #ffffff;
-  border-radius: 50px;
+	background: #333333;
+	border: 0px none #ffffff;
+	border-radius: 50px;
 }
 ::-webkit-scrollbar-track:hover {
-  background: #333333;
+	background: #333333;
 }
 ::-webkit-scrollbar-track:active {
-  background: #333333;
+	background: #333333;
 }
 ::-webkit-scrollbar-corner {
-  background: transparent;
+	background: transparent;
 }
 
 /*
 	HEADER
 */
 .show_on_mobile {
-    display: none;
+	display: none;
 }
 
 @media screen and (max-width: 800px) {
-  .show_on_desktop {
-    display: none;
-  }
-  .show_on_mobile {
-    display: block; 
-  }
+	.show_on_desktop {
+		display: none;
+	}
+	.show_on_mobile {
+		display: block; 
+	}
 }
 
 header {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  height: 5.55vh;
-  width: 100%;
-  z-index: 100;
-  background: #FFF;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	height: 5.55vh;
+	width: 100%;
+	z-index: 100;
+	background: #FFF;
 }
 
 header::after {
-  /*background: linear-gradient(to right,  #AF0909 0%,#AF0909 66%,#606464 66%,#606464 100%);*/
-  background: #AF0909;
-  height: 4px;
-  width: 100%;
-  position: absolute;
-  left: 0px;
-  top: calc(5.55vh - 4px);
-  content: '';
+	/*background: linear-gradient(to right,  #AF0909 0%,#AF0909 66%,#606464 66%,#606464 100%);*/
+	background: #AF0909;
+	height: 4px;
+	width: 100%;
+	position: absolute;
+	left: 0px;
+	top: calc(5.55vh - 4px);
+	content: '';
 }
 
 .nav_list {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  margin-right: 50px;
-  margin-top: 15px;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	margin-right: 50px;
+	margin-top: 15px;
 }
 
 .nav_list li {
-  float: right;
-  margin-right: 20px;
-  display: block;
+	float: right;
+	margin-right: 20px;
+	display: block;
 }
 
 .nav_item {
-  color: #000;
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
-  text-decoration: none;
+	color: #000;
+	font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+	text-decoration: none;
 }
 
 .nav_item:hover {
-  color: #777;
+	color: #777;
 }
 
 .nav_light .nav_item {
-  color: rgba(255, 255, 255, .5);
+	color: rgba(255, 255, 255, .5);
 }
 
 .nav_light:hover .nav_item:hover {
-  color: rgba(255, 255, 255, 0.75);
+	color: rgba(255, 255, 255, 0.75);
 }
 
 #nav_logo {
-  height: 3vh;
-  display: inline;
-  float: left;
-  margin-left: 50px;
-  margin-top: 15px;
+	height: 3vh;
+	display: inline;
+	float: left;
+	margin-left: 50px;
+	margin-top: 15px;
 }
 
 .home_main {
-  padding-top: 5.55vh;
-  background-image: url("http://localhost:8000/static/machine_usage/img/cover_lowres.png");
-  background-size: cover;
-  background-position: center center;
+	padding-top: 5.55vh;
+	background-image: url("http://localhost:8000/static/machine_usage/img/cover_lowres.png");
+	background-size: cover;
+	background-position: center center;
 
-  height: 94.45vh !important;
+	height: 94.45vh !important;
 }
 
 /*
@@ -153,17 +153,17 @@ header::after {
 */
 
 main {
-  position: absolute;
-  height: 100vh;
-  width: 100%;
-  top: 0px;
-  left: 0px;
-    
-  z-index: 10;
+	position: absolute;
+	height: 100vh;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+
+	z-index: 10;
 }
 
 .bg_shade {
-  background: #EEE;
+	background: #EEE;
 }
 
 /*
@@ -171,9 +171,9 @@ main {
 */
 
 .center_children {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 /*
@@ -181,49 +181,49 @@ main {
 */
 
 .fill_parent_horiz {
-  position: absolute;
-  left: 0px;
-  width: 100%;
+	position: absolute;
+	left: 0px;
+	width: 100%;
 }
 
 .fill_screen_vert {
-  position: absolute;
-  top: 0px;
-  height: 100vh;
+	position: absolute;
+	top: 0px;
+	height: 100vh;
 }
 
 /* Styling for Mobile Nav bar */
 .mobile_nav {
-  overflow: hidden;
-  background-color: #AF0909;
-  position: relative;
-  z-index: 100;
-  font-size: 20px;
+	overflow: hidden;
+	background-color: #AF0909;
+	position: relative;
+	z-index: 100;
+	font-size: 20px;
 }
 
 .mobile_nav a {
-  color: white;
-  padding: 20px 20px;
-  text-decoration: none;
-  display: block;
-  font-size-adjust: 0.38; /*uppercase was 26.5px tall. This scales it to 20px*/
-  outline: 0;
+	color: white;
+	padding: 20px 20px;
+	text-decoration: none;
+	display: block;
+	font-size-adjust: 0.38; /*uppercase was 26.5px tall. This scales it to 20px*/
+	outline: 0;
 }
 
 .mobile_nav a.icon {
-  background: black;
-  display: block;
-  position: absolute;
-  right: 0;
-  top: 0;
+	background: black;
+	display: block;
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 
 .mobile_nav a:hover {
-  background-color: #ddd;
-  color: black;
+	background-color: #ddd;
+	color: black;
 }
 
 .active {
-  background-color: #4CAF50;
-  color: white;
+	background-color: #4CAF50;
+	color: white;
 }
