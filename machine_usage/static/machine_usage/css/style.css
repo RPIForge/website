@@ -207,6 +207,7 @@ main {
   text-decoration: none;
   display: block;
   font-size-adjust: 0.38; /*uppercase was 26.5px tall. This scales it to 20px*/
+  outline: 0;
 }
 
 .mobile_nav a.icon {
