@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
-# Create your views here.
 def render_index(request):
     return render(request, 'machine_usage/index.html', {})
 
