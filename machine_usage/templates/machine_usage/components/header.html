@@ -1,5 +1,6 @@
 {% load static %}
 
+<div class="show_on_desktop">
 <header>
 	<a href="/"><img id="nav_logo" src="{% static 'machine_usage/img/logo_no_text.png' %}" /></a>
 	<ul class="nav_list">
@@ -14,5 +15,42 @@
 		<li><a class="nav_item" href="/machine_usage/status">Status</a></li>
 		<li><a class="nav_item" href="/machine_usage/equipment">Equipment</a></li>
 		<li><a class="nav_item" href="/machine_usage/our_space">Our Space</a></li>
-	</ul>
+    </ul>
 </header>
+</div>
+
+<div class="show_on_mobile">
+<div class="mobile_nav" id="mobile_nav" style="height:3em">
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+        <i class="fa fa-bars"></i>
+    </a>
+    <div id="menu_items" class="menu_items" style="display:none">
+        <a href="/machine_usage/our_space">Our Space</a>
+        <a href="/machine_usage/equipment">Equipment</a>
+        <a href="/machine_usage/status">Status</a>
+        <a href="/machine_usage/news">News</a>
+        <a href="/machine_usage/hours">Hours</a>
+        {% if request.user.is_authenticated %}
+        <a href="/machine_usage/myforge">My Forge</a> {# Replace with (name)'s forge? #}
+		<a href="/machine_usage/logout">Log Out ({{request.user.get_username}})</a>
+		{% else %}
+		<a href="/machine_usage/login">Log In</a>
+		{% endif %}
+    </div>
+</div>
+    
+</div>
+
+<script>
+function myFunction() {
+  var items = document.getElementById("menu_items");
+  var menu = document.getElementById("mobile_nav")
+  if (items.style.display === "block") {
+    items.style.display = "none";
+    menu.style.height = "3em";
+  } else {
+    items.style.display = "block";
+    menu.style.height = "inherit";
+  }
+}
+</script>

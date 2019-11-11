@@ -8,47 +8,63 @@ main {
 	top: 5.55vh;
 	left: 0px;
 	height: 94.45vh;
-	width: 15%;
+	width: 250px;
 
 	background: #EEE;
 	z-index: 99;
 }
 
 .block_list {
-  padding: 0px;
-  padding-left: 20px;
-  padding-top: 20px;
-  height: calc(100% - 20px);
-  overflow-y: hidden;
-  overflow-x: hidden;
-  margin-top: 0px;
-  margin-bottom: 0px;
+	padding: 0px;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 20px;
 
-  font-size: 14px;
+	height: calc(100% - 20px);
+	overflow-y: hidden;
+	overflow-x: hidden;
+	margin-top: 0px;
+	margin-bottom: 0px;
+
+	font-size: 14px;
 }
 
 .block_list li {
-  text-decoration: none;
-  display: block;
+	text-decoration: none;
+	display: block;
+	padding: 0.5em;
 
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-left: 40px;
-
-  border-radius: 20px;
+	padding-left: 25px;
 }
 
-.block_list li:hover {
-  background: #BBB;
+.block_list a:hover {
+	background: #BBB;
+}
+
+.block_list_active { /* Will be applied to currently active tab */
+	background: #AF0909;
+	color: white;
+}
+
+.block_list a {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	border-radius: 10px;
+	margin: 0px;
+	text-decoration: none;
+	color: black;
+	outline: 0;
 }
 
 .block_list_header {
-  padding-top: 15px !important;
-  padding-left: 20px !important;
-  font-weight: bold;
-  color: #AF0909;
+	padding-top: 15px !important;
+	padding-left: 20px !important;
+	font-weight: bold;
+	color: #AF0909;
 }
 
 .block_list_header:hover {
-  background: #EEE !important;
+	background: #EEE !important;
 }
