@@ -10,10 +10,10 @@ class UserProfile(models.Model):
 	rin = models.PositiveIntegerField(default=0, blank=True)
 	gender = models.CharField(max_length=255, default="", blank=True)
 	major = models.CharField(max_length=255, default="", blank=True)
-	# TODO calculate outstanding balance instead of storing it outright?
-	outstanding_balance = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+
+	verified_email = models.BooleanField(default=False, blank=True)
+
 	# TODO replace email verification with a group membership
-	#email_verified = models.BooleanField()
 
 	def calculate_balance(self):
 		balance = Decimal(15.00) # TODO: Make this a constant somewhere.
@@ -38,12 +38,17 @@ class Resource(models.Model):
 	unit = models.CharField(max_length=255)
 	cost_per = models.DecimalField(max_digits=5, decimal_places=2)
 
+	in_stock = models.BooleanField(default=True)
+	deleted = models.BooleanField(default=False)
+
 	def __str__(self):
 		return self.resource_name
 
 class MachineType(models.Model):
 	machine_type_name = models.CharField(max_length=255)
 	machine_category = models.CharField(max_length=255, null=True)
+
+	deleted = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.machine_type_name
@@ -58,6 +63,8 @@ class MachineSlot(models.Model):
 
 	allowed_resources = models.ManyToManyField(Resource)
 
+	deleted = models.BooleanField(default=False)
+
 	def __str__(self):
 		return self.slot_name
 
@@ -68,7 +75,8 @@ class Machine(models.Model):
 		on_delete = models.CASCADE
 	)
 
-	in_use = models.BooleanField()
+	in_use = models.BooleanField(default=False)
+	deleted = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.machine_name
@@ -93,6 +101,7 @@ class Usage(models.Model):
 	retry_count = models.PositiveIntegerField(default=0)
 
 	complete = models.BooleanField()
+	deleted = models.BooleanField(default=False)
 
 	def cost(self):
 		cost = Decimal(0.00)
@@ -121,6 +130,7 @@ class SlotUsage(models.Model):
 	)
 
 	amount = models.DecimalField(max_digits=10, decimal_places=5)
+	deleted = models.BooleanField(default=False)
 
 	def __str__(self):
 		return f"Usage of {self.usage.machine}'s {self.machine_slot} slot by {self.usage.userprofile.user.username}"
