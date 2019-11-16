@@ -1,0 +1,30 @@
+{% extends "machine_usage/generic.html" %}
+{% load static %}
+
+{% block custom_styles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/homepage.css' %}">
+{% endblock custom_styles %}
+
+{% block main %}
+	<main class="home_main">
+		<div id="cover" class="center_children fill_parent_horiz fill_screen_vert">
+			<div id="cover_text">
+			    {% if not email_verified %}
+                                <h2>Unable to verify email</h2>
+                            {% else %}
+                                {% if already_verified %}
+                                    <h2> Email Already Verfied </h2>
+                                {% else %}
+                                    <h2> Emailed Verfied </h2>
+                                {% endif%}
+                            {% endif %}
+        
+                            <form action="/machine_usage/">
+                                 <input type="submit" value="Continue to Home Page" />
+                            </form>
+                                
+                        </div>
+		</div>
+
+	</main>
+{% endblock main %}
