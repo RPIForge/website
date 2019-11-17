@@ -11,7 +11,7 @@ class UserProfile(models.Model):
 	gender = models.CharField(max_length=255, default="", blank=True)
 	major = models.CharField(max_length=255, default="", blank=True)
 
-	verified_email = models.BooleanField(default=False, blank=True)
+	user_token = models.CharField(max_length=255, default="", blank=True)
 
 	# TODO replace email verification with a group membership
 

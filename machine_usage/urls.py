@@ -12,4 +12,5 @@ urlpatterns = [
     path('login', views.render_login, name='login'),
     path('logout', views.log_out, name='logout'),
     path('myforge', views.render_myforge, name='myforge'),
+    path('verify_email',views.render_verify_email, name='verify_email')
 ]
