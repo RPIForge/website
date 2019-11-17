@@ -4,6 +4,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from decimal import Decimal
+import machine_usage.utils
+
+import uuid
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -11,12 +14,10 @@ class UserProfile(models.Model):
 	gender = models.CharField(max_length=255, default="", blank=True)
 	major = models.CharField(max_length=255, default="", blank=True)
 
-	user_token = models.CharField(max_length=255, default="", blank=True)
-
-	# TODO replace email verification with a group membership
+	email_verification_token = models.CharField(max_length=255, default="", blank=True)
 
 	def calculate_balance(self):
-		balance = Decimal(15.00) # TODO: Make this a constant somewhere.
+		balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
 		for usage in self.usage_set.all():
 			balance += usage.cost()
 		return balance
@@ -27,7 +28,14 @@ class UserProfile(models.Model):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
+        email_verification_token = str(uuid.uuid4())
+        UserProfile.objects.create(user=instance, email_verification_token=email_verification_token)
+
+    if not ( (instance.email == "") or (instance.email is None) ):
+        print("User email was updated!")
+        if not instance.groups.filter(name = "verified_email").exists():
+            print("User was not verified. Sending email.")
+            machine_usage.utils.send_verification_email(instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

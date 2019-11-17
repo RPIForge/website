@@ -1,11 +1,12 @@
-#import django methods
+# Importing Django stuff
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User, Group
+from django.db.models.base import ObjectDoesNotExist
 
-#import database tables
+# Importing Models
+from django.contrib.auth.models import User, Group
 from machine_usage.models import UserProfile
 
 
@@ -49,42 +50,30 @@ def render_status(request):
     return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "Status" page.
 
 def render_verify_email(request):
-    #output dictionary
-    verification_dict = {"already_verified":False,"email_verified":False}
-    
-    #if method is correct type
+    # Make sure we only support GET requests, so we can make POST do something later if needed
     if request.method == 'GET':
-        #get email id from request
-        token = request.GET.get("user_token",'')
+        # Get the verification token from the request, or a NoneType if the request is malformed.
+        token = request.GET.get("token", None)
         
-        #if no email id paramaters redirect to error
-        if(token == ''):
-            print("Failed 1")
-            return render(request, 'machine_usage/verify_email.html', verification_dict)
+        if token is None:
+            return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"error", "message":"Invalid Request: No token provided."})
             
-        #try getting the user that corispondes to the token
+    	# See if we have a user that corresponds to the token.
         try:
-            #get user id from user profile which is from token
-            user_profile = UserProfile.objects.get(user_token=token)
-            user_id = user_profile.user_id
-            #get the user and group objects
-            user = User.objects.get(id=user_id)
-            group = Group.objects.get(name="Verified_Email")
-            
-            #if user is in group then return already verified
-            if(user.groups.filter(name="Verified_Email")):
-                verification_dict["already_verified"] = True
-                verification_dict["email_verified"] = True            
-            else:
-                #add user to email group
-                user.groups.add(group)
-                user.save()
-                verification_dict["email_verified"] = True
-        except:
-            verification_dict["email_verified"] = False
-            return render(request, 'machine_usage/verify_email.html',verification_dict)
-    return render(request, 'machine_usage/verify_email.html',verification_dict) 
-         
+            user_profile = UserProfile.objects.get(email_verification_token=token)
+        except ObjectDoesNotExist:
+            return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"error", "message":"Invalid Token."})
+
+        user = user_profile.user
+        
+        if(user.groups.filter(name="verified_email")):
+            return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"info", "message":"Email already verified."})
+        else:
+            group = Group.objects.get(name="verified_email") # TODO Create this group if it doesn't exist - current solution is to add the group manually from the admin panel.
+            user.groups.add(group)
+            user.save()
+            return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"success", "message":"Successfully verified email!"}) 
+
        
 @login_required
 def render_myforge(request):
