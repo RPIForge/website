@@ -66,7 +66,7 @@ class MachineSlot(models.Model):
 	deleted = models.BooleanField(default=False)
 
 	def __str__(self):
-		return self.slot_name
+		return f"{self.machine_type.machine_type_name}'s {self.slot_name} slot"
 
 class Machine(models.Model):
 	machine_name = models.CharField(max_length=255)
@@ -76,6 +76,8 @@ class Machine(models.Model):
 	)
 
 	in_use = models.BooleanField(default=False)
+	enabled = models.BooleanField(default=True)
+	status_message = models.CharField(max_length=255, default="", blank=True)
 	deleted = models.BooleanField(default=False)
 
 	def __str__(self):
@@ -133,7 +135,7 @@ class SlotUsage(models.Model):
 	deleted = models.BooleanField(default=False)
 
 	def __str__(self):
-		return f"Usage of {self.usage.machine}'s {self.machine_slot} slot by {self.usage.userprofile.user.username}"
+		return f"Usage of {self.usage.machine}'s {self.machine_slot} by {self.usage.userprofile.user.username}"
 
 	def cost(self):
 		return self.amount * self.resource.cost_per

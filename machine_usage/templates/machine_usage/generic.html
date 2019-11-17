@@ -46,12 +46,12 @@
 
 	{# Load scripts and fonts at the end of the page to improve load time. #}
 
-	{% block scripts %}
 	{% include "machine_usage/components/scripts.html" %}
+	{% block scripts %}
 	{% endblock scripts %}
 
-	{% block fonts %}
 	{% include "machine_usage/components/fonts.html" %}
+	{% block fonts %}
 	{% endblock fonts %}
 
 </html>

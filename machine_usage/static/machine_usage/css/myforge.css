@@ -68,3 +68,12 @@ main {
 .block_list_header:hover {
 	background: #EEE !important;
 }
+
+#myforge_frame {
+	position: absolute;
+	height: 94.55vh;
+	width: calc(100% - 250px);
+	top: 5.5vh;
+	left: 250px;
+	border: none;
+}

@@ -1,7 +1,43 @@
+{% load static %}
 <html>
 	<head>
+		<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/list.css' %}" />
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+		<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+		{% include "machine_usage/components/fonts.html" %} <!-- May not be necessary if this is only being loaded in frames. -->
 	</head>
 
 	<body>
+		<table id="data" class="display">
+			<thead>
+			<tr>
+			{% for header in table_headers %}
+				<th>{{ header }}</th>
+			{% endfor %}
+				<th>Actions</th>
+			</tr>
+			</thead>
+
+			<tbody>
+			{% for row in table_rows %}
+			<tr>
+			{% for item in row %}
+				<td>{{ item }}</td>
+			{% endfor %}
+				<td><i class="fas fa-edit" title="Edit"></i></td>
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+
+		<script>
+			$(document).ready( function () {
+    				$('#data').DataTable({
+				"aLengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
+				"iDisplayLength": 20});
+			} );
+		</script>
 	</body>
 </html>

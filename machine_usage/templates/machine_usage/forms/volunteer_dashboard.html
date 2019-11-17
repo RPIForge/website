@@ -1,0 +1,84 @@
+{% load static %}
+<html>
+	<head>
+		<script type="application/javascript" src="{% static 'machine_usage/js/loading-bar.js' %}"></script>
+		<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/loading-bar.css' %}" />
+
+		<style type="text/css">
+			.ldBar path.mainline {
+				stroke-linecap: round;
+			}
+			.ldBar path.baseline {
+				stroke-linecap: round;
+			}
+
+			.ldBar-label {
+				position: relative;
+				top: -85px;
+				text-align: center;
+
+				color: #080;
+				font-size: 2em;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+			}
+
+			body {
+				background: #EEE;
+			}
+
+			main {
+				padding: 25px;
+			}
+
+			.card {
+				background: #FFF;
+				height: 200px;
+				width: 200px;
+				box-shadow: #DDD 2px 2px 2px 2px; 
+
+				text-align: center;
+				color: #AF0909;
+			}
+
+			.time_remaining {
+				position: relative;
+				top: -20px;
+			}
+
+			.in_progress {
+				color: #080;
+			}
+
+			.machine_name {
+				position: relative;
+				top: -7px;
+				font-weight: bold;
+				color: #000;
+			}
+
+			.user_name {
+				position: relative;
+				top: -20px;
+				color: #000;
+			}
+		</style>
+	
+	</head>
+	<body>
+		<main>
+			<!--<div class="ldBar"
+			  data-type="stroke",
+			  data-stroke="data:ldbar/res,gradient(0,1,#9df,#9fd,#df9,#fd9)",
+			  data-path="M 20 160 Q 20 80 100 80 Q 180 80 180 160",
+			  data-stroke-trail="gray", data-stroke-trail-width="1",
+			  data-value="50"></div>-->
+			<div class="card">
+				<!--<div class="ldBar" data-preset="fan" data-value="50" data-stroke="data:ldbar/res,gradient(0,2,#000,#f00,#f00,#f00,#f00,#f00,#f00)" style="width:150px;height:150px;left:25px;top:0px;"></div>-->
+				<div class="ldBar in_progress" data-preset="fan" data-value="50" data-stroke="data:ldbar/res,gradient(0,1,#0f0,#0b0)" style="width:150px;height:150px;left:25px;top:0px;"></div>
+				<div class="time_remaining in_progress">6 Hours, 10 Minutes</div>
+				<div class="user_name">Rish Shadra</div>
+				<div class="machine_name">Prusa Alpha</div>
+			</div>
+		</main>
+	</body>
+</html>
