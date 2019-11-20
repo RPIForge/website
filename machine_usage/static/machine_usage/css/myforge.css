@@ -14,6 +14,11 @@ main {
 	z-index: 99;
 }
 
+#myforge_frame {
+	height: 100%;
+	width: 100%;
+}
+
 .block_list {
 	padding: 0px;
 	padding-left: 10px;
