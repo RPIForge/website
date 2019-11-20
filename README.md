@@ -8,10 +8,16 @@ Required Python libraries:
 - psycopg2
 - argon2-cffi
 - django
+- sendgrid
 
 Recommended:
 
 - bcrypt
+
+To automatically install requirements run the following command:
+
+	- pip install -r requirements.txt
+
 
 The app currently expects a database user `postgresql@localhost:5432` with password `password`. This behavior will be changed shortly to use environment variables to store database credentials. The program also currently expects a `forge_devel` database to have already been created. These settings can be found in `forge/settings.py`.
 
