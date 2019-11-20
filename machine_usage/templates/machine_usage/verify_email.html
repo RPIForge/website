@@ -1,0 +1,21 @@
+{% extends "machine_usage/generic.html" %}
+{% load static %}
+
+{% block custom_styles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/homepage.css' %}">
+{% endblock custom_styles %}
+
+{% block main %}
+	<main class="home_main">
+		<div id="cover" class="center_children fill_parent_horiz fill_screen_vert">
+			<div id="cover_text">
+			    <h2>{{message}}</h2>
+                            <form action="/machine_usage/">
+                                 <input type="submit" value="Continue to Home Page" />
+                            </form>
+                                
+                        </div>
+		</div>
+
+	</main>
+{% endblock main %}
