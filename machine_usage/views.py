@@ -48,7 +48,7 @@ def render_login(request):
             return render(request, 'machine_usage/login.html', {"error":"Login failed."})
  
 def render_news(request):
-    return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "News" page.
+    return render(request, 'machine_usage/news.html', {}) # TO-DO: Implement the "News" page.
 
 def render_our_space(request):
     return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "Our Space" page.
