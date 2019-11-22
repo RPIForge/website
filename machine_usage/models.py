@@ -5,16 +5,21 @@ from django.dispatch import receiver
 
 from decimal import Decimal
 import machine_usage.utils
+import machine_usage.lists
 
 import uuid
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	rin = models.PositiveIntegerField(default=0, blank=True)
-	gender = models.CharField(max_length=255, default="", blank=True)
-	major = models.CharField(max_length=255, default="", blank=True)
+	gender = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.gender)
+	major = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.major)
 
 	email_verification_token = models.CharField(max_length=255, default="", blank=True)
+
+	USERNAME_FIELD = 'user' 
+	REQUIRED_FIELDS = ['user','rin','gender','major']
+
 
 	def calculate_balance(self):
 		balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.

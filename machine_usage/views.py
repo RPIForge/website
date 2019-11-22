@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models.base import ObjectDoesNotExist
 
 from machine_usage.models import *
-
+from machine_usage.forms import ForgeUserCreationForm
 #
 #	Pages/Login
 #
@@ -186,6 +186,16 @@ def list_users(request):
 	    context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
 
     return render(request, 'machine_usage/forms/list_items.html', context)
+
+@login_required
+def create_user(request):
+    if(request.method == 'POST'):
+        form = ForgeUserCreationForm(request.POST)
+        if(form.is_valid()):
+            form.save()
+    else:
+        form = ForgeUserCreationForm()
+    return render(request, 'machine_usage/forms/create_user.html', {'form': form})
 
 @login_required
 def volunteer_dashboard(request):
