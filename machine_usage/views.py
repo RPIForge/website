@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models.base import ObjectDoesNotExist
 
 from machine_usage.models import *
-from machine_usage.forms import ForgeUserCreationForm
+from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
 #
 #	Pages/Login
 #
@@ -190,12 +190,16 @@ def list_users(request):
 @login_required
 def create_user(request):
     if(request.method == 'POST'):
-        form = ForgeUserCreationForm(request.POST)
-        if(form.is_valid()):
-            form.save()
+        user_form = ForgeUserCreationForm(request.POST)
+        forge_form = ForgeProfileCreationForm(request.POST)
+
+        if(user_form.is_valid() and forge_form.is_valid()):
+            user_form.save()
+            forge_form.save()
     else:
-        form = ForgeUserCreationForm()
-    return render(request, 'machine_usage/forms/create_user.html', {'form': form})
+        user_form = ForgeUserCreationForm()
+        forge_form = ForgeProfileCreationForm()
+    return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'forge_form':forge_form})
 
 @login_required
 def volunteer_dashboard(request):
