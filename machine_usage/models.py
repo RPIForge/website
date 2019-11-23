@@ -18,7 +18,7 @@ class UserProfile(models.Model):
 	email_verification_token = models.CharField(max_length=255, default="", blank=True)
 
 	USERNAME_FIELD = 'user' 
-	REQUIRED_FIELDS = ['user','rin','gender','major']
+	REQUIRED_FIELDS = []
 
 
 	def calculate_balance(self):

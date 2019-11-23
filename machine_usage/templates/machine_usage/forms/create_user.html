@@ -3,7 +3,9 @@
 	</head>
 	<body>
 	    <form method="post">
-                {% csrf_token %}
+                {% csrf_token %} 
+                {{ user_form.fieldname.errors|striptags }}
+                {{ forge_form.fieldname.errors|striptags }}
                 {{ user_form.as_p }}
                 {{ forge_form.as_p }}
                 <button type="submit">Sign up</button>

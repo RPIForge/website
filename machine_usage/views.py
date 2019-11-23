@@ -192,10 +192,19 @@ def create_user(request):
     if(request.method == 'POST'):
         user_form = ForgeUserCreationForm(request.POST)
         forge_form = ForgeProfileCreationForm(request.POST)
-
+        print(forge_form.is_valid())
         if(user_form.is_valid() and forge_form.is_valid()):
-            user_form.save()
-            forge_form.save()
+            #save user and get values from user form
+            user = user_form.save()
+            user_rin = forge_form.cleaned_data.get('rin')
+            user_gender = forge_form.cleaned_data.get('gender')
+            user_major = forge_form.cleaned_data.get('major')
+            
+            #update and save profile
+            user.userprofile.rin = user_rin
+            user.userprofile.gender = user_gender
+            user.userprofile.major = user_major
+            user.save()
     else:
         user_form = ForgeUserCreationForm()
         forge_form = ForgeProfileCreationForm()

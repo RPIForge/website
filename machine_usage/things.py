@@ -24,22 +24,47 @@ class ForgeProfileCreationForm(forms.ModelForm):
         model = UserProfile 
         fields = ('rin','gender','major')
 
-    def is_valid(self):
-        valid = super(ForgeProfileCreationForm, self).is_valid()
+    def clear(self):
         rin = self.cleaned_data.get("rin")
         
         if(len(rin)!=9):
-            valid = False
-            self._errors['rin_error'] = 'Invalid rin'
+            raise ValidationError("Invalid Rin")
+
         try:
-            rin = int(rin)
+            int(rin)
+        except:
+            raise ValidationError("Invlaid Rin")
+    
+        
+    
+    def is_valid(self):
+        # run the parent validation first
+        valid = super(ForgeProfileCreationForm, self).is_valid()
+        
+        # we're done now if not valid
+        if not valid:
+            return valid
+
+        rin = self.cleaned_data['rin'].strip()
+
+        if(len(rin)!=9):
+           valid = False
+
+        try:
+            int(rin)
         except:
             valid = False
-            self._errors['rin_error'] = 'Invalid rin'
-        
-        
+
         if not valid:
-            return False
-        
-        return  True
-        
+            self._errors['invalid_rin'] = 'Invlaid Rin'
+            return valid
+
+        try:
+            user = UserProfile.objects.get(rin=rin)
+            valid = False
+            self._errors['exists_rin'] = 'Rin already exists'
+            return valid
+        except:
+            pass
+
+        return True
