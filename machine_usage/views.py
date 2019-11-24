@@ -192,7 +192,8 @@ def create_user(request):
     if(request.method == 'POST'):
         user_form = ForgeUserCreationForm(request.POST)
         forge_form = ForgeProfileCreationForm(request.POST)
-        print(forge_form.is_valid())
+        forge_form.is_valid()
+        print(forge_form.errors) 
         if(user_form.is_valid() and forge_form.is_valid()):
             #save user and get values from user form
             user = user_form.save()
@@ -208,6 +209,7 @@ def create_user(request):
     else:
         user_form = ForgeUserCreationForm()
         forge_form = ForgeProfileCreationForm()
+
     return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'forge_form':forge_form})
 
 @login_required
