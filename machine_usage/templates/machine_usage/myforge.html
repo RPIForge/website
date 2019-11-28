@@ -2,35 +2,36 @@
 {% load static %}
 
 {% block custom_styles %}
-  <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/myforge.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/myforge.css' %}">
 {% endblock custom_styles %}
 
 {% block pre_main %}
-  <section id="myforge_sidebar">
-    <ul class="block_list">
-      <li class="block_list_header">User Functions</li>
-      <li><a href="#">Use A Machine</a></li>
-      <li><a href="javascript:setFrame('dyn/project_list')">View Your Projects</a></li>
-      <li><a href="#">Send Feedback</a></li>
+	<section id="myforge_sidebar">
+		<ul class="block_list">
+			<li class="block_list_header">User Functions</li>
+				<li><a href="#">Use A Machine</a></li>
+				<li><a href="javascript:setFrame('dyn/project_list')">View Your Projects</a></li>
+				<li><a href="#">Send Feedback</a></li>
 
-      <li class="block_list_header">Volunteer Functions</li>
-      <li><a href="javascript:setFrame('dyn/volunteer_dashboard')">Volunteer Dashboard</a></li>
+			<li class="block_list_header">Volunteer Functions</li>
+				<li><a href="javascript:setFrame('dyn/volunteer_dashboard')">Volunteer Dashboard</a></li>
+				<li><a href="javascript:setFrame('forms/create_user')">Create User</a></li>
 
-      <li class="block_list_header">Manager Functions</li>
-      <li><a href="javascript:setFrame('dyn/machine_type_list')">Machine Types</a></li>
-      <li><a href="javascript:setFrame('dyn/machine_list')">Machines</a></li>
-      <li><a href="javascript:setFrame('dyn/resource_list')">Resources</a></li>
-      <li><a href="javascript:setFrame('dyn/user_list')">Users</a></li>
-      <li><a href="#">View Statistics</a></li>
-      <li><a href="#">Generate Reports</a></li>
+			<li class="block_list_header">Manager Functions</li>
+				<li><a href="javascript:setFrame('dyn/machine_type_list')">Machine Types</a></li>
+				<li><a href="javascript:setFrame('dyn/machine_list')">Machines</a></li>
+				<li><a href="javascript:setFrame('dyn/resource_list')">Resources</a></li>
+				<li><a href="javascript:setFrame('dyn/user_list')">Users</a></li>
+				<li><a href="#">View Statistics</a></li>
+				<li><a href="#">Generate Reports</a></li>
 
-      <li class="block_list_header">Administrator Functions</li>
-      <li><a href="#">Third-Party Machine Usage</a></li>
-      <li><a href="#">View Manager Logs</a></li>
-      <li><a href="/admin">Edit Database (ADVANCED)</a></li>
-      <li><a href="#">End Semester</a></li>
-    </ul>
-  </section>
+			<li class="block_list_header">Administrator Functions</li>
+				<li><a href="#">Third-Party Machine Usage</a></li>
+				<li><a href="#">View Manager Logs</a></li>
+				<li><a href="/admin">Edit Database (ADVANCED)</a></li>
+				<li><a href="#">End Semester</a></li>
+		</ul>
+	</section>
 {% endblock pre_main %}
 
 {% block main %}

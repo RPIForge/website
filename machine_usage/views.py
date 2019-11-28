@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models.base import ObjectDoesNotExist
 
 from machine_usage.models import *
-
+from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
 #
 #	Pages/Login
 #
@@ -186,6 +186,33 @@ def list_users(request):
 	    context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
 
     return render(request, 'machine_usage/forms/list_items.html', context)
+
+# Login intentionally not required for create_user - new users should be able to create their own accounts.
+def create_user(request):
+    if request.method == 'POST':
+
+        user_form = ForgeUserCreationForm(request.POST)
+        profile_form = ForgeProfileCreationForm(request.POST)
+
+        if(user_form.is_valid() and profile_form.is_valid()):
+            # Save user and get values from user form
+            user = user_form.save()
+
+            user_rin = profile_form.cleaned_data.get('rin')
+            user_gender = profile_form.cleaned_data.get('gender')
+            user_major = profile_form.cleaned_data.get('major')
+            
+            # Update and save profile
+            user.userprofile.rin = user_rin
+            user.userprofile.gender = user_gender
+            user.userprofile.major = user_major
+
+            user.save()
+    else:
+        user_form = ForgeUserCreationForm()
+        profile_form = ForgeProfileCreationForm()
+
+    return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'profile_form':profile_form})
 
 @login_required
 def volunteer_dashboard(request):
