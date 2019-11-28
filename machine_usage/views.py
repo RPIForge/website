@@ -113,7 +113,8 @@ def list_projects(request):
 
     context = {
 	    "table_headers":["Date", "Machine", "Cost"],
-	    "table_rows":[]
+	    "table_rows":[],
+        "page_title":"Projects"
     }
 
     usages = user_profile.usage_set.all()
@@ -126,7 +127,8 @@ def list_projects(request):
 def list_machines(request):
     context = {
 	    "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "In Use?"],
-	    "table_rows":[]
+	    "table_rows":[],
+        "page_title":"Machines"
     }
 
     machines = Machine.objects.all()
@@ -139,7 +141,8 @@ def list_machines(request):
 def list_machine_types(request):
     context = {
 	    "table_headers":["Type", "Category", "Slots", "Count", "Resource Types"],
-	    "table_rows":[]
+	    "table_rows":[],
+        "page_title":"Machine Types"
     }
 
     machine_types = MachineType.objects.all()
@@ -165,7 +168,8 @@ def list_machine_types(request):
 def list_resources(request):
     context = {
 	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "In Stock?"],
-	    "table_rows":[]
+	    "table_rows":[],
+        "page_title":"Resources"
     }
 
     resources = Resource.objects.all()
@@ -178,7 +182,8 @@ def list_resources(request):
 def list_users(request):
     context = {
 	    "table_headers":["Name", "RIN", "Outstanding Balance"],
-	    "table_rows":[]
+	    "table_rows":[],
+        "page_title":"Users"
     }
 
     users = UserProfile.objects.all()
