@@ -23,10 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # To any curious GitHub readers: This isn't actually being used in prod. Don't worry.
 SECRET_KEY = 'u$q*w!hvr(bvie*bo1c^!p!^cq%rsswx6jocx5yz2qw%1dc83$'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY WARNING: don't run with debug turned on in production! Also, REMOVE * FROM ALLOWED_HOSTS!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
