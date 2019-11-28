@@ -16,6 +16,12 @@ class ForgeUserCreationForm(UserCreationForm):
         self.fields['last_name'].required = True
         self.fields['email'].required = True
 
+        self.fields['password2'].label = "Confirm Password"
+
+        for f in self.fields.values():
+            f.widget.attrs = {"placeholder":f.label}
+            f.label = ""
+
     def clean(self, *args, **kwargs):
         super(ForgeUserCreationForm , self).clean(*args, **kwargs)
         
@@ -49,6 +55,15 @@ class ForgeProfileCreationForm(forms.ModelForm):
         self.fields['rin'].required = True
         self.fields['gender'].required = True
         self.fields['major'].required = True
+
+        self.fields['rin'].label = "RIN"
+        self.fields['gender'].choices = [("", "Gender"),] + list(self.fields['gender'].choices)[1:] 
+        self.fields['major'].choices = [("", "Major"),] + list(self.fields['major'].choices)[1:] 
+
+
+        for f in self.fields.values():
+            f.widget.attrs = {"placeholder":f.label}
+            f.label = ""
    
     def clean(self, *args , **kwargs):
         super(ForgeProfileCreationForm, self).clean(*args ,**kwargs) 

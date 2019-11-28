@@ -210,7 +210,7 @@ def create_user(request):
             user.save()
     else:
         user_form = ForgeUserCreationForm()
-        forge_form = ForgeProfileCreationForm()
+        profile_form = ForgeProfileCreationForm()
 
     return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'profile_form':profile_form})
 

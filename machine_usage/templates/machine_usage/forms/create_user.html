@@ -1,13 +1,25 @@
-<html>
-	<head>
-	</head>
-	<body>
-	    
-            <form method="POST">
-                {% csrf_token %} 
-                {{ user_form.as_p }}
-                {{ profile_form.as_p }}
-                <button type="submit">Sign up</button>
-            </form>
-        </body>
-</html>
+{% extends "machine_usage/generic.html" %}
+{% load static %}
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/form.css' %}">
+{% endblock custom_styles %}
+    
+{% block header %}
+{% endblock header%}
+
+{% block main %}
+    <main class="bg_shade">
+        <div id="form_container" class="center_children fill_parent_horiz fill_screen_vert">
+            <div id="form">
+                <h1>Create an Account</h1>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ user_form }}
+                    {{ profile_form }}
+                    <button type="submit" id="submit_button">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock main %}
