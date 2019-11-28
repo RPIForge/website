@@ -187,30 +187,32 @@ def list_users(request):
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
-@login_required
+# Login intentionally not required for create_user - new users should be able to create their own accounts.
 def create_user(request):
-    if(request.method == 'POST'):
+    if request.method == 'POST':
+
         user_form = ForgeUserCreationForm(request.POST)
-        forge_form = ForgeProfileCreationForm(request.POST)
-        forge_form.is_valid()
-        print(forge_form.errors) 
-        if(user_form.is_valid() and forge_form.is_valid()):
-            #save user and get values from user form
+        profile_form = ForgeProfileCreationForm(request.POST)
+
+        if(user_form.is_valid() and profile_form.is_valid()):
+            # Save user and get values from user form
             user = user_form.save()
-            user_rin = forge_form.cleaned_data.get('rin')
-            user_gender = forge_form.cleaned_data.get('gender')
-            user_major = forge_form.cleaned_data.get('major')
+
+            user_rin = profile_form.cleaned_data.get('rin')
+            user_gender = profile_form.cleaned_data.get('gender')
+            user_major = profile_form.cleaned_data.get('major')
             
-            #update and save profile
+            # Update and save profile
             user.userprofile.rin = user_rin
             user.userprofile.gender = user_gender
             user.userprofile.major = user_major
+
             user.save()
     else:
         user_form = ForgeUserCreationForm()
         forge_form = ForgeProfileCreationForm()
 
-    return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'forge_form':forge_form})
+    return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'profile_form':profile_form})
 
 @login_required
 def volunteer_dashboard(request):

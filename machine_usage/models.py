@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from decimal import Decimal
+
 import machine_usage.utils
 import machine_usage.lists
 
@@ -11,14 +12,11 @@ import uuid
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	rin = models.PositiveIntegerField(default=0, blank=True)
+	rin = models.PositiveIntegerField(default=0, blank=True, unique=True)
 	gender = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.gender)
 	major = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.major)
 
-	email_verification_token = models.CharField(max_length=255, default="", blank=True)
-
-	USERNAME_FIELD = 'user' 
-	REQUIRED_FIELDS = []
+	email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
 
 
 	def calculate_balance(self):
@@ -47,7 +45,7 @@ def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
 
 class Resource(models.Model):
-	resource_name = models.CharField(max_length=255)
+	resource_name = models.CharField(max_length=255, unique=True)
 	unit = models.CharField(max_length=255)
 	cost_per = models.DecimalField(max_digits=5, decimal_places=2)
 
@@ -58,7 +56,7 @@ class Resource(models.Model):
 		return self.resource_name
 
 class MachineType(models.Model):
-	machine_type_name = models.CharField(max_length=255)
+	machine_type_name = models.CharField(max_length=255, unique=True)
 	machine_category = models.CharField(max_length=255, null=True)
 
 	deleted = models.BooleanField(default=False)
@@ -82,7 +80,7 @@ class MachineSlot(models.Model):
 		return f"{self.machine_type.machine_type_name}'s {self.slot_name} slot"
 
 class Machine(models.Model):
-	machine_name = models.CharField(max_length=255)
+	machine_name = models.CharField(max_length=255, unique=True)
 	machine_type = models.ForeignKey(
 		MachineType,
 		on_delete = models.CASCADE

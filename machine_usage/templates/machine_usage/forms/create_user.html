@@ -3,10 +3,10 @@
 	</head>
 	<body>
 	    
-            <form method="post">
+            <form method="POST">
                 {% csrf_token %} 
                 {{ user_form.as_p }}
-                {{ forge_form.as_p }}
+                {{ profile_form.as_p }}
                 <button type="submit">Sign up</button>
             </form>
         </body>

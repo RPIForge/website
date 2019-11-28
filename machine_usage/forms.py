@@ -11,6 +11,7 @@ from machine_usage.models import UserProfile
 class ForgeUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(ForgeUserCreationForm, self).__init__(*args, **kwargs)
+
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
         self.fields['email'].required = True
@@ -21,8 +22,9 @@ class ForgeUserCreationForm(UserCreationForm):
         email = self.cleaned_data.get('email')
         username = self.cleaned_data.get('username')
 
-        if email  and User.objects.filter(email=email).exclude(username=username).exists():
-            raise forms.ValidationError('Email addresses must be unique.',code='duplicate_email')
+        # See: https://stackoverflow.com/questions/1160030/how-to-make-email-field-unique-in-model-user-from-contrib-auth-in-django
+        if email and User.objects.filter(email=email).exclude(username=username).exists():
+            raise forms.ValidationError('Email addresses must be unique.', code='duplicate_email')
         
         
         
@@ -36,7 +38,7 @@ class ForgeUserCreationForm(UserCreationForm):
 
 
 class ForgeProfileCreationForm(forms.ModelForm):
-    rin = forms.CharField()
+    rin = forms.IntegerField()
     gender = forms.Select(choices=machine_usage.lists.gender)
     major = forms.Select(choices=machine_usage.lists.major)
     
@@ -53,24 +55,10 @@ class ForgeProfileCreationForm(forms.ModelForm):
         
         rin = self.cleaned_data['rin']
 
-        if(rin):
-            #See if rin is an integer                                                    
-            try:
-                int(rin)
-            except ValueError:
+        if rin:
+            # Check to see if RIN is 9 digits long
+            if(len(str(rin)) != 9):
                 raise forms.ValidationError("Invalid Rin", code='invalid_rin')
-            
-            #See if rin is correct length
-            if(len(rin) != 9):
-                raise forms.ValidationError("Invalid Rin", code='invalid_rin')
-
-            #See if rin already exists
-            try:
-                UserProfile.objects.get(rin=self.cleaned_data['rin'])
-                raise forms.ValidationError("Rin already taken", code='duplicate_rin')
-            except ObjectDoesNotExist:
-                pass
-
             
         return self.cleaned_data
     
