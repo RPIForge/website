@@ -12,12 +12,11 @@ import uuid
 
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	rin = models.PositiveIntegerField(default=0, blank=True, unique=True)
+	rin = models.PositiveIntegerField(default=None, null=True, blank=True, unique=True)
 	gender = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.gender)
 	major = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.major)
 
 	email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
-
 
 	def calculate_balance(self):
 		balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
