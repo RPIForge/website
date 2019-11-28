@@ -16,6 +16,7 @@ class ForgeUserCreationForm(UserCreationForm):
         self.fields['last_name'].required = True
         self.fields['email'].required = True
 
+        self.fields['username'].label = "RCS ID (e.g. roberr5)"
         self.fields['password2'].label = "Confirm Password"
 
         for f in self.fields.values():
