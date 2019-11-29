@@ -7,6 +7,7 @@ from django.db.models.base import ObjectDoesNotExist
 
 from machine_usage.models import *
 from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
+import machine_usage.utils
 #
 #   Pages/Login
 #
@@ -211,6 +212,13 @@ def create_user(request):
             user.userprofile.major = user_major
 
             user.save()
+
+            email = profile_form.cleaned_data.get('email')
+
+            if not user.groups.filter(name="verified_email").exists():
+                print(f"Sending verification email to {user.email}")
+                machine_usage.utils.send_verification_email(user)
+
             login(request, user)
             return redirect('/myforge')
     else:

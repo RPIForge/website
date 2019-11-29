@@ -33,8 +33,6 @@ class ForgeUserCreationForm(UserCreationForm):
         if email and User.objects.filter(email=email).exclude(username=username).exists():
             raise forms.ValidationError('Email addresses must be unique.', code='duplicate_email')
         
-        
-        
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email')
@@ -48,7 +46,6 @@ class ForgeProfileCreationForm(forms.ModelForm):
     rin = forms.IntegerField()
     gender = forms.Select(choices=machine_usage.lists.gender)
     major = forms.Select(choices=machine_usage.lists.major)
-    
     
     def __init__(self, *args, **kwargs):
         super(ForgeProfileCreationForm, self).__init__(*args, **kwargs)

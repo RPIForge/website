@@ -33,12 +33,6 @@ def create_user_profile(sender, instance, created, **kwargs):
         email_verification_token = str(uuid.uuid4())
         UserProfile.objects.create(user=instance, email_verification_token=email_verification_token)
 
-    if not ( (instance.email == "") or (instance.email is None) ):
-        print(f"User email was updated to {instance.email}!")
-        if not instance.groups.filter(name = "verified_email").exists():
-            print("User was not verified. Sending email.")
-            machine_usage.utils.send_verification_email(instance)
-
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()
