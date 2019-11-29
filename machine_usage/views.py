@@ -211,7 +211,7 @@ def create_user(request):
             user.userprofile.major = user_major
 
             user.save()
-            user = authenticate(request, username=profile_form.cleaned_data.get('username'), password=profile_form.cleaned_data.get('password1'))
+            login(request, user)
             return redirect('/myforge')
     else:
         user_form = ForgeUserCreationForm()
