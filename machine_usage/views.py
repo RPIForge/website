@@ -211,11 +211,13 @@ def create_user(request):
             user.userprofile.major = user_major
 
             user.save()
+            user = authenticate(request, username=profile_form.cleaned_data.get('username'), password=profile_form.cleaned_data.get('password1'))
+            return redirect('/myforge')
     else:
         user_form = ForgeUserCreationForm()
         profile_form = ForgeProfileCreationForm()
 
-    return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'profile_form':profile_form})
+        return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'profile_form':profile_form})
 
 @login_required
 def volunteer_dashboard(request):
