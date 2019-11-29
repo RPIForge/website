@@ -8,7 +8,7 @@ from django.db.models.base import ObjectDoesNotExist
 from machine_usage.models import *
 from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
 #
-#	Pages/Login
+#   Pages/Login
 #
 
 # Importing Models
@@ -63,7 +63,7 @@ def render_verify_email(request):
         if token is None:
             return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"error", "message":"Invalid Request: No token provided."})
             
-    	# See if we have a user that corresponds to the token.
+        # See if we have a user that corresponds to the token.
         try:
             user_profile = UserProfile.objects.get(email_verification_token=token)
         except ObjectDoesNotExist:
@@ -90,7 +90,7 @@ def log_out(request):
 
 
 #
-#	Forms/Tables
+#   Forms/Tables
 #
 
 #
@@ -98,7 +98,7 @@ def log_out(request):
 #
 
 def format_usd(fp):
-	return f"${fp:.2f}"
+    return f"${fp:.2f}"
 
 @login_required
 def list_projects(request):
@@ -110,22 +110,22 @@ def list_projects(request):
     user_profile = request.user.userprofile
 
     context = {
-	    "table_headers":["Date", "Machine", "Cost"],
-	    "table_rows":[],
+        "table_headers":["Date", "Machine", "Cost"],
+        "table_rows":[],
         "page_title":"Projects"
     }
 
     usages = user_profile.usage_set.all()
     for u in usages:
-	    context["table_rows"].append([u.start_time, u.machine.machine_name, format_usd(u.cost())])
+        context["table_rows"].append([u.start_time, u.machine.machine_name, format_usd(u.cost())])
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
 @login_required
 def list_machines(request):
     context = {
-	    "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "In Use?"],
-	    "table_rows":[],
+        "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "In Use?"],
+        "table_rows":[],
         "page_title":"Machines"
     }
 
@@ -179,14 +179,14 @@ def list_resources(request):
 @login_required		
 def list_users(request):
     context = {
-	    "table_headers":["Name", "RIN", "Outstanding Balance"],
-	    "table_rows":[],
+        "table_headers":["Name", "RIN", "Outstanding Balance"],
+        "table_rows":[],
         "page_title":"Users"
     }
 
     users = UserProfile.objects.all()
     for u in users:
-	    context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
+        context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
