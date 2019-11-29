@@ -11,8 +11,6 @@ from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
 #	Pages/Login
 #
 
-def render_index(request):
-    return render(request, 'machine_usage/index.html', {})
 # Importing Models
 from django.contrib.auth.models import User, Group
 
