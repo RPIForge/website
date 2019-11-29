@@ -125,5 +125,3 @@ class google_calendar():
 
 
 
-calendar = google_calendar()
-print(calendar.list_events(datetime.now(), datetime.now() + timedelta(days=7)))    
