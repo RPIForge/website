@@ -1,7 +1,13 @@
 import os
 import urllib
+
+#email imports
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+
+#google calendar imports
+from googleapiclient.discovery import build
+from datetime import datetime, timedelta
 
 def send_email(to_email, subject, html_string):
     message = Mail(
@@ -29,3 +35,95 @@ def send_verification_email(user):
     verification_url = f"https://www.rpiforge.dev/verify_email?{params_string}" # TODO replace URL with config value
     body = f"Thanks for signing up for the Forge! Click <a clicktracking=off href='{verification_url}'>this link</a> to verify your email."
     send_email(user.email, subject, body)
+
+
+class google_calendar():
+    
+    calendar_service = None
+    calendar_id = None
+
+    def __init__(self):
+        api_key = os.getenv('GOOGLE_API_KEY')                
+        if(not api_key):
+            raise ValueError("No GOOGLE_API_KEY enviromental variable")
+        
+        self.calendar_service = build('calendar', 'v3', developerKey=api_key)
+    
+        #will be by enviromental variable later
+        self.calendar_id = "k2r6osjjms6lqt41bi5a7j48n0@group.calendar.google.com"
+        if(not self.calendar_id):
+            raise ValueError("No CALENDAR_ID enviromental variable")
+    #handle events
+    def recurrence_time(self,calendar_time):
+        return datetime.strptime(calendar_time[:8],'%Y%m%d')
+
+ 
+    def handle_event(self,event_dict):
+        
+        if('recurrence' not in event_dict and event_dict['status']!='cancelled'):
+            if('dateTime' in event_dict['start']):
+                try:
+                    output_dict = {
+                    'start':datetime.fromisoformat(event_dict['start']['dateTime']).replace(tzinfo=None),
+                    'end':datetime.fromisoformat(event_dict['end']['dateTime']).replace(tzinfo=None)
+                    }
+                except:
+                    print(event_dict)
+                    raise ValueError()
+            else:
+                output_dict = {
+                    'start':  datetime.strptime(event_dict['start']['date'],'%Y-%m-%d'),
+                    'end': datetime.strptime(event_dict['start']['date'],'%Y-%m-%d')
+                }
+            output_dict['description'] = event_dict['summary']
+            return [output_dict]
+        recurring_events_list = self.calendar_service.events().instances(calendarId=self.calendar_id,eventId=event_dict['id'],showDeleted=True).execute()
+    
+     
+        event_array=[]
+        for event in recurring_events_list['items']:
+            if(event['status']!='cancelled'):
+                try:
+                    output_dict = {
+                    'start':datetime.fromisoformat(event['start']['dateTime']).replace(tzinfo=None),
+                    'end':datetime.fromisoformat(event['end']['dateTime']).replace(tzinfo=None),
+                    'description':event['summary']
+                    }
+                    event_array.append(output_dict)
+                except:
+                    
+                    print(event)
+                    raise ValueError()
+        return event_array
+        
+                
+    def list_events(self, time_min=None,time_max=None):
+        
+        if(not isinstance(time_min, datetime) and time_min):
+            raise ValueError("Invalid Paramaters: must be datetime objects")
+        if(not isinstance(time_max, datetime) and time_max):
+            raise ValueError("Invalid Paramaters: must be datetime objects")
+     
+        if(not time_min):
+            time_min = datetime.min
+        if(not time_max):
+            time_max = datetime.max
+        
+        time_min_str = time_min.isoformat("T") + "Z"
+        time_max_str = time_max.isoformat("T") + "Z"  
+        
+        event_list = self.calendar_service.events().list(calendarId=self.calendar_id, timeMax = time_max_str, timeMin = time_min_str).execute()
+        
+        current_event_list = []
+        for event in event_list['items']:
+            for event_data in  self.handle_event(event): 
+                print(str(time_min)+":"+str(event_data['start']))
+                if(time_min<event_data['start'] and event_data['end']<time_max):
+                    current_event_list.append(event_data)
+    
+        return current_event_list
+
+
+
+calendar = google_calendar()
+print(calendar.list_events(datetime.now(), datetime.now() + timedelta(days=7)))    
