@@ -30,7 +30,7 @@ def render_login(request):
     if request.method == 'GET':
 
         if request.user.is_authenticated:
-            return redirect('/machine_usage/myforge')
+            return redirect('/myforge')
         else:
             return render(request, 'machine_usage/login.html', {})
 
@@ -43,7 +43,7 @@ def render_login(request):
 
         if user is not None:
             login(request, user)
-            return redirect('/machine_usage/myforge')
+            return redirect('/myforge')
         else:
             return render(request, 'machine_usage/login.html', {"error":"Login failed."})
  
@@ -88,7 +88,7 @@ def render_myforge(request):
 
 def log_out(request):
     logout(request)
-    return redirect('/machine_usage/')
+    return redirect('/')
 
 
 #
