@@ -132,4 +132,4 @@ STATIC_URL = '/static/'
 
 # Login
 
-LOGIN_URL = '/machine_usage/login'
+LOGIN_URL = '/login'
