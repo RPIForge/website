@@ -34,7 +34,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.create(user=instance, email_verification_token=email_verification_token)
 
     if not ( (instance.email == "") or (instance.email is None) ):
-        print("User email was updated to {instance.email}!")
+        print(f"User email was updated to {instance.email}!")
         if not instance.groups.filter(name = "verified_email").exists():
             print("User was not verified. Sending email.")
             machine_usage.utils.send_verification_email(instance)
