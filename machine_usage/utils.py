@@ -58,18 +58,18 @@ class google_calendar():
         return datetime.strptime(calendar_time[:8],'%Y%m%d')
 
  
-    def handle_event(self,event_dict):
+    def handle_event(self,event_dict, time_min, time_max):
+        #get event string
+        time_min_str = time_min.isoformat("T") + "Z"
+        time_max_str = time_max.isoformat("T") + "Z"   
         
+        #handle not events that are not recurrence
         if('recurrence' not in event_dict and event_dict['status']!='cancelled'):
             if('dateTime' in event_dict['start']):
-                try:
-                    output_dict = {
+                output_dict = {
                     'start':datetime.fromisoformat(event_dict['start']['dateTime']).replace(tzinfo=None),
                     'end':datetime.fromisoformat(event_dict['end']['dateTime']).replace(tzinfo=None)
-                    }
-                except:
-                    print(event_dict)
-                    raise ValueError()
+                }
             else:
                 output_dict = {
                     'start':  datetime.strptime(event_dict['start']['date'],'%Y-%m-%d'),
@@ -77,51 +77,43 @@ class google_calendar():
                 }
             output_dict['description'] = event_dict['summary']
             return [output_dict]
-        recurring_events_list = self.calendar_service.events().instances(calendarId=self.calendar_id,eventId=event_dict['id'],showDeleted=True).execute()
+        
+        #get recurring events within datetime
+        recurring_events_list = self.calendar_service.events().instances(calendarId=self.calendar_id,eventId=event_dict['id'],showDeleted=True, timeMin=time_min_str, timeMax=time_max_str).execute()
     
      
         event_array=[]
         for event in recurring_events_list['items']:
+            #only get events that are not cancelled
             if(event['status']!='cancelled'):
-                try:
-                    output_dict = {
+                output_dict = {
                     'start':datetime.fromisoformat(event['start']['dateTime']).replace(tzinfo=None),
                     'end':datetime.fromisoformat(event['end']['dateTime']).replace(tzinfo=None),
                     'description':event['summary']
-                    }
-                    event_array.append(output_dict)
-                except:
-                    
-                    print(event)
-                    raise ValueError()
+                }
+                event_array.append(output_dict)
         return event_array
         
                 
-    def list_events(self, time_min=None,time_max=None):
-        
+    def list_events(self, time_min=datetime.min,time_max=datetime.max):
+        #handle objects that are not the right type 
         if(not isinstance(time_min, datetime) and time_min):
             raise ValueError("Invalid Paramaters: must be datetime objects")
         if(not isinstance(time_max, datetime) and time_max):
             raise ValueError("Invalid Paramaters: must be datetime objects")
-     
-        if(not time_min):
-            time_min = datetime.min
-        if(not time_max):
-            time_max = datetime.max
-        
+    
+        #set time to string 
         time_min_str = time_min.isoformat("T") + "Z"
         time_max_str = time_max.isoformat("T") + "Z"  
         
+        #get the events
         event_list = self.calendar_service.events().list(calendarId=self.calendar_id, timeMax = time_max_str, timeMin = time_min_str).execute()
         
+        #loop through and handle events
         current_event_list = []
         for event in event_list['items']:
-            for event_data in  self.handle_event(event): 
-                print(str(time_min)+":"+str(event_data['start']))
-                if(time_min<event_data['start'] and event_data['end']<time_max):
-                    current_event_list.append(event_data)
+            current_event_list.extend(self.handle_event(event,time_min,time_max)) 
     
         return current_event_list
-
 
 
