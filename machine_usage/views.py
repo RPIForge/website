@@ -232,3 +232,44 @@ def create_user(request):
 @login_required
 def volunteer_dashboard(request):
     return render(request, 'machine_usage/forms/volunteer_dashboard.html', {})
+
+#
+#   API
+#
+
+def machine_endpoint(request):
+    if request.method == 'GET':
+        output = []
+
+        machines = Machine.objects.all()
+
+        for m in machines:
+            if not m.deleted:
+                machine_entry = {
+                    "name": m.machine_name,
+                    "in_use": m.in_use,
+                    "enabled": m.enabled,
+                    "status": m.status_message,
+                    "slots": []
+                }
+
+                slots = m.machine_type.machineslot_set.all()
+                for s in slots:
+                    slot_entry = {
+                        "slot_name": s.slot_name,
+                        "allowed_resources": []
+                    }
+
+                    for r in s.allowed_resources.all():
+
+                        if r.in_stock and not r.deleted:
+                            slot_entry["allowed_resources"].append({"name":r.resource_name,"unit":r.unit, "cost":float(r.cost_per)})
+
+                    machine_entry["slots"].append(slot_entry)
+                
+                output.append(machine_entry)
+
+        return HttpResponse(json.dumps(output))
+
+    else:
+        return HttpResponse("", status=405) # Method not allowed
