@@ -221,11 +221,13 @@ def create_user(request):
 
             login(request, user)
             return redirect('/myforge')
+        else:
+            return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form': profile_form})
     else:
         user_form = ForgeUserCreationForm()
         profile_form = ForgeProfileCreationForm()
 
-        return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'profile_form':profile_form})
+        return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form':profile_form})
 
 @login_required
 def volunteer_dashboard(request):
