@@ -1,20 +1,26 @@
-# Importing Django stuff
+# Importing Django Utils
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models.base import ObjectDoesNotExist
 
+# Importing Models
 from machine_usage.models import *
+from django.contrib.auth.models import User, Group
+
+# Importing Forms
 from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
+
+# Importing Helper Functions
 import machine_usage.utils
+
+# Importing Other Libraries
+import json
+
 #
 #   Pages/Login
 #
-
-# Importing Models
-from django.contrib.auth.models import User, Group
-
 
 def render_equipment(request):
     return render(request, 'machine_usage/equipment.html', {})
@@ -190,6 +196,13 @@ def list_users(request):
         context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
 
     return render(request, 'machine_usage/forms/list_items.html', context)
+
+def create_machine_usage(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        return redirect('/')
+    else:
+        return redirect('/')
 
 # Login intentionally not required for create_user - new users should be able to create their own accounts.
 def create_user(request):

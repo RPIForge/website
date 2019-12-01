@@ -3,6 +3,23 @@ import urllib
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
+#
+# FORM JSON FUNCTIONS
+#
+
+def validate_json(fields, json):
+    for f in fields:
+        if f not in json:
+            return False
+    return True
+
+def validate_slot_usage(slot_name, resource_name):
+    ...
+
+#
+# EMAIL FUNCTIONS
+#
+
 def send_email(to_email, subject, html_string):
     message = Mail(
         from_email = 'no_reply@rpiforge.dev',
