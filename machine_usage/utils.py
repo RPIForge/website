@@ -38,7 +38,6 @@ def send_verification_email(user):
 
 
 class google_calendar():
-    
     calendar_service = None
     calendar_id = None
 
@@ -88,11 +87,13 @@ class google_calendar():
         time_max_str = time_max.isoformat("T") + "Z"  
         
         #get the events
-        event_list = self.calendar_service.events().list(calendarId=self.calendar_id, singleEvents = True, showDeleted=False, timeMax = time_max_str, timeMin = time_min_str).execute()
+        event_list = self.calendar_service.events().list(calendarId=self.calendar_id, singleEvents = True, showDeleted=True, timeMax = time_max_str, timeMin = time_min_str).execute()
         
         #loop through and put events in an easier format
         current_event_list = []
         for event in event_list['items']:
+            if(event['status'] == 'cancelled'):
+                continue
             current_event_list.extend(self.handle_event(event)) 
     
         return current_event_list
@@ -109,29 +110,35 @@ class google_calendar():
         
         #get events during the week
         week_events = self.list_events(start_week,end_week)
-        for event in week_events:
-            print(event['description']) 
         
-         #sort each event by day 
+        #sort events by day
         day_events =  [[] for j in range(7)]
         for event in week_events:
             day_events[int(event['start'].strftime('%w'))].append((event['start'],event['end']))
 
+        #initialize the output array
         output_events = [[] for i in range(7)]
+        
+        #loop through each event
         for day in range(7): 
+            #if day is empty then skip
             if(day_events[day] == []):
                 continue
+    
+            #sort day's events by start time
             day_events[day].sort(key = lambda x: x[0])
             output_events[day].append(day_events[day][0])
+            
+            #for each event see if it adds onto the previous event
             for event in day_events[day]:
                 current_event = output_events[day][-1]
                 
                 if(event[0]<= current_event[1] and event[1]<= current_event[1]):
                     pass
                 elif(event[0]<= current_event[1] and event[1]>= current_event[1]):
-                    current_event = (current_event[0], event[1])
+                    output_events[day][-1] = (current_event[0], event[1])
                 elif(event[0] > current_event[1]):
                     output_events[day].append((event[0],event[1]))
-                    
-        return output_events                
-                   
+        
+        #return event times
+        return output_events               
