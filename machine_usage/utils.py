@@ -78,9 +78,9 @@ class google_calendar():
                 
     def list_events(self, time_min=datetime.min,time_max=datetime.max):
         #handle objects that are not the right type 
-        if(not isinstance(time_min, datetime) and time_min):
+        if(not isinstance(time_min, datetime)):
             raise ValueError("Invalid Paramaters: must be datetime objects")
-        if(not isinstance(time_max, datetime) and time_max):
+        if(not isinstance(time_max, datetime)):
             raise ValueError("Invalid Paramaters: must be datetime objects")
     
         #set time to string 
@@ -97,3 +97,41 @@ class google_calendar():
     
         return current_event_list
 
+    def get_hours(self, week=datetime.now()):
+        if(not isinstance(week,datetime)):
+            raise ValueError("Invalid Paramaters: must be datetime objects")
+        
+        #get week start day and end day
+        start_week = week - timedelta(days=week.weekday())
+        end_week = start_week + timedelta(days=6)
+        start_week = datetime.combine(start_week, datetime.min.time())
+        end_week = datetime.combine(end_week,datetime.max.time())
+        
+        #get events during the week
+        week_events = self.list_events(start_week,end_week)
+        for event in week_events:
+            print(event['description']) 
+        
+         #sort each event by day 
+        day_events =  [[] for j in range(7)]
+        for event in week_events:
+            day_events[int(event['start'].strftime('%w'))].append((event['start'],event['end']))
+
+        output_events = [[] for i in range(7)]
+        for day in range(7): 
+            if(day_events[day] == []):
+                continue
+            day_events[day].sort(key = lambda x: x[0])
+            output_events[day].append(day_events[day][0])
+            for event in day_events[day]:
+                current_event = output_events[day][-1]
+                
+                if(event[0]<= current_event[1] and event[1]<= current_event[1]):
+                    pass
+                elif(event[0]<= current_event[1] and event[1]>= current_event[1]):
+                    current_event = (current_event[0], event[1])
+                elif(event[0] > current_event[1]):
+                    output_events[day].append((event[0],event[1]))
+                    
+        return output_events                
+                   
