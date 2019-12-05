@@ -1,7 +1,7 @@
 argon2-cffi==19.2.0
 bcrypt==3.1.7
 cffi==1.13.2
-Django==2.2.7
+Django==2.2.8
 psycopg2==2.8.4
 pycparser==2.19
 python-http-client==3.2.1
