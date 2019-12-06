@@ -1,6 +1,10 @@
 {% extends "machine_usage/generic.html" %}
 {% load static %}
 
+{% block page_title %}
+<title>My Forge</title>
+{% endblock page_title %}
+
 {% block custom_styles %}
 	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/myforge.css' %}">
 {% endblock custom_styles %}
@@ -11,7 +15,7 @@
 			<li class="block_list_header">User Functions</li>
 				<li><a href="#">Use A Machine</a></li>
 				<li><a href="javascript:setFrame('dyn/project_list')">View Your Projects</a></li>
-				<li><a href="#">Send Feedback</a></li>
+				<li><a href="javascript:setFrame('https://docs.google.com/forms/d/e/1FAIpQLSfEj3o6wlmHYNSDVT1U8dTkul1DSuRhhokQO5S1YNnTeAYpqw/viewform')">Send Feedback</a></li>
 
 			<li class="block_list_header">Volunteer Functions</li>
 				<li><a href="javascript:setFrame('dyn/volunteer_dashboard')">Volunteer Dashboard</a></li>

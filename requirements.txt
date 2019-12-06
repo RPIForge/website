@@ -4,7 +4,6 @@ cachetools==3.1.1
 certifi==2019.11.28
 cffi==1.13.2
 chardet==3.0.4
-Django==2.2.7
 google-api-python-client==1.7.11
 google-auth==1.7.1
 google-auth-httplib2==0.0.3
@@ -12,6 +11,7 @@ google-auth-oauthlib==0.4.1
 httplib2==0.14.0
 idna==2.8
 oauthlib==3.1.0
+Django==2.2.8
 psycopg2==2.8.4
 pyasn1==0.4.8
 pyasn1-modules==0.2.7

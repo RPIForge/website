@@ -5,10 +5,27 @@ import urllib
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
+
 #google calendar imports
 from googleapiclient.discovery import build
 from datetime import datetime, timedelta
 
+#
+# FORM JSON FUNCTIONS
+#
+
+def validate_json(fields, json):
+    for f in fields:
+        if f not in json:
+            return False
+    return True
+
+def validate_slot_usage(slot_name, resource_name):
+    ...
+
+#
+# EMAIL FUNCTIONS
+#
 def send_email(to_email, subject, html_string):
     message = Mail(
         from_email = 'no_reply@rpiforge.dev',
@@ -36,7 +53,9 @@ def send_verification_email(user):
     body = f"Thanks for signing up for the Forge! Click <a clicktracking=off href='{verification_url}'>this link</a> to verify your email."
     send_email(user.email, subject, body)
 
-
+#
+# CALENDAR FUNCTIONS
+#
 class google_calendar():
     calendar_service = None
     calendar_id = None

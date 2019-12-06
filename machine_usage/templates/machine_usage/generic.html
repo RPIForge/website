@@ -14,9 +14,46 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 		{% endblock meta %}
 
-		{% block title %}
+		{% block user_analytics %}
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-153495688-1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'UA-153495688-1');
+		</script>
+
+			<!-- Quantcast Tag -->
+			<script type="text/javascript">
+				var _qevents = _qevents || [];
+
+				(function() {
+				var elem = document.createElement('script');
+				elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+				elem.async = true;
+				elem.type = "text/javascript";
+				var scpt = document.getElementsByTagName('script')[0];
+				scpt.parentNode.insertBefore(elem, scpt);
+				})();
+
+				_qevents.push({
+				qacct:"p-m4RPhcz_K_-XN"
+			});
+			</script>
+
+			<noscript>
+				<div style="display:none;">
+					<img src="//pixel.quantserve.com/pixel/p-m4RPhcz_K_-XN.gif" border="0" height="1" width="1" alt="Quantcast"/>
+				</div>
+			</noscript>
+			<!-- End Quantcast tag -->
+
+		{% endblock user_analytics %}
+
+		{% block page_title %}
 		<title>{{page_title}}</title>
-		{% endblock title %}
+		{% endblock page_title %}
 	</head>
 	{% endblock head %}
 	

@@ -1,21 +1,26 @@
-# Importing Django stuff
+# Importing Django Utils
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db.models.base import ObjectDoesNotExist
 
-from machine_usage.models import *
-from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
-#
-#	Pages/Login
-#
-
-def render_index(request):
-    return render(request, 'machine_usage/index.html', {})
 # Importing Models
+from machine_usage.models import *
 from django.contrib.auth.models import User, Group
 
+# Importing Forms
+from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
+
+# Importing Helper Functions
+import machine_usage.utils
+
+# Importing Other Libraries
+import json
+
+#
+#   Pages/Login
+#
 
 def render_equipment(request):
     return render(request, 'machine_usage/equipment.html', {})
@@ -30,7 +35,7 @@ def render_login(request):
     if request.method == 'GET':
 
         if request.user.is_authenticated:
-            return redirect('/machine_usage/myforge')
+            return redirect('/myforge')
         else:
             return render(request, 'machine_usage/login.html', {})
 
@@ -43,7 +48,7 @@ def render_login(request):
 
         if user is not None:
             login(request, user)
-            return redirect('/machine_usage/myforge')
+            return redirect('/myforge')
         else:
             return render(request, 'machine_usage/login.html', {"error":"Login failed."})
  
@@ -65,7 +70,7 @@ def render_verify_email(request):
         if token is None:
             return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"error", "message":"Invalid Request: No token provided."})
             
-    	# See if we have a user that corresponds to the token.
+        # See if we have a user that corresponds to the token.
         try:
             user_profile = UserProfile.objects.get(email_verification_token=token)
         except ObjectDoesNotExist:
@@ -88,11 +93,11 @@ def render_myforge(request):
 
 def log_out(request):
     logout(request)
-    return redirect('/machine_usage/')
+    return redirect('/')
 
 
 #
-#	Forms/Tables
+#   Forms/Tables
 #
 
 #
@@ -100,7 +105,7 @@ def log_out(request):
 #
 
 def format_usd(fp):
-	return f"${fp:.2f}"
+    return f"${fp:.2f}"
 
 @login_required
 def list_projects(request):
@@ -112,21 +117,23 @@ def list_projects(request):
     user_profile = request.user.userprofile
 
     context = {
-	    "table_headers":["Date", "Machine", "Cost"],
-	    "table_rows":[]
+        "table_headers":["Date", "Machine", "Cost"],
+        "table_rows":[],
+        "page_title":"Projects"
     }
 
     usages = user_profile.usage_set.all()
     for u in usages:
-	    context["table_rows"].append([u.start_time, u.machine.machine_name, format_usd(u.cost())])
+        context["table_rows"].append([u.start_time, u.machine.machine_name, format_usd(u.cost())])
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
 @login_required
 def list_machines(request):
     context = {
-	    "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "In Use?"],
-	    "table_rows":[]
+        "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "In Use?"],
+        "table_rows":[],
+        "page_title":"Machines"
     }
 
     machines = Machine.objects.all()
@@ -139,7 +146,8 @@ def list_machines(request):
 def list_machine_types(request):
     context = {
 	    "table_headers":["Type", "Category", "Slots", "Count", "Resource Types"],
-	    "table_rows":[]
+	    "table_rows":[],
+        "page_title":"Machine Types"
     }
 
     machine_types = MachineType.objects.all()
@@ -165,7 +173,8 @@ def list_machine_types(request):
 def list_resources(request):
     context = {
 	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "In Stock?"],
-	    "table_rows":[]
+	    "table_rows":[],
+        "page_title":"Resources"
     }
 
     resources = Resource.objects.all()
@@ -177,15 +186,23 @@ def list_resources(request):
 @login_required		
 def list_users(request):
     context = {
-	    "table_headers":["Name", "RIN", "Outstanding Balance"],
-	    "table_rows":[]
+        "table_headers":["Name", "RIN", "Outstanding Balance"],
+        "table_rows":[],
+        "page_title":"Users"
     }
 
     users = UserProfile.objects.all()
     for u in users:
-	    context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
+        context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
 
     return render(request, 'machine_usage/forms/list_items.html', context)
+
+def create_machine_usage(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        return redirect('/')
+    else:
+        return redirect('/')
 
 # Login intentionally not required for create_user - new users should be able to create their own accounts.
 def create_user(request):
@@ -208,12 +225,64 @@ def create_user(request):
             user.userprofile.major = user_major
 
             user.save()
+
+            email = profile_form.cleaned_data.get('email')
+
+            if not user.groups.filter(name="verified_email").exists():
+                print(f"Sending verification email to {user.email}")
+                machine_usage.utils.send_verification_email(user)
+
+            login(request, user)
+            return redirect('/myforge')
+        else:
+            return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form': profile_form})
     else:
         user_form = ForgeUserCreationForm()
         profile_form = ForgeProfileCreationForm()
 
-    return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form,'profile_form':profile_form})
+        return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form':profile_form})
 
 @login_required
 def volunteer_dashboard(request):
     return render(request, 'machine_usage/forms/volunteer_dashboard.html', {})
+
+#
+#   API
+#
+
+def machine_endpoint(request):
+    if request.method == 'GET':
+        output = []
+
+        machines = Machine.objects.all()
+
+        for m in machines:
+            if not m.deleted:
+                machine_entry = {
+                    "name": m.machine_name,
+                    "in_use": m.in_use,
+                    "enabled": m.enabled,
+                    "status": m.status_message,
+                    "slots": []
+                }
+
+                slots = m.machine_type.machineslot_set.all()
+                for s in slots:
+                    slot_entry = {
+                        "slot_name": s.slot_name,
+                        "allowed_resources": []
+                    }
+
+                    for r in s.allowed_resources.all():
+
+                        if r.in_stock and not r.deleted:
+                            slot_entry["allowed_resources"].append({"name":r.resource_name,"unit":r.unit, "cost":float(r.cost_per)})
+
+                    machine_entry["slots"].append(slot_entry)
+                
+                output.append(machine_entry)
+
+        return HttpResponse(json.dumps(output))
+
+    else:
+        return HttpResponse("", status=405) # Method not allowed
