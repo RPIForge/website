@@ -17,6 +17,7 @@ main {
 #myforge_frame {
 	height: 100%;
 	width: 100%;
+	background: #EEE;
 }
 
 .block_list {
