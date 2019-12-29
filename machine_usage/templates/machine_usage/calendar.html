@@ -1,0 +1,36 @@
+{% extends "machine_usage/generic.html" %}
+{% load static %}
+
+{% block custom_styles %}
+{% endblock custom_styles %}
+
+{% block main %}
+<br>
+<br>
+<br>
+    
+    <table>
+        <tr>
+            <th>Sunday</th>        
+            <th>Monday</th>        
+            <th>Tuesday</th>        
+            <th>Wednesday</th>        
+            <th>Thursday</th>        
+            <th>Friday</th>        
+            <th>Saturday</th>        
+        </tr>
+        {% for day in results %}
+            <tr>
+            {% if day %} 
+                {% for hour in day %}
+                    <td>{{hour}}</td>
+                {% endfor %}
+            {% else %}
+                <td> No Hours </td>
+            {%endif%}
+
+            </tr>        
+        {% endfor %}
+    </table>
+
+{% endblock main %}

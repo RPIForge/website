@@ -17,6 +17,7 @@ import machine_usage.utils
 
 # Importing Other Libraries
 import json
+from datetime import datetime 
 
 #
 #   Pages/Login
@@ -26,7 +27,45 @@ def render_equipment(request):
     return render(request, 'machine_usage/equipment.html', {})
 
 def render_hours(request):
-    return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "Hours" page.
+    # Make sure we only support GET requests, so we can make POST do something later if needed
+    if request.method == 'GET':
+        # Get the verification token from the request, or a NoneType if the request is malformed.
+        hour = request.GET.get("date", None)
+        
+            
+        #initalize calendar
+        calendar = machine_usage.utils.google_calendar()
+       
+        #get hours 
+        if hour: 
+            hour = datetime.strptime(hour,"%m-%d-%Y")
+            week_hours = calendar.get_hours(hour)
+        else:
+            week_hours = calendar.get_hours()
+
+        #get the largest list
+        largest_len=0
+        for day in week_hours:
+            if(len(day)>largest_len):
+                largest_len = len(day)
+
+        #pad each list
+        for day in week_hours:
+             day +=  [''] * (largest_len - len(day))
+        
+        for day in week_hours:
+             
+            for time in range(len(day)):
+                if(day[time] == ''):
+                    continue
+                
+                day[time] = day[time][0].strftime("%I:%M %p - ")+day[time][1].strftime("%I:%M %p")
+                 
+ 
+        rot_hours = list(zip(*week_hours))
+         
+ 
+        return render(request, 'machine_usage/calendar.html', {'results':rot_hours}) # TO-DO: Implement the "Hours" page.
 
 def render_index(request):
     return render(request, 'machine_usage/index.html', {})
