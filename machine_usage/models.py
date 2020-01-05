@@ -10,6 +10,8 @@ import machine_usage.lists
 
 import uuid
 
+from datetime import datetime, timedelta
+
 class UserProfile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	rin = models.PositiveIntegerField(default=None, null=True, blank=True, unique=True)
@@ -57,6 +59,15 @@ class MachineType(models.Model):
 	def __str__(self):
 		return self.machine_type_name
 
+	def get_slot(self, name):
+		return self.machineslot_set.get(slot_name=name)
+
+	def get_slot_names(self):
+		out = []
+		for element in self.machineslot_set.all():
+			out.append(element.slot_name)
+		return out
+
 class MachineSlot(models.Model):
 	slot_name = models.CharField(max_length=255)
 
@@ -66,13 +77,15 @@ class MachineSlot(models.Model):
 	)
 
 	allowed_resources = models.ManyToManyField(Resource)
-
 	deleted = models.BooleanField(default=False)
 
 	def __str__(self):
 		return f"{self.machine_type.machine_type_name}'s {self.slot_name} slot"
 
-class Machine(models.Model):
+	def resource_allowed(self, name):
+		return True
+
+class Machine(models.Model): # TODO make sure names of all slots added to machine are unique in scope
 	machine_name = models.CharField(max_length=255, unique=True)
 	machine_type = models.ForeignKey(
 		MachineType,
@@ -80,6 +93,13 @@ class Machine(models.Model):
 	)
 
 	in_use = models.BooleanField(default=False)
+	current_job = models.OneToOneField(
+		"Usage",
+		on_delete=models.CASCADE,
+		null=True,
+		blank=True,
+		related_name="current_machine"
+	)
 	enabled = models.BooleanField(default=True)
 	status_message = models.CharField(max_length=255, default="", blank=True)
 	deleted = models.BooleanField(default=False)
@@ -98,15 +118,14 @@ class Usage(models.Model):
 		on_delete = models.CASCADE
 	)
 
-	for_class = models.BooleanField()
+	for_class = models.BooleanField(default=False)
 	
 	start_time = models.DateTimeField(auto_now=True)
-	planned_duration = models.DurationField()
+	end_time = models.DateTimeField(null=True, blank=True) # null/blank allowed for check-in/check-out machines
 
-	fail_time = models.DateTimeField(null=True)
 	retry_count = models.PositiveIntegerField(default=0)
 
-	complete = models.BooleanField()
+	complete = models.BooleanField(default=False)
 	deleted = models.BooleanField(default=False)
 
 	def cost(self):
@@ -114,6 +133,9 @@ class Usage(models.Model):
 		for slot in self.slotusage_set.all():
 			cost += Decimal(slot.cost())
 		return cost
+
+	def set_end_time(self, hours, minutes):
+		self.end_time = self.start_time + timedelta(hours=hours, minutes=minutes)
 
 	def __str__(self):
 		return f"Usage of {self.machine} by {self.userprofile.user.username} at {self.start_time}"

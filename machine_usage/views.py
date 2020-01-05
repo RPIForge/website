@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models.base import ObjectDoesNotExist
 
 # Importing Models
@@ -17,6 +18,7 @@ import machine_usage.utils
 
 # Importing Other Libraries
 import json
+from decimal import Decimal
 
 #
 #   Pages/Login
@@ -154,7 +156,7 @@ def list_machine_types(request):
     for m in machine_types:
 
             slots = m.machineslot_set.all()
-            resource_set = set()
+            resource_set = set() # We use this to get a set of unique resources for display, since multiple slots can accept the same resource.
 
             for s in slots:
                 for r in s.allowed_resources.all():
@@ -197,12 +199,75 @@ def list_users(request):
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
+def validate_machine(machine, slot_usages):
+    input_set = set()
+    model_set = set()
+
+    for u in slot_usages:
+        input_set.add(u["name"])
+
+    model_names = machine.machine_type.get_slot_names()
+
+    for n in model_names:
+        model_set.add(n)
+
+    return (input_set == model_set) and not machine.in_use
+
+def validate_slot(slot, material, quantity):
+    try:
+        Decimal(quantity)
+    except Exception as e:
+        return False
+    return (slot.resource_allowed(material))
+
+# $.post("http://localhost:8000/api/machines", '{"machine_name":"Prusa Alpha", "hours":1, "minutes":30,"slot_usages":[{"name":"Filament", "resource":"PLA", "quantity":10}]}')
+@login_required
 def create_machine_usage(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        machine_name = data["machine_name"]
+        machine = Machine.objects.get(machine_name=machine_name)
+
+        validate_machine(machine, data["slot_usages"])
+
+        slot_usages = []
+
+        for slot_usage in data["slot_usages"]: # TODO Ensure that data["slot_usages"] is actually iterable. Or alternatively validate the JSON somewhere. List of dicts.
+            slot_name = slot_usage["name"]
+            resource = slot_usage["resource"]
+            quantity = slot_usage["quantity"]
+
+            slot = machine.machine_type.get_slot(slot_name)
+
+            if not validate_slot(slot, resource, quantity):
+                return HttpResponse("", status=405) # Method not allowed
+
+            su = SlotUsage()
+            slot_usages.append(su)
+            su.machine_slot = slot
+            su.resource = Resource.objects.get(resource_name=resource)
+            su.amount = Decimal(quantity)
+
+        u = Usage()
+        u.machine = machine
+        u.userprofile = request.user.userprofile
+        u.save() # Necessary so start_time gets set automatically
+        u.set_end_time(int(data["hours"]), int(data["minutes"]))
+        u.save()
+
+        for su in slot_usages:
+            su.usage = u
+            su.save()
+
+        machine.in_use = True
+        machine.current_job = u
+        machine.save()
+
+        # Create the MachineUsage object and SlotUsage objects, associate it with the machine, yadda yadda yadda
+
         return redirect('/')
     else:
-        return redirect('/')
+        return HttpResponse("", status=405) # Method not allowed
 
 # Login intentionally not required for create_user - new users should be able to create their own accounts.
 def create_user(request):
@@ -250,6 +315,7 @@ def volunteer_dashboard(request):
 #   API
 #
 
+@csrf_exempt # TODO REMOVE THIS, ONLY FOR DEBUG
 def machine_endpoint(request):
     if request.method == 'GET':
         output = []
@@ -283,6 +349,7 @@ def machine_endpoint(request):
                 output.append(machine_entry)
 
         return HttpResponse(json.dumps(output))
-
+    elif request.method == 'POST':
+        return create_machine_usage(request) # Make sure this still checks for login!
     else:
         return HttpResponse("", status=405) # Method not allowed
