@@ -1,0 +1,59 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+
+{% for slot in slots %}
+	{{ slot.name }}
+	<input type="number" name="{{slot.name}}_qty" data-slot-name="{{ slot.name }}" />
+	<select name="{{slot.name}}_resource" data-slot-name="{{ slot.name }}">
+		{% for resource in slot.allowed_resources %}
+			<option data-resource-unit="{{ resource.unit }}" data-resource-name="{{ resource.name }}">{{ resource.unit }} {{ resource.name }}</option>
+		{% endfor %}
+	</select>
+	<br />
+{% endfor %}
+<br />
+<button onclick="javascript:submit_form()">Submit</button>
+
+<script>
+	function submit_form() {
+
+		output = {};
+		output["machine_name"] = "{{ machine_name }}";
+		output["hours"] = 1;
+		output["minutes"] = 0;
+		output["slot_usages"] = [];
+
+		quantities = document.getElementsByTagName('input');
+		selectors = document.getElementsByTagName('select');
+		
+		slot_data = {};
+
+		for (var i = 0; i < selectors.length; i++) {
+			//console.log(quantities[i].getAttribute("data-slot-name"));
+			//console.log(selectors[i].getAttribute("data-slot-name"));
+			slot_name = selectors[i].getAttribute("data-slot-name");
+			selected_option = $(selectors[i]).children("option:selected")[0];
+			console.log(selected_option);
+			output["slot_usages"].push({
+				"name":slot_name,
+				"resource":selected_option.getAttribute("data-resource-name"),
+				"quantity":quantities[i].value
+			});
+		}
+
+		console.log(JSON.stringify(output));
+		$.post("http://localhost:8000/api/machines", JSON.stringify(output));
+	}
+</script>
+
+{
+    "machine_name": "Prusa Beta",
+    "hours": 0,
+    "minutes": 5,
+    "slot_usages": [
+        {
+            "name": "Filament",
+            "resource": "ABS",
+            "quantity": 5
+        }
+    ]
+}

@@ -345,6 +345,37 @@ def create_user(request):
 def volunteer_dashboard(request):
     return render(request, 'machine_usage/forms/volunteer_dashboard.html', {})
 
+@login_required
+def machine_usage(request):
+    return render(request, 'machine_usage/forms/machine_usage.html', {})
+
+@login_required
+def generate_machine_form(request):
+    machine_name = request.GET.get("machine", None)
+    if machine_name is None:
+        return HttpResponse("Machine name not found.", status=400)
+
+    machine = Machine.objects.get(machine_name=machine_name) # TODO Catch machine not existing
+    slots = []
+
+    for slot in machine.machine_type.machineslot_set.all():
+        if not slot.deleted:
+            allowed_resources = []
+
+            for resource in slot.allowed_resources.all():
+                if resource.in_stock and not resource.deleted:
+                    allowed_resources.append({
+                        "name":resource.resource_name,
+                        "unit":resource.unit
+                    })
+
+            slots.append({
+                "name":slot.slot_name,
+                "allowed_resources":allowed_resources
+            })
+
+    return render(request, 'machine_usage/forms/machine_form.html', {"slots":slots, "machine_name":machine_name})
+
 #
 #   API
 #
@@ -374,7 +405,6 @@ def machine_endpoint(request):
                     }
 
                     for r in s.allowed_resources.all():
-
                         if r.in_stock and not r.deleted:
                             slot_entry["allowed_resources"].append({"name":r.resource_name,"unit":r.unit, "cost":float(r.cost_per)})
 
