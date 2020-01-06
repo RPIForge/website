@@ -251,7 +251,7 @@ def create_machine_usage(request):
         u = Usage()
         u.machine = machine
         u.userprofile = request.user.userprofile
-        u.save() # Necessary so start_time gets set automatically
+        u.save() # Necessary so start_time gets set to current time automatically
         u.set_end_time(int(data["hours"]), int(data["minutes"]))
         u.save()
 
