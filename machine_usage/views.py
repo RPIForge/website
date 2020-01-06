@@ -199,6 +199,38 @@ def list_users(request):
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
+def validate_slot_usage_list(slot_usage_list): # slot_usage_list has already been validated as a list.
+    field_types = [("name", str), ("resource", str), ("quantity", str)]
+    for slot_usage in slot_usage_list:
+        for (name, expected_type) in field_types:
+            if name not in slot_usage:
+                return (False, f"Parameter {name} was not found in slot usage dictionary.")
+
+            if not (type(slot_usage[name]) == expected_type):
+                return (False, f"Parameter {name} was provided as type {type(slot_usage[name])} (expected {expected_type}).")
+
+            try:
+                dec = Decimal(slot_usage["quantity"])
+            except Exception as e:
+                return (False, f"Parameter quantity for slot {slot_usage['name']} was not a valid decimal number.")
+
+    return (True, "")
+
+def validate_machine_usage_json(json_dict):
+    if not (type(json_dict) == dict):
+        return (False, "Root JSON object was not a dictionary.")
+
+    field_types = [("machine_name", str), ("slot_usages", list), ("hours", int), ("minutes", int)]
+
+    for (name, expected_type) in field_types:
+        if name not in json_dict:
+            return (False, f"Parameter {name} was not found in dictionary.")
+
+        if not (type(json_dict[name]) == expected_type):
+            return (False, f"Parameter {name} was provided as type {type(json_dict[name])} (expected {expected_type}).")
+
+    return (True, "")
+
 def validate_machine(machine, slot_usages):
     input_set = set()
     model_set = set()
@@ -218,7 +250,7 @@ def validate_slot(slot, material, quantity):
         Decimal(quantity)
     except Exception as e:
         return False
-    return (slot.resource_allowed(material))
+    return slot.resource_allowed(material)
 
 # $.post("http://localhost:8000/api/machines", '{"machine_name":"Prusa Alpha", "hours":1, "minutes":30,"slot_usages":[{"name":"Filament", "resource":"PLA", "quantity":10}]}')
 @login_required
@@ -228,7 +260,10 @@ def create_machine_usage(request):
         machine_name = data["machine_name"]
         machine = Machine.objects.get(machine_name=machine_name)
 
-        validate_machine(machine, data["slot_usages"])
+        validation_result = validate_machine(machine, data["slot_usages"])
+
+        if not validation_result:
+            return HttpResponse("Invalid machine or schema.", status=400)
 
         slot_usages = []
 
@@ -239,8 +274,9 @@ def create_machine_usage(request):
 
             slot = machine.machine_type.get_slot(slot_name)
 
-            if not validate_slot(slot, resource, quantity):
-                return HttpResponse("", status=405) # Method not allowed
+            validation_result = validate_slot(slot, resource, quantity)
+            if not validation_result:
+                return HttpResponse(f"Quantity for slot {slot_name} was not a valid decimal, or the resource provided was invalid.", status=400)
 
             su = SlotUsage()
             slot_usages.append(su)
@@ -251,7 +287,7 @@ def create_machine_usage(request):
         u = Usage()
         u.machine = machine
         u.userprofile = request.user.userprofile
-        u.save() # Necessary so start_time gets set to current time automatically
+        u.save() # Necessary so start_time gets set to current time before referencing it below
         u.set_end_time(int(data["hours"]), int(data["minutes"]))
         u.save()
 
@@ -262,8 +298,6 @@ def create_machine_usage(request):
         machine.in_use = True
         machine.current_job = u
         machine.save()
-
-        # Create the MachineUsage object and SlotUsage objects, associate it with the machine, yadda yadda yadda
 
         return redirect('/')
     else:

@@ -98,7 +98,7 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
 		on_delete=models.CASCADE,
 		null=True,
 		blank=True,
-		related_name="current_machine"
+		related_name="current_machine" # Can we make this None? You can already see a usage's machine from usage.machine.
 	)
 	enabled = models.BooleanField(default=True)
 	status_message = models.CharField(max_length=255, default="", blank=True)
@@ -120,7 +120,7 @@ class Usage(models.Model):
 
 	for_class = models.BooleanField(default=False)
 	
-	start_time = models.DateTimeField(auto_now=True)
+	start_time = models.DateTimeField(auto_now_add=True)
 	end_time = models.DateTimeField(null=True, blank=True) # null/blank allowed for check-in/check-out machines
 
 	retry_count = models.PositiveIntegerField(default=0)
