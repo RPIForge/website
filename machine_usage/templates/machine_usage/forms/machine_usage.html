@@ -13,17 +13,22 @@
 {% endblock header%}
 
 {% block main %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        function setFrame(src) {
+            $("#machine_form").attr("src", src);
+        }
+    </script>
+
     <main class="bg_shade">
         <div id="machine_usage">
             <div id="available_machines">
-                <input>
-                    {% for machine in available_machines %}
-                        <option>{{ machine.name }}</option>
-                    {% endfor %}
-                </input>
+                {% for machine in available_machines %}
+                    <a href="javascript:setFrame('/forms/machine_form?machine={{machine.name|urlencode}}')">{{ machine.name }}</a><br />
+                {% endfor %}
             </div>
 
-            <div id="machine_form">
+            <iframe id="machine_form">
             </div>
         </div>
     </main>

@@ -2,7 +2,7 @@
 
 {% for slot in slots %}
 	{{ slot.name }}
-	<input type="number" name="{{slot.name}}_qty" data-slot-name="{{ slot.name }}" />
+	<input type="number" name="{{slot.name}}_qty" data-slot-name="{{ slot.name }}" value="0" />
 	<select name="{{slot.name}}_resource" data-slot-name="{{ slot.name }}">
 		{% for resource in slot.allowed_resources %}
 			<option data-resource-unit="{{ resource.unit }}" data-resource-name="{{ resource.name }}">{{ resource.unit }} {{ resource.name }}</option>
@@ -44,16 +44,3 @@
 		$.post("http://localhost:8000/api/machines", JSON.stringify(output));
 	}
 </script>
-
-{
-    "machine_name": "Prusa Beta",
-    "hours": 0,
-    "minutes": 5,
-    "slot_usages": [
-        {
-            "name": "Filament",
-            "resource": "ABS",
-            "quantity": 5
-        }
-    ]
-}

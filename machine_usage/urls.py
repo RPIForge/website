@@ -14,7 +14,7 @@ urlpatterns = [
     path('myforge', views.render_myforge, name='myforge'),
 
     path('forms/create_user', views.create_user, name='create_user'),
-    path('forms/machine_usage', views.machine_usage, name='create_user'),
+    path('forms/machine_usage', views.machine_usage, name='machine_usage'),
     path('forms/machine_form', views.generate_machine_form, name='machine_form'),
 
     path('dyn/project_list', views.list_projects, name='project_list'),
