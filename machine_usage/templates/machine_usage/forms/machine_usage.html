@@ -23,13 +23,19 @@
     <main class="bg_shade">
         <div id="machine_usage">
             <div id="available_machines">
-                {% for machine in available_machines %}
-                    <a href="javascript:setFrame('/forms/machine_form?machine={{machine.name|urlencode}}')">{{ machine.name }}</a><br />
-                {% endfor %}
+                <h3>Available Machines</h3>
+
+                <ul class="block_list">
+                    {% for machine_type, machines in available_machines.items %}
+                        <li class="block_list_header">{{ machine_type }}</li>
+                        {% for machine_name in machines %}
+                            <li><a href="javascript:setFrame('/forms/machine_form?machine={{machine_name|urlencode}}')">{{ machine_name }}</a></li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
             </div>
 
-            <iframe id="machine_form">
-            </div>
+            <iframe id="machine_form"></iframe>
         </div>
     </main>
 {% endblock main %}
