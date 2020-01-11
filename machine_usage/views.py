@@ -348,11 +348,14 @@ def volunteer_dashboard(request):
 @login_required
 def machine_usage(request):
     machines = Machine.objects.all()
-    available_machines = []
+    available_machines = {}
 
     for m in machines:
         if (not m.deleted) and (not m.in_use):
-            available_machines.append({"name":m.machine_name})
+            type_name = m.machine_type.machine_type_name
+            if type_name not in available_machines:
+                available_machines[type_name] = []
+            available_machines[type_name].append(m.machine_name)
 
     return render(request, 'machine_usage/forms/machine_usage.html', {"available_machines":available_machines})
 
@@ -381,7 +384,7 @@ def generate_machine_form(request):
                 "allowed_resources":allowed_resources
             })
 
-    return render(request, 'machine_usage/forms/machine_form.html', {"slots":slots, "machine_name":machine_name})
+    return render(request, 'machine_usage/forms/machine_form.html', {"slots":sorted(slots, key=lambda k: k["name"]), "machine_name":machine_name})
 
 #
 #   API
