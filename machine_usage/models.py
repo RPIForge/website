@@ -54,6 +54,10 @@ class MachineType(models.Model):
 	machine_type_name = models.CharField(max_length=255, unique=True)
 	machine_category = models.CharField(max_length=255, null=True)
 
+	hourly_cost = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+
+	data_entry_after_use = models.BooleanField(default=False) # Allow a user to check a machine out, marking it as used, and then enter usage info afterwards. Ex: Laser Cutter
+
 	deleted = models.BooleanField(default=False)
 
 	def __str__(self):
