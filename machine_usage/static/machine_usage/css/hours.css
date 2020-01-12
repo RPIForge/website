@@ -1,0 +1,10 @@
+
+
+#hour_frame {
+	position: absolute;
+	height: 94.55vh;
+	width: calc(100% - 250px);
+	top: 5.5vh;
+	left: 25%;
+	border: none;
+}

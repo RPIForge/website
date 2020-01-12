@@ -2,35 +2,25 @@
 {% load static %}
 
 {% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/hours.css' %}">
 {% endblock custom_styles %}
 
 {% block main %}
-<br>
-<br>
-<br>
-    
-    <table>
+    <section id="hour_frame">
+        <table border="1">
         <tr>
-            <th>Sunday</th>        
-            <th>Monday</th>        
-            <th>Tuesday</th>        
-            <th>Wednesday</th>        
-            <th>Thursday</th>        
-            <th>Friday</th>        
-            <th>Saturday</th>        
+          <th>Day</th>
+          <th>Hours</th>
         </tr>
-        {% for day in results %}
-            <tr>
-            {% if day %} 
-                {% for hour in day %}
-                    <td>{{hour}}</td>
-                {% endfor %}
-            {% else %}
-                <td> No Hours </td>
-            {%endif%}
-
-            </tr>        
+        {% for day in result_hours %}
+          <tr>
+            <td> {{day.name}} </td>
+            <td> {{day.hours}} </td>
+          </tr>
         {% endfor %}
-    </table>
 
+      </table>
+
+        <iframe src="https://calendar.google.com/calendar/embed?height=600&amp;wkst=1&amp;bgcolor=%23af0909&amp;ctz=America%2FCampo_Grande&amp;src=azJyNm9zamptczZscXQ0MWJpNWE3ajQ4bjBAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&amp;color=%23AA5A00&amp;mode=WEEK&amp;showTitle=0&amp;showNav=1&amp;showDate=1&amp;showPrint=0&amp;showTabs=0&amp;showCalendars=0&amp;showTz=0" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    </section>
 {% endblock main %}
