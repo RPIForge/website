@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models.base import ObjectDoesNotExist
 
 # Importing Models
@@ -19,6 +20,7 @@ import machine_usage.lists
 # Importing Other Libraries
 import json
 from datetime import datetime
+from decimal import Decimal
 
 #
 #   Pages/Login
@@ -189,7 +191,7 @@ def list_machine_types(request):
     for m in machine_types:
 
             slots = m.machineslot_set.all()
-            resource_set = set()
+            resource_set = set() # We use this to get a set of unique resources for display, since multiple slots can accept the same resource.
 
             for s in slots:
                 for r in s.allowed_resources.all():
@@ -232,12 +234,109 @@ def list_users(request):
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
+def validate_slot_usage_list(slot_usage_list): # slot_usage_list has already been validated as a list.
+    field_types = [("name", str), ("resource", str), ("quantity", str)]
+    for slot_usage in slot_usage_list:
+        for (name, expected_type) in field_types:
+            if name not in slot_usage:
+                return (False, f"Parameter {name} was not found in slot usage dictionary.")
+
+            if not (type(slot_usage[name]) == expected_type):
+                return (False, f"Parameter {name} was provided as type {type(slot_usage[name])} (expected {expected_type}).")
+
+            try:
+                dec = Decimal(slot_usage["quantity"])
+            except Exception as e:
+                return (False, f"Parameter quantity for slot {slot_usage['name']} was not a valid decimal number.")
+
+    return (True, "")
+
+def validate_machine_usage_json(json_dict):
+    if not (type(json_dict) == dict):
+        return (False, "Root JSON object was not a dictionary.")
+
+    field_types = [("machine_name", str), ("slot_usages", list), ("hours", int), ("minutes", int)]
+
+    for (name, expected_type) in field_types:
+        if name not in json_dict:
+            return (False, f"Parameter {name} was not found in dictionary.")
+
+        if not (type(json_dict[name]) == expected_type):
+            return (False, f"Parameter {name} was provided as type {type(json_dict[name])} (expected {expected_type}).")
+
+    return (True, "")
+
+def validate_machine(machine, slot_usages):
+    input_set = set()
+    model_set = set()
+
+    for u in slot_usages:
+        input_set.add(u["name"])
+
+    model_names = machine.machine_type.get_slot_names()
+
+    for n in model_names:
+        model_set.add(n)
+
+    return (input_set == model_set) and not machine.in_use
+
+def validate_slot(slot, material, quantity):
+    try:
+        Decimal(quantity)
+    except Exception as e:
+        return False
+    return slot.resource_allowed(material)
+
+# $.post("http://localhost:8000/api/machines", '{"machine_name":"Prusa Alpha", "hours":1, "minutes":30,"slot_usages":[{"name":"Filament", "resource":"PLA", "quantity":10}]}')
+@login_required
 def create_machine_usage(request):
     if request.method == 'POST':
         data = json.loads(request.body)
+        machine_name = data["machine_name"]
+        machine = Machine.objects.get(machine_name=machine_name)
+
+        validation_result = validate_machine(machine, data["slot_usages"])
+
+        if not validation_result:
+            return HttpResponse("Invalid machine or schema.", status=400)
+
+        slot_usages = []
+
+        for slot_usage in data["slot_usages"]: # TODO Ensure that data["slot_usages"] is actually iterable. Or alternatively validate the JSON somewhere. List of dicts.
+            slot_name = slot_usage["name"]
+            resource = slot_usage["resource"]
+            quantity = slot_usage["quantity"]
+
+            slot = machine.machine_type.get_slot(slot_name)
+
+            validation_result = validate_slot(slot, resource, quantity)
+            if not validation_result:
+                return HttpResponse(f"Quantity for slot {slot_name} was not a valid decimal, or the resource provided was invalid.", status=400)
+
+            su = SlotUsage()
+            slot_usages.append(su)
+            su.machine_slot = slot
+            su.resource = Resource.objects.get(resource_name=resource)
+            su.amount = Decimal(quantity)
+
+        u = Usage()
+        u.machine = machine
+        u.userprofile = request.user.userprofile
+        u.save() # Necessary so start_time gets set to current time before referencing it below
+        u.set_end_time(int(data["hours"]), int(data["minutes"]))
+        u.save()
+
+        for su in slot_usages:
+            su.usage = u
+            su.save()
+
+        machine.in_use = True
+        machine.current_job = u
+        machine.save()
+
         return redirect('/')
     else:
-        return redirect('/')
+        return HttpResponse("", status=405) # Method not allowed
 
 # Login intentionally not required for create_user - new users should be able to create their own accounts.
 def create_user(request):
@@ -281,10 +380,52 @@ def create_user(request):
 def volunteer_dashboard(request):
     return render(request, 'machine_usage/forms/volunteer_dashboard.html', {})
 
+@login_required
+def machine_usage(request):
+    machines = Machine.objects.all()
+    available_machines = {}
+
+    for m in machines:
+        if (not m.deleted) and (not m.in_use):
+            type_name = m.machine_type.machine_type_name
+            if type_name not in available_machines:
+                available_machines[type_name] = []
+            available_machines[type_name].append(m.machine_name)
+
+    return render(request, 'machine_usage/forms/machine_usage.html', {"available_machines":available_machines})
+
+@login_required
+def generate_machine_form(request):
+    machine_name = request.GET.get("machine", None)
+    if machine_name is None:
+        return HttpResponse("Machine name not found.", status=400)
+
+    machine = Machine.objects.get(machine_name=machine_name) # TODO Catch machine not existing
+    slots = []
+
+    for slot in machine.machine_type.machineslot_set.all():
+        if not slot.deleted:
+            allowed_resources = []
+
+            for resource in slot.allowed_resources.all():
+                if resource.in_stock and not resource.deleted:
+                    allowed_resources.append({
+                        "name":resource.resource_name,
+                        "unit":resource.unit
+                    })
+
+            slots.append({
+                "name":slot.slot_name,
+                "allowed_resources":allowed_resources
+            })
+
+    return render(request, 'machine_usage/forms/machine_form.html', {"slots":sorted(slots, key=lambda k: k["name"]), "machine_name":machine_name})
+
 #
 #   API
 #
 
+@csrf_exempt # TODO REMOVE THIS, ONLY FOR DEBUG
 def machine_endpoint(request):
     if request.method == 'GET':
         output = []
@@ -309,7 +450,6 @@ def machine_endpoint(request):
                     }
 
                     for r in s.allowed_resources.all():
-
                         if r.in_stock and not r.deleted:
                             slot_entry["allowed_resources"].append({"name":r.resource_name,"unit":r.unit, "cost":float(r.cost_per)})
 
@@ -318,6 +458,7 @@ def machine_endpoint(request):
                 output.append(machine_entry)
 
         return HttpResponse(json.dumps(output))
-
+    elif request.method == 'POST':
+        return create_machine_usage(request) # Make sure this still checks for login!
     else:
         return HttpResponse("", status=405) # Method not allowed

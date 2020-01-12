@@ -1,25 +1,42 @@
 {% load static %}
 <html>
 	<head>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 		<script type="application/javascript" src="{% static 'machine_usage/js/loading-bar.js' %}"></script>
 		<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/loading-bar.css' %}" />
 
 		<style type="text/css">
-			.ldBar path.mainline {
-				stroke-linecap: round;
-			}
-			.ldBar path.baseline {
-				stroke-linecap: round;
-			}
 
 			.ldBar-label {
+				position: absolute;
+				bottom: 11px;
+				left: 10px;
+				font-size: 15px;
+
+				color: black;
+			}
+
+			.loading_bar {
 				position: relative;
-				top: -85px;
+				/*top: -85px;*/
 				text-align: center;
+
+				width: 200px !important;
+				left: 0px !important;
+				height: 200px !important;
+				bottom: 0px;
 
 				color: #080;
 				font-size: 2em;
 				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+			}
+
+			.loading_bar svg {
+				position: relative;
+				width: 75%;
+				height: auto;
+				top: 164px;
+				left: 20px;
 			}
 
 			body {
@@ -28,6 +45,8 @@
 
 			main {
 				padding: 25px;
+				display: flex;
+				flex-wrap: wrap;
 			}
 
 			.card {
@@ -38,47 +57,154 @@
 
 				text-align: center;
 				color: #AF0909;
+
+				margin-right: 10px;
+				margin-bottom: 10px;
+
+				font-family: sans-serif;
+			}
+
+			.card_text {
+				position: relative;
+				top: -200px;
+				left: 0px;
+
+				height: 100%;
+				width: 100%;
+			}
+
+			.status_message {
+				position: relative;
+				top: 15px;
+				width: 100%;
+				height: 50px;
+
+				font-size: 12px;
 			}
 
 			.time_remaining {
 				position: relative;
-				top: -20px;
-			}
+				top: 15px;
 
-			.in_progress {
-				color: #080;
+				font-size: 12px;
 			}
 
 			.machine_name {
 				position: relative;
-				top: -7px;
+				top: 10px;
 				font-weight: bold;
+				font-size: 20px;
 				color: #000;
 			}
 
 			.user_name {
 				position: relative;
-				top: -20px;
-				color: #000;
+				font-size: 10px;
+				top: 13px;
+				color: gray;
+			}
+
+			.text_in_progress {
+				color: #0A0;
+			}
+
+			.text_failed {
+				color: #A00;
+			}
+
+			.text_complete {
+				color: #0A0;
+			}
+
+			.text_error {
+				color: #ADA52C;
 			}
 		</style>
 	
 	</head>
 	<body>
 		<main>
-			<!--<div class="ldBar"
-			  data-type="stroke",
-			  data-stroke="data:ldbar/res,gradient(0,1,#9df,#9fd,#df9,#fd9)",
-			  data-path="M 20 160 Q 20 80 100 80 Q 180 80 180 160",
-			  data-stroke-trail="gray", data-stroke-trail-width="1",
-			  data-value="50"></div>-->
 			<div class="card">
-				<!--<div class="ldBar" data-preset="fan" data-value="50" data-stroke="data:ldbar/res,gradient(0,2,#000,#f00,#f00,#f00,#f00,#f00,#f00)" style="width:150px;height:150px;left:25px;top:0px;"></div>-->
-				<div class="ldBar in_progress" data-preset="fan" data-value="50" data-stroke="data:ldbar/res,gradient(0,1,#0f0,#0b0)" style="width:150px;height:150px;left:25px;top:0px;"></div>
-				<div class="time_remaining in_progress">6 Hours, 10 Minutes</div>
-				<div class="user_name">Rish Shadra</div>
-				<div class="machine_name">Prusa Alpha</div>
+				<div class="loading_bar bar_in_progress" data-value="50" data-machine-name="Prusa Alpha"></div>
+				<div class="card_text text_in_progress">
+					<div class="machine_name">Prusa Alpha</div>
+					<div class="user_name">Prusa Mk3S | Rish Shadra</div>
+					<div class="status_message">In Progress.</div>
+					<div class="time_remaining">Estimated Completion: <br />12/11/2019 9:40PM<br />10h 20m remaining</div>
+				</div>
 			</div>
+
+			<div class="card">
+				<div class="loading_bar bar_error" data-value="66" data-machine-name="Prusa Beta"></div>
+				<div class="card_text text_error">
+					<div class="machine_name">Prusa Beta</div>
+					<div class="user_name">Prusa Mk3S | Rish Shadra</div>
+					<div class="status_message">Error: Bed shifted. Print recovered.</div>
+					<div class="time_remaining">Estimated Completion: <br />12/11/2019 9:40PM<br />10h 20m remaining</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="loading_bar bar_failed" data-value="75" data-machine-name="Prusa Sigma"></div>
+				<div class="card_text text_failed">
+					<div class="machine_name">Prusa Sigma</div>
+					<div class="user_name">Prusa Mk3S | Rish Shadra</div>
+					<div class="status_message">Print failed.</div>
+					<div class="time_remaining">Restart By: <br />12/11/2019 9:40PM<br />1h 00m remaining</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="loading_bar bar_complete" data-value="100" data-machine-name="Prusa Omega"></div>
+				<div class="card_text text_complete">
+					<div class="machine_name">Prusa Omega</div>
+					<div class="user_name">Prusa Mk3S | Rish Shadra</div>
+					<div class="status_message">Complete!</div>
+					<div class="time_remaining">Time of Completion: <br />12/11/2019 9:40PM<br />10h 20m ago</div>
+				</div>
+			</div>
+
 		</main>
 	</body>
+	<script>
+		function progress_bar(idx, elem, color1, color2, speed) {
+			var bar = new ldBar(elem,
+			{
+				"type": 'fill',
+				"path": 'M15 5L85 5A5 5 0 0 1 85 15L15 15A5 5 0 0 1 15 5',
+				"stroke": '#f00',
+				"fill": 'data:ldbar/res,stripe(' + color1 + ',' + color2 + ',' + speed + ')',
+				"fill-dir": "ltr",
+				"fill-background": '#ddd',
+				"fill-background-extrude": 1,
+				"bbox": "10 5 80 10"
+			});
+		}
+
+		function in_progress(idx, elem) {
+			progress_bar(idx, elem, "#050", "#0A0", "1");
+		}
+
+		function error(idx, elem) {
+			progress_bar(idx, elem, "#FFF000", "#ADA52C", "1"); // TODO Change these colors to yellow/dark yellow
+		}
+
+		function complete(idx, elem) {
+			progress_bar(idx, elem, "#9EA2A2", "#AB2328", "0");
+		}
+
+		function failed(idx, elem) {
+			progress_bar(idx, elem, "#500", "#A00", "4");
+		}
+
+		function refresh_bars() {
+			$(".bar_in_progress").each(in_progress);
+			$(".bar_complete").each(complete);
+			$(".bar_failed").each(failed);
+			$(".bar_error").each(error);
+
+		}
+
+		refresh_bars();
+</script>
 </html>

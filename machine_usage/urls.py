@@ -13,7 +13,9 @@ urlpatterns = [
     path('logout', views.log_out, name='logout'),
     path('myforge', views.render_myforge, name='myforge'),
 
-    path('forms/create_user',views.create_user, name='create_user'),
+    path('forms/create_user', views.create_user, name='create_user'),
+    path('forms/machine_usage', views.machine_usage, name='machine_usage'),
+    path('forms/machine_form', views.generate_machine_form, name='machine_form'),
 
     path('dyn/project_list', views.list_projects, name='project_list'),
     path('dyn/machine_list', views.list_machines, name='machine_list'),
@@ -21,7 +23,7 @@ urlpatterns = [
     path('dyn/resource_list', views.list_resources, name='resource_list'),
     path('dyn/user_list', views.list_users, name='user_list'),
     path('dyn/volunteer_dashboard', views.volunteer_dashboard, name='volunteer_dashboard'),
-    path('verify_email',views.render_verify_email, name='verify_email'),
+    path('verify_email', views.render_verify_email, name='verify_email'),
 
     path('api/machines', views.machine_endpoint, name='machine_endpoint'),
 ]

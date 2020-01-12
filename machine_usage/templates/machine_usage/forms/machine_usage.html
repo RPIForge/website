@@ -2,28 +2,40 @@
 {% load static %}
 
 {% block page_title %}
-<title>Sign Up</title>
+<title>Use A Machine</title>
 {% endblock page_title %}
 
 {% block custom_styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/form.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/machine_usage.css' %}">
 {% endblock custom_styles %}
     
 {% block header %}
 {% endblock header%}
 
 {% block main %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        function setFrame(src) {
+            $("#machine_form").attr("src", src);
+        }
+    </script>
+
     <main class="bg_shade">
-        <div id="form_container" class="center_children fill_parent_horiz fill_screen_vert">
-            <div id="form">
-                <h1>Create an Account</h1>
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ user_form }}
-                    {{ profile_form }}
-                    <button type="submit" id="submit_button">Sign Up</button>
-                </form>
+        <div id="machine_usage">
+            <div id="available_machines">
+                <h3>Available Machines</h3>
+
+                <ul class="block_list">
+                    {% for machine_type, machines in available_machines.items %}
+                        <li class="block_list_header">{{ machine_type }}</li>
+                        {% for machine_name in machines %}
+                            <li><a href="javascript:setFrame('/forms/machine_form?machine={{machine_name|urlencode}}')">{{ machine_name }}</a></li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
             </div>
+
+            <iframe id="machine_form"></iframe>
         </div>
     </main>
 {% endblock main %}
