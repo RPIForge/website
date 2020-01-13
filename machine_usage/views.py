@@ -14,7 +14,7 @@ from django.contrib.auth.models import User, Group
 from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
 
 # Importing Helper Functions
-import machine_usage.utils
+import machine_usage.utils as utils
 
 # Importing Other Libraries
 import json
@@ -329,7 +329,7 @@ def create_user(request):
 
             if not user.groups.filter(name="verified_email").exists():
                 print(f"Sending verification email to {user.email}")
-                machine_usage.utils.send_verification_email(user)
+                utils.send_verification_email(user)
 
             login(request, user)
             return redirect('/myforge')
