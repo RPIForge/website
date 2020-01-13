@@ -49,7 +49,8 @@ def send_verification_email(user):
 
     params_string = urllib.parse.urlencode(params)
 
-    verification_url = f"https://www.rpiforge.dev/verify_email?{params_string}" # TODO replace URL with config value
+    base_url = os.environ.get('SITE_URL')
+    verification_url = f"https://{base_url}/verify_email?{params_string}" # TODO replace URL with config value
     body = f"Thanks for signing up for the Forge! Click <a clicktracking=off href='{verification_url}'>this link</a> to verify your email."
     send_email(user.email, subject, body)
 
