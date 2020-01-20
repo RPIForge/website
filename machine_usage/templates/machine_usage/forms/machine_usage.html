@@ -86,6 +86,7 @@
             working_machine = null;
 
             output = {};
+            costs = {};
 
             function update_machine_information() {
                 machine_information = JSON.parse($.get({
@@ -131,6 +132,8 @@
 
                     resources = document.createElement("td");
                     resource_picker = document.createElement("select");
+                    resource_picker.setAttribute("onchange", "javascript:update_row(" + i +")");
+
 
                     for (var j = 0; j < slots[i].allowed_resources.length; j++) {
                         resource = slots[i].allowed_resources[j];
@@ -150,6 +153,7 @@
                     quantity_input = document.createElement("input");
                     quantity_input.setAttribute("type", "number");
                     quantity_input.setAttribute("placeholder", "units of material");
+                    quantity_input.setAttribute("oninput", "javascript:update_row(" + i +")");
                     quantity.appendChild(quantity_input);
                     row.appendChild(quantity);
 
@@ -158,6 +162,7 @@
                     row.appendChild(cost);
 
                     $("#slot_usage_table")[0].appendChild(row);
+                    update_row(i);
                 }
 
                 $("#available_machines")[0].style["display"] = "none";
@@ -178,6 +183,7 @@
                     usage["resource"] = cols[1].children[0].value;
                     usage["quantity"] = cols[2].children[0].value;
 
+                    costs[usage["name"]] = cols[3].innerText.substring(1); // Extract '$'
                     output["slot_usages"].push(usage);
                 }
 
@@ -203,6 +209,15 @@
             }
 
             function accept_policy() {
+
+                total_cost = 0.0;
+                Object.keys(costs).forEach(function(key) {
+                    total_cost += parseFloat(costs[key]);
+                    console.log(key, costs[key]);
+                });
+
+                $("#total_cost_text")[0].innerText = "$" + total_cost.toFixed(2) + " ($0.00 of usage time and $" + total_cost.toFixed(2) + " of materials)";
+
                 $("#reprint_policy")[0].style["display"] = "none";
                 $("#total_cost")[0].style["display"] = "block";
             }
@@ -210,6 +225,18 @@
             function submit() {
                 $("#total_cost")[0].style["display"] = "none";
                 $.post("/api/machines", JSON.stringify(output));
+            }
+
+            function update_row(row_index) {
+                row = $("#slot_usage_table tr")[row_index + 1]; // +1 to account for header
+                material = $(row.children[1].children[0]).children("option:selected")[0].innerText;
+                unit = $(row.children[1].children[0]).children("option:selected")[0].getAttribute("data-unit");
+                cost_per = $(row.children[1].children[0]).children("option:selected")[0].getAttribute("data-cost");
+                quantity = row.children[2].children[0].value;
+                cost = cost_per * quantity;
+
+                row.children[3].innerText = "$" + cost.toFixed(2);
+                row.children[2].children[0].setAttribute("placeholder", unit + " of " + material);
             }
 
             $("#available_next").on("click", available_next);
