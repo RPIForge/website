@@ -19,7 +19,7 @@ import machine_usage.utils as utils
 # Importing Other Libraries
 import json
 from decimal import Decimal
-import datetime
+from datetime import datetime
 
 #
 #   Pages/Login
