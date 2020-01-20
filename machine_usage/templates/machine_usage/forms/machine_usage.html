@@ -14,28 +14,210 @@
 
 {% block main %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-        function setFrame(src) {
-            $("#machine_form").attr("src", src);
-        }
-    </script>
 
     <main class="bg_shade">
-        <div id="machine_usage">
-            <div id="available_machines">
-                <h3>Available Machines</h3>
-
-                <ul class="block_list">
-                    {% for machine_type, machines in available_machines.items %}
-                        <li class="block_list_header">{{ machine_type }}</li>
-                        {% for machine_name in machines %}
-                            <li><a href="javascript:setFrame('/forms/machine_form?machine={{machine_name|urlencode}}')">{{ machine_name }}</a></li>
-                        {% endfor %}
+        <div id="available_machines">
+            <select id="machine_selection">
+                <option value selected disabled>Select a Machine</option>
+                {% for machine_type, machines in available_machines.items %}
+                    <optgroup label="{{ machine_type }}">
+                    {% for machine_name in machines %}
+                        <option value="{{ machine_name }}">{{ machine_name }}</option>
                     {% endfor %}
-                </ul>
-            </div>
+                    </optgroup>
+                {% endfor %}
+            </select>
 
-            <iframe id="machine_form"></iframe>
+            <br /><br />
+
+            <button id="available_next">Next</button>
         </div>
+
+        <div id="material_usage">
+            <table id="slot_usage_table">
+                <tr>
+                    <th>Slot Name</th>
+                    <th>Material</th>
+                    <th>Quantity</th>
+                    <th>Cost</th>
+                </tr>
+            </table>
+            <br />
+            <button id="material_usage_next">Next</button>
+        </div>
+
+        <div id="usage_time">
+            <input type="number" placeholder="Hours" id="usage_hours"/>
+            <input type="number" placeholder="Minutes" id="usage_minutes"/>
+
+            <button id="usage_time_next">Next</button>
+        </div>
+
+        <div id="checkboxes">
+            <input type="checkbox" id="for_class"/> <label for="for_class">Is this machine usage for a class?</label><br />
+            <input type="checkbox" id="own_material"/> <label for="own_material">Are you using your own material?</label><br />
+            <input type="checkbox" id="is_reprint"/> <label for="is_reprint">Is this a reprint?</label><br /><br />
+
+            <button id="checkboxes_next">Next</button>
+        </div>
+
+        <div id="reprint_policy">
+            <p id="reprint_policy_title"><strong>Machine Policy:</strong></p><br />
+            <!-- Insert policy of selected machine dynamically -->
+
+            <p id="reprint_policy_text">Machine usage policy goes here. Machine usage policy goes here. Machine usage policy goes here. Machine usage policy goes here. Machine usage policy goes here.</p><br /><br />
+
+            <button id="accept_policy">Accept and Continue</button>
+        </div>
+
+        <div id="total_cost">
+            <p id="total_cost_title"><strong>Total Cost:</strong></p>
+            <p id="total_cost_text">$10.00 ($0.00 of usage time and $10.00 of materials)</p><br />
+            <button id="submit">Submit</button>
+        </div>
+
+        <script type="text/javascript">
+
+            machine_information = JSON.parse($.get({
+                "url": "/api/machines",
+                "async": false
+            }).responseText);
+
+            working_machine = null;
+
+            output = {};
+
+            function update_machine_information() {
+                machine_information = JSON.parse($.get({
+                    "url": "/api/machines",
+                    "async": false
+                }).responseText);
+            }
+
+            function available_next() {
+                selected = $("#machine_selection")[0].value;
+                working_machine = null;
+
+                update_machine_information();
+
+                if (selected === "Select a Machine") {
+                    return false;
+                }
+
+                for (var i = 0; i < machine_information.length; i++) {
+                    machine = machine_information[i];
+                    if (machine.name === selected) {
+                        working_machine = machine;
+                        output["machine_name"] = machine.name;
+                    }
+                }
+
+                if (working_machine === null) {
+                    return false;
+                }
+
+                if (working_machine.in_use || !(working_machine.enabled)) {
+                    return false;
+                }
+
+                slots = working_machine.slots;
+
+                for (var i = 0; i < slots.length; i++) {
+                    row = document.createElement("tr");
+
+                    slot_name = document.createElement("td");
+                    slot_name.innerText = slots[i].slot_name;
+                    row.appendChild(slot_name);
+
+                    resources = document.createElement("td");
+                    resource_picker = document.createElement("select");
+
+                    for (var j = 0; j < slots[i].allowed_resources.length; j++) {
+                        resource = slots[i].allowed_resources[j];
+
+                        option = document.createElement("option");
+                        option.setAttribute("data-unit", resource.unit);
+                        option.setAttribute("data-cost", resource.cost);
+                        option.innerText = resource.name;
+
+                        resource_picker.appendChild(option);
+                    }
+
+                    resources.appendChild(resource_picker);
+                    row.appendChild(resources);
+
+                    quantity = document.createElement("td");
+                    quantity_input = document.createElement("input");
+                    quantity_input.setAttribute("type", "number");
+                    quantity_input.setAttribute("placeholder", "units of material");
+                    quantity.appendChild(quantity_input);
+                    row.appendChild(quantity);
+
+                    cost = document.createElement("td");
+                    cost.innerText = "$0.00";
+                    row.appendChild(cost);
+
+                    $("#slot_usage_table")[0].appendChild(row);
+                }
+
+                $("#available_machines")[0].style["display"] = "none";
+                $("#material_usage")[0].style["display"] = "block";
+            }
+
+            function material_usage_next() {
+                rows = $("#slot_usage_table tr");
+
+                output["slot_usages"] = [];
+
+                // rows[0] contains the headers!
+                for (var i = 1; i < rows.length; i++) {
+                    usage = {};
+                    cols = rows[i].children;
+
+                    usage["name"] = cols[0].innerText;
+                    usage["resource"] = cols[1].children[0].value;
+                    usage["quantity"] = cols[2].children[0].value;
+
+                    output["slot_usages"].push(usage);
+                }
+
+                $("#material_usage")[0].style["display"] = "none";
+                $("#usage_time")[0].style["display"] = "block";
+            }
+
+            function usage_time_next() {
+                output["hours"] = $("#usage_hours")[0].value;
+                output["minutes"] = $("#usage_minutes")[0].value;
+
+                $("#usage_time")[0].style["display"] = "none";
+                $("#checkboxes")[0].style["display"] = "block";
+            }
+
+            function checkboxes_next() {
+                output["for_class"] = $("#for_class")[0].checked;
+                output["own_material"] = $("#own_material")[0].checked;
+                output["is_reprint"] = $("#is_reprint")[0].checked;
+
+                $("#checkboxes")[0].style["display"] = "none";
+                $("#reprint_policy")[0].style["display"] = "block";
+            }
+
+            function accept_policy() {
+                $("#reprint_policy")[0].style["display"] = "none";
+                $("#total_cost")[0].style["display"] = "block";
+            }
+
+            function submit() {
+                $("#total_cost")[0].style["display"] = "none";
+                $.post("/api/machines", JSON.stringify(output));
+            }
+
+            $("#available_next").on("click", available_next);
+            $("#material_usage_next").on("click", material_usage_next);
+            $("#usage_time_next").on("click", usage_time_next);
+            $("#checkboxes_next").on("click", checkboxes_next);
+            $("#accept_policy").on("click", accept_policy);
+            $("#submit").on("click", submit);
+        </script>
     </main>
 {% endblock main %}

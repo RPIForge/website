@@ -54,6 +54,8 @@ class MachineType(models.Model):
 	machine_type_name = models.CharField(max_length=255, unique=True)
 	machine_category = models.CharField(max_length=255, null=True)
 
+	usage_policy = models.CharField(max_length=4096, default="")
+
 	hourly_cost = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
 
 	data_entry_after_use = models.BooleanField(default=False) # Allow a user to check a machine out, marking it as used, and then enter usage info afterwards. Ex: Laser Cutter
@@ -123,9 +125,17 @@ class Usage(models.Model):
 	)
 
 	for_class = models.BooleanField(default=False)
+	is_reprint = models.BooleanField(default=False)
+	own_material = models.BooleanField(default=False)
+
+	cost_override = models.BooleanField(default=False)
+	overridden_cost = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+	cost_override_reason = models.CharField(max_length=512, default="", blank=True)
 	
 	start_time = models.DateTimeField(auto_now_add=True)
 	end_time = models.DateTimeField(null=True, blank=True) # null/blank allowed for check-in/check-out machines
+
+	clear_time = models.DateTimeField(null=True, blank=True)
 
 	retry_count = models.PositiveIntegerField(default=0)
 
@@ -134,6 +144,13 @@ class Usage(models.Model):
 
 	def cost(self):
 		cost = Decimal(0.00)
+
+		if self.cost_override:
+			return self.overridden_cost
+
+		if self.own_material:
+			return cost
+
 		for slot in self.slotusage_set.all():
 			cost += Decimal(slot.cost())
 		return cost

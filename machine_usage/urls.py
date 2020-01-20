@@ -16,6 +16,7 @@ urlpatterns = [
     path('forms/create_user', views.create_user, name='create_user'),
     path('forms/machine_usage', views.machine_usage, name='machine_usage'),
     path('forms/machine_form', views.generate_machine_form, name='machine_form'),
+    path('forms/clear_machine', views.generate_clear_machine_form, name='clear_machine_form'),
 
     path('dyn/project_list', views.list_projects, name='project_list'),
     path('dyn/machine_list', views.list_machines, name='machine_list'),

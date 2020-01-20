@@ -14,13 +14,14 @@
 	<section id="myforge_sidebar">
 		<ul class="block_list">
 			<li class="block_list_header">User Functions</li>
-				<li><a href="javascript:setFrame('forms/machine_usage')">Use A Machine</a></li>
 				<li><a href="javascript:setFrame('dyn/project_list')">View Your Projects</a></li>
+				<li><a href="javascript:setFrame('forms/machine_usage')">Use A Machine</a></li>
 				<li><a href="javascript:setFrame('https://docs.google.com/forms/d/e/1FAIpQLSfEj3o6wlmHYNSDVT1U8dTkul1DSuRhhokQO5S1YNnTeAYpqw/viewform')">Send Feedback</a></li>
 
 			{% if request.user|in_group:"volunteers" %}
 			<li class="block_list_header">Volunteer Functions</li>
 				<li><a href="javascript:setFrame('dyn/volunteer_dashboard')">Volunteer Dashboard</a></li>
+				<li><a href="javascript:setFrame('forms/clear_machine')">Clear A Machine</a></li>
 				<!--<li><a href="javascript:setFrame('forms/create_user')">Create User</a></li>-->
 			{% endif %}
 
@@ -38,7 +39,7 @@
 			<li class="block_list_header">Administrator Functions</li>
 				<!--<li><a href="#">Third-Party Machine Usage</a></li>-->
 				<!--<li><a href="#">View Manager Logs</a></li>-->
-				<li><a href="/admin">Edit Configuration</a></li>
+				<li><a href="javascript:setFrame('/admin')">Edit Configuration</a></li>
 				<!--<li><a href="#">End Semester</a></li>-->
 			{% endif %}
 
@@ -55,5 +56,7 @@
 	function setFrame(src) {
 		$("#myforge_frame").attr("src", src);
 	}
+
+	setFrame('dyn/project_list');
 </script>
 {% endblock scripts %}

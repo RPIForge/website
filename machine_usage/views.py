@@ -19,6 +19,7 @@ import machine_usage.utils as utils
 # Importing Other Libraries
 import json
 from decimal import Decimal
+import datetime
 
 #
 #   Pages/Login
@@ -339,7 +340,7 @@ def create_user(request):
         user_form = ForgeUserCreationForm()
         profile_form = ForgeProfileCreationForm()
 
-        return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form':profile_form})
+        return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form': profile_form})
 
 @login_required
 def volunteer_dashboard(request):
@@ -386,6 +387,33 @@ def generate_machine_form(request):
 
     return render(request, 'machine_usage/forms/machine_form.html', {"slots":sorted(slots, key=lambda k: k["name"]), "machine_name":machine_name})
 
+@login_required #TODO This should only be available to volunteers and up.
+def generate_clear_machine_form(request):
+    if request.method == 'GET':
+        machines_in_use = Machine.objects.filter(in_use=True)
+        output = {}
+
+        for m in machines_in_use:
+            type_name = m.machine_type.machine_type_name
+            if type_name not in output:
+                output[type_name] = []
+            output[type_name].append(m.machine_name)
+
+        return render(request, 'machine_usage/forms/clear_machine.html', {"machines_in_use":output})
+    else:
+        machine_name = request.POST["machine_name"]
+        machine = Machine.objects.get(machine_name=machine_name)
+
+        usage = machine.current_job
+        usage.clear_time = datetime.now()
+        usage.complete = True
+        usage.save()
+
+        machine.current_job = None
+        machine.in_use = False
+        machine.save()
+        return render(request, 'machine_usage/forms/clear_machine.html', {"machines_in_use":output})
+
 #
 #   API
 #
@@ -404,6 +432,7 @@ def machine_endpoint(request):
                     "in_use": m.in_use,
                     "enabled": m.enabled,
                     "status": m.status_message,
+                    "usage_policy": m.machine_type.usage_policy,
                     "slots": []
                 }
 
@@ -416,7 +445,7 @@ def machine_endpoint(request):
 
                     for r in s.allowed_resources.all():
                         if r.in_stock and not r.deleted:
-                            slot_entry["allowed_resources"].append({"name":r.resource_name,"unit":r.unit, "cost":float(r.cost_per)})
+                            slot_entry["allowed_resources"].append({"name":r.resource_name, "unit":r.unit, "cost":float(r.cost_per)})
 
                     machine_entry["slots"].append(slot_entry)
                 

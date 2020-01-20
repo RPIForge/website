@@ -10,7 +10,7 @@ def in_group(user, group_name):
 	except Group.DoesNotExist:
 		return False
 
-	for g in user.groups.all():
-		print(group_name + " " + str(g))
+	#for g in user.groups.all():
+	#	print(group_name + " " + str(g))
 
 	return group in user.groups.all()
