@@ -412,7 +412,7 @@ def generate_clear_machine_form(request):
         machine.current_job = None
         machine.in_use = False
         machine.save()
-        return render(request, 'machine_usage/forms/clear_machine.html', {"machines_in_use":output})
+        return redirect('/forms/clear_machine')
 
 #
 #   API
