@@ -106,6 +106,9 @@
             output = {};
             costs = {};
 
+            output["hours"] = 0;
+            output["minutes"] = 0;
+
             hourly_cost = 0.00;
 
             function update_machine_information() {
@@ -220,6 +223,12 @@
             }
 
             function usage_time_next() {
+
+                if ( ($("#usage_hours")[0].value === "") or ($("#usage_hours")[0].value === "") ) {
+                    alert("Please enter values in both fields.");
+                    return false;
+                }
+
                 output["hours"] = $("#usage_hours")[0].value;
                 output["minutes"] = $("#usage_minutes")[0].value;
 
