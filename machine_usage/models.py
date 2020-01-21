@@ -142,8 +142,12 @@ class Usage(models.Model):
 
 	retry_count = models.PositiveIntegerField(default=0)
 
+	status_message = models.CharField(max_length=255, default="In Progress.", blank=False)
+
 	complete = models.BooleanField(default=False)
+	error = models.BooleanField(default=False)
 	failed = models.BooleanField(default=False)
+	
 	deleted = models.BooleanField(default=False)
 
 	def cost(self):

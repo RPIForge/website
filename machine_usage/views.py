@@ -20,7 +20,7 @@ import machine_usage.utils as utils
 # Importing Other Libraries
 import json
 from decimal import Decimal
-from datetime import datetime
+from datetime import datetime, timedelta
 
 #
 #   Pages/Login
@@ -61,9 +61,6 @@ def render_news(request):
 
 def render_our_space(request):
     return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "Our Space" page.
-
-def render_status(request):
-    return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "Status" page.
 
 def render_verify_email(request):
     # Make sure we only support GET requests, so we can make POST do something later if needed
@@ -126,6 +123,81 @@ def render_begin_semester(request):
 
         profile.save()
         return redirect('/myforge')
+
+def render_status(request):
+
+    machines = Machine.objects.all().order_by('machine_name')
+    output = []
+
+    for m in machines:
+        if m.in_use:
+            u = m.current_job
+            if u.failed:
+                bar_type = "bar_failed"
+                text_type = "text_failed"
+            elif u.complete:
+                bar_type = "bar_complete"
+                text_type = "text_complete"
+            elif u.error:
+                bar_type = "bar_error"
+                text_type = "text_error"
+            else:
+                bar_type = "bar_in_progress"
+                text_type = "text_in_progress"
+
+            if u.complete:
+                bar_progress = 100
+                time_remaining_text = "Time of Completion:"
+                time_remaining = f""
+                estimated_completion = u.end_time
+            elif u.failed:
+
+                fail_time = u.clear_time
+                expiration_time = u.clear_time + timedelta(hours=1)
+
+                percent_expired = (timezone.now() - fail_time).total_seconds() / (60 * 60)
+                bar_progress = int(100 * percent_expired)
+
+                time_remaining_text = "Restart By:"
+                time_remaining = ""
+                estimated_completion = u.clear_time + timedelta(hours=1)
+            else:
+                duration = u.end_time - u.start_time
+                elapsed = timezone.now() - u.start_time
+                percent_complete = elapsed.total_seconds() / duration.total_seconds()
+                bar_progress = int(100 * percent_complete)
+
+                time_remaining_text = "Estimated Completion:"
+                time_remaining = f""
+                estimated_completion = u.end_time
+
+            output.append({
+                "name": m.machine_name,
+                "bar_type": bar_type,
+                "text_type": text_type,
+                "bar_progress":bar_progress,
+                "type":m.machine_type.machine_type_name,
+                "user":f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}.",
+                "status_message":m.current_job.status_message,
+                "time_remaining_text": time_remaining_text,
+                "estimated_completion": estimated_completion,
+                "time_remaining": time_remaining
+            })
+        else:
+            output.append({
+                "name": m.machine_name,
+                "bar_type": "bar_in_progress",
+                "text_type": "text_in_progress",
+                "bar_progress": 0,
+                "type":m.machine_type.machine_type_name,
+                "user":f"No User",
+                "status_message":"Not In Use",
+                "time_remaining_text": "",
+                "estimated_completion": "",
+                "time_remaining": ""
+                })
+
+    return render(request, 'machine_usage/status.html', {"machines":output})
 
 @login_required
 def resend_email_verification(request):
@@ -382,9 +454,91 @@ def create_user(request):
 
         return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form': profile_form})
 
+# <div class="card">
+#     <div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
+#     <div class="card_text {{machine.text_type}}">
+#         <div class="machine_name">{{ machine.name }}</div>
+#         <div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
+#         <div class="status_message">{{ machine.status_message }}</div>
+#         <div class="time_remaining">{{machine.time_remaining_text}} <br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
+#     </div>
+# </div>
+
 @login_required
 def volunteer_dashboard(request):
-    return render(request, 'machine_usage/forms/volunteer_dashboard.html', {})
+
+    machines = Machine.objects.all().order_by('machine_name')
+    output = []
+
+    for m in machines:
+        if m.in_use:
+            u = m.current_job
+            if u.failed:
+                bar_type = "bar_failed"
+                text_type = "text_failed"
+            elif u.complete:
+                bar_type = "bar_complete"
+                text_type = "text_complete"
+            elif u.error:
+                bar_type = "bar_error"
+                text_type = "text_error"
+            else:
+                bar_type = "bar_in_progress"
+                text_type = "text_in_progress"
+
+            if u.complete:
+                bar_progress = 100
+                time_remaining_text = "Time of Completion:"
+                time_remaining = f""
+                estimated_completion = u.end_time
+            elif u.failed:
+
+                fail_time = u.clear_time
+                expiration_time = u.clear_time + timedelta(hours=1)
+
+                percent_expired = (timezone.now() - fail_time).total_seconds() / (60 * 60)
+                bar_progress = int(100 * percent_expired)
+
+                time_remaining_text = "Restart By:"
+                time_remaining = ""
+                estimated_completion = u.clear_time + timedelta(hours=1)
+            else:
+                duration = u.end_time - u.start_time
+                elapsed = timezone.now() - u.start_time
+                percent_complete = elapsed.total_seconds() / duration.total_seconds()
+                bar_progress = int(100 * percent_complete)
+
+                time_remaining_text = "Estimated Completion:"
+                time_remaining = f""
+                estimated_completion = u.end_time
+
+            output.append({
+                "name": m.machine_name,
+                "bar_type": bar_type,
+                "text_type": text_type,
+                "bar_progress":bar_progress,
+                "type":m.machine_type.machine_type_name,
+                "user":f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}.",
+                "status_message":m.current_job.status_message,
+                "time_remaining_text": time_remaining_text,
+                "estimated_completion": estimated_completion,
+                "time_remaining": time_remaining
+            })
+        else:
+            output.append({
+                "name": m.machine_name,
+                "bar_type": "bar_in_progress",
+                "text_type": "text_in_progress",
+                "bar_progress": 0,
+                "type":m.machine_type.machine_type_name,
+                "user":f"No User",
+                "status_message":"Not In Use",
+                "time_remaining_text": "",
+                "estimated_completion": "",
+                "time_remaining": ""
+                })
+
+    return render(request, 'machine_usage/forms/volunteer_dashboard.html', {"machines":output})
 
 @login_required
 def machine_usage(request):
@@ -473,13 +627,9 @@ def generate_failed_usage_form(request):
 
         usage = machine.current_job
         usage.clear_time = timezone.now()
-        usage.complete = True
         usage.failed = True
+        usage.status_message = "Failed."
         usage.save()
-
-        machine.current_job = None
-        machine.in_use = False
-        machine.save()
 
         utils.send_failure_email(usage)
         return redirect('/forms/failed_usage')

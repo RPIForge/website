@@ -124,45 +124,17 @@
 	</head>
 	<body>
 		<main>
-			<div class="card">
-				<div class="loading_bar bar_in_progress" data-value="50" data-machine-name="Prusa Alpha"></div>
-				<div class="card_text text_in_progress">
-					<div class="machine_name">Prusa Alpha</div>
-					<div class="user_name">Prusa Mk3S | Rish Shadra</div>
-					<div class="status_message">In Progress.</div>
-					<div class="time_remaining">Estimated Completion: <br />12/11/2019 9:40PM<br />10h 20m remaining</div>
+			{% for machine in machines %}
+				<div class="card">
+					<div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
+					<div class="card_text {{machine.text_type}}">
+						<div class="machine_name">{{ machine.name }}</div>
+						<div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
+						<div class="status_message">{{ machine.status_message }}</div>
+						<div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
+					</div>
 				</div>
-			</div>
-
-			<div class="card">
-				<div class="loading_bar bar_error" data-value="66" data-machine-name="Prusa Beta"></div>
-				<div class="card_text text_error">
-					<div class="machine_name">Prusa Beta</div>
-					<div class="user_name">Prusa Mk3S | Rish Shadra</div>
-					<div class="status_message">Error: Bed shifted. Print recovered.</div>
-					<div class="time_remaining">Estimated Completion: <br />12/11/2019 9:40PM<br />10h 20m remaining</div>
-				</div>
-			</div>
-
-			<div class="card">
-				<div class="loading_bar bar_failed" data-value="75" data-machine-name="Prusa Sigma"></div>
-				<div class="card_text text_failed">
-					<div class="machine_name">Prusa Sigma</div>
-					<div class="user_name">Prusa Mk3S | Rish Shadra</div>
-					<div class="status_message">Print failed.</div>
-					<div class="time_remaining">Restart By: <br />12/11/2019 9:40PM<br />1h 00m remaining</div>
-				</div>
-			</div>
-
-			<div class="card">
-				<div class="loading_bar bar_complete" data-value="100" data-machine-name="Prusa Omega"></div>
-				<div class="card_text text_complete">
-					<div class="machine_name">Prusa Omega</div>
-					<div class="user_name">Prusa Mk3S | Rish Shadra</div>
-					<div class="status_message">Complete!</div>
-					<div class="time_remaining">Time of Completion: <br />12/11/2019 9:40PM<br />10h 20m ago</div>
-				</div>
-			</div>
+			{% endfor %}
 
 		</main>
 	</body>
