@@ -533,11 +533,15 @@ def create_user(request):
 
             user.username = user.username.lower()
 
-            if request.POST["is_graduating"] == "on":
+            if ("is_graduating" in request.POST) and (request.POST["is_graduating"] == "on"):
                 user.userprofile.is_graduating = True
+            else:
+                user.userprofile.is_graduating = False
 
-            if request.POST["accepts_charges"] == "on":
+            if ("accepts_charges" in request.POST) and (request.POST["accepts_charges"] == "on"):
                 user.userprofile.is_active = True
+            else:
+                user.userprofile.is_active = False
 
             user.save()
 
