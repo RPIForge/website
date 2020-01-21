@@ -159,6 +159,9 @@ class Usage(models.Model):
 		if self.own_material:
 			return cost
 
+		if self.is_reprint:
+			return cost
+
 		for slot in self.slotusage_set.all():
 			cost += Decimal(slot.cost())
 

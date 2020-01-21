@@ -204,27 +204,65 @@
                 output["own_material"] = $("#own_material")[0].checked;
                 output["is_reprint"] = $("#is_reprint")[0].checked;
 
+                total_cost = 0.0;
+                if (!output["own_material"] && !output["is_reprint"]) {
+                    Object.keys(costs).forEach(function(key) {
+                        total_cost += parseFloat(costs[key]);
+                        console.log(key, costs[key]);
+                    });
+                }
+
+                additional_text = "";
+
+                if (output["for_class"]) {
+                    additional_text += "This machine usage is for a class. ";
+                }
+
+                if (output["own_material"]) {
+                    additional_text += "You are using your own material for this machine usage. ";
+                }
+
+                if (output["is_reprint"]) {
+                    additional_text += "This print is an authorized reprint as per the reprint policy. ";
+                }
+
+                $("#total_cost_text")[0].innerText = "$" + total_cost.toFixed(2) + " ($0.00 of usage time and $" + total_cost.toFixed(2) + " of materials). " + additional_text;
+
                 $("#checkboxes")[0].style["display"] = "none";
                 $("#total_cost")[0].style["display"] = "block";
             }
 
             function accept_policy() {
-
-                total_cost = 0.0;
-                Object.keys(costs).forEach(function(key) {
-                    total_cost += parseFloat(costs[key]);
-                    console.log(key, costs[key]);
-                });
-
-                $("#total_cost_text")[0].innerText = "$" + total_cost.toFixed(2) + " ($0.00 of usage time and $" + total_cost.toFixed(2) + " of materials)";
-
                 $("#reprint_policy")[0].style["display"] = "none";
                 $("#checkboxes")[0].style["display"] = "block";
             }
 
             function submit() {
                 $("#total_cost")[0].style["display"] = "none";
-                $.post("/api/machines", JSON.stringify(output));
+                $("#loading")[0].style["display"] = "block";
+                $.post("/api/machines", JSON.stringify(output), function(data, status, xhr) {
+                    display_result(data, status, xhr);
+                }).fail(function(xhr, status, error) {
+                    display_result(error, status, xhr);
+                });
+            }
+
+            function display_result(data, status, xhr) {
+
+                console.log(data)
+                console.log(status)
+                console.log(xhr)
+
+                if (xhr.status !== 200) {
+                    text = "ERROR: " + xhr.responseText
+                } else {
+                    text = "Success!"
+                }
+
+                $("#result_text")[0].innerText = text;
+
+                $("#loading")[0].style["display"] = "none";
+                $("#result")[0].style["display"] = "block";
             }
 
             function update_row(row_index) {

@@ -374,7 +374,6 @@ def validate_slot(slot, material, quantity):
         print("Resource not allowed in slot")
         return False
 
-# $.post("http://localhost:8000/api/machines", '{"machine_name":"Prusa Alpha", "hours":1, "minutes":30,"slot_usages":[{"name":"Filament", "resource":"PLA", "quantity":10}]}')
 @login_required
 def create_machine_usage(request):
     if request.method == 'POST':
@@ -387,6 +386,19 @@ def create_machine_usage(request):
         if not validation_result:
             print(f"Invalid machine or schema. JSON: {request.body}")
             return HttpResponse("Invalid machine or schema.", status=400)
+
+        if not "for_class" in data:
+            return HttpResponse("for_class missing from object.", status=400)
+
+        if not "own_material" in data:
+            return HttpResponse("own_material missing from object.", status=400)
+
+        if not "is_reprint" in data:
+            return HttpResponse("is_reprint missing from object.", status=400)
+
+        for_class = data["for_class"]
+        own_material = data["own_material"]
+        is_reprint = data["is_reprint"]
 
         slot_usages = []
 
@@ -413,6 +425,11 @@ def create_machine_usage(request):
         u.userprofile = request.user.userprofile
         u.save() # Necessary so start_time gets set to current time before referencing it below
         u.set_end_time(int(data["hours"]), int(data["minutes"]))
+
+        u.for_class = for_class
+        u.own_material = own_material
+        u.is_reprint = is_reprint
+
         u.save()
 
         for su in slot_usages:
@@ -423,7 +440,7 @@ def create_machine_usage(request):
         machine.current_job = u
         machine.save()
 
-        return redirect('/')
+        return HttpResponse("Usage successfully recorded.", status=200)
     else:
         return HttpResponse("", status=405) # Method not allowed
 
