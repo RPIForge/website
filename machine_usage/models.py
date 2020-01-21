@@ -132,7 +132,7 @@ class Usage(models.Model):
 	own_material = models.BooleanField(default=False)
 
 	cost_override = models.BooleanField(default=False)
-	overridden_cost = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+	overridden_cost = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 	cost_override_reason = models.CharField(max_length=512, default="", blank=True)
 	
 	start_time = models.DateTimeField(auto_now_add=True)
