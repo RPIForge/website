@@ -201,7 +201,9 @@ class Usage(models.Model):
 		self.end_time = self.start_time + timedelta(hours=hours, minutes=minutes)
 
 	def elapsed_time(self):
-		if self.complete or (self.end_time < timezone.now()):
+		if self.failed:
+			return (self.clear_time - self.start_time)
+		elif self.complete or (self.end_time < timezone.now()):
 			return (self.end_time - self.start_time)
 		else:
 			return (timezone.now() - self.start_time)
