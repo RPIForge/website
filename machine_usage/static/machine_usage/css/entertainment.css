@@ -5,3 +5,45 @@ body {
     -o-transform: rotate(180deg);
     transform: rotate(180deg);
 }
+
+/*@keyframes spin { 
+        from { 
+            transform: rotate(0deg); 
+        } to { 
+            transform: rotate(360deg); 
+        }
+}
+
+a {
+	animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+	animation: fadein 2s;
+	-moz-animation: fadein 2s;
+	-webkit-animation: fadein 2s;
+	-o-animation: fadein 2s;
+}*/
+
+body {
+	-webkit-animation: rotation 2s infinite linear;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes rotation {
+		from {
+				-webkit-transform: rotate(0deg);
+		}
+		to {
+				-webkit-transform: rotate(359deg);
+		}
+}
