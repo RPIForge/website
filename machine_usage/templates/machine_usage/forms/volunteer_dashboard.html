@@ -3,124 +3,48 @@
 	<head>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 		<script type="application/javascript" src="{% static 'machine_usage/js/loading-bar.js' %}"></script>
+		<script src="https://kit.fontawesome.com/73db8a1232.js" crossorigin="anonymous"></script>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/loading-bar.css' %}" />
+		<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/status.css' %}" />
 
-		<style type="text/css">
+		<script type="text/javascript">
+			function fail_usage(id, name) {
+				proceed = confirm("This will mark the current usage of " + name + " as failed and send a failed print email. Continue?");
 
-			.ldBar-label {
-				position: absolute;
-				bottom: 11px;
-				left: 10px;
-				font-size: 15px;
+				if (!proceed) {
+					return false;
+				}
 
-				color: black;
+				$.post("/api/machines/fail", JSON.stringify({"machine_id":id}), function(data, status, xhr) {
+					alert("Operation successful.");
+                    location.reload();
+                }).fail(function(xhr, status, error) {
+                    alert("Error" + xhr.status + ": " +  xhr.responseText);
+                    location.reload();
+                });
 			}
 
-			.loading_bar {
-				position: relative;
-				/*top: -85px;*/
-				text-align: center;
+			function clear_usage(id, name) {
+				proceed = confirm("Clearing machine " + name + ". Continue?");
 
-				width: 200px !important;
-				left: 0px !important;
-				height: 200px !important;
-				bottom: 0px;
+				if (!proceed) {
+					return false;
+				}
 
-				color: #080;
-				font-size: 2em;
-				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+				$.post("/api/machines/clear", JSON.stringify({"machine_id":id}), function(data, status, xhr) {
+					alert("Operation successful.");
+                    location.reload();
+                }).fail(function(xhr, status, error) {
+                    alert("Error" + xhr.status + ": " +  xhr.responseText);
+                    location.reload();
+                });
 			}
 
-			.loading_bar svg {
-				position: relative;
-				width: 75%;
-				height: auto;
-				top: 164px;
-				left: 20px;
+			function edit_usage(usage_id) {
+				window.location.href = "/admin/machine_usage/usage/" + usage_id + "/change/";
 			}
-
-			body {
-				background: #EEE;
-			}
-
-			main {
-				padding: 25px;
-				display: flex;
-				flex-wrap: wrap;
-			}
-
-			.card {
-				background: #FFF;
-				height: 200px;
-				width: 200px;
-				box-shadow: #DDD 2px 2px 2px 2px; 
-
-				text-align: center;
-				color: #AF0909;
-
-				margin-right: 10px;
-				margin-bottom: 10px;
-
-				font-family: sans-serif;
-			}
-
-			.card_text {
-				position: relative;
-				top: -200px;
-				left: 0px;
-
-				height: 100%;
-				width: 100%;
-			}
-
-			.status_message {
-				position: relative;
-				top: 15px;
-				width: 100%;
-				height: 50px;
-
-				font-size: 12px;
-			}
-
-			.time_remaining {
-				position: relative;
-				top: 15px;
-
-				font-size: 12px;
-			}
-
-			.machine_name {
-				position: relative;
-				top: 10px;
-				font-weight: bold;
-				font-size: 15px;
-				color: #000;
-			}
-
-			.user_name {
-				position: relative;
-				font-size: 10px;
-				top: 13px;
-				color: gray;
-			}
-
-			.text_in_progress {
-				color: #0A0;
-			}
-
-			.text_failed {
-				color: #A00;
-			}
-
-			.text_complete {
-				color: #0A0;
-			}
-
-			.text_error {
-				color: #ADA52C;
-			}
-		</style>
-	
+		</script>
 	</head>
 	<body>
 		<main>
@@ -132,6 +56,13 @@
 						<div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
 						<div class="status_message">{{ machine.status_message }}</div>
 						<div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
+						{% if machine.in_use %}
+						<div class="toolbox">
+							<a class="toolbox_button" href="javascript:clear_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-broom" title="Clear"></i></i></a><br /><br />
+							<a class="toolbox_button" href="javascript:fail_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-times" title="Fail"></i></a><br /><br />
+							<a class="toolbox_button" href="javascript:edit_usage({{ machine.current_usage_id }})"><i class="fas fa-edit" title="Edit"></i></a><br /><br />
+						</div>
+						{% endif %}
 					</div>
 				</div>
 			{% endfor %}

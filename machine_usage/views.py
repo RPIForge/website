@@ -616,29 +616,35 @@ def volunteer_dashboard(request):
                 estimated_completion = u.end_time
 
             output.append({
+                "id": m.id,
                 "name": m.machine_name,
                 "bar_type": bar_type,
                 "text_type": text_type,
-                "bar_progress":bar_progress,
-                "type":m.machine_type.machine_type_name,
-                "user":f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}.",
+                "bar_progress": bar_progress,
+                "type": m.machine_type.machine_type_name,
+                "user": f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}.",
                 "status_message":m.current_job.status_message,
                 "time_remaining_text": time_remaining_text,
                 "estimated_completion": estimated_completion,
-                "time_remaining": time_remaining
+                "time_remaining": time_remaining,
+                "current_usage_id": m.current_job.id,
+                "in_use": True
             })
         else:
             output.append({
+                "id": m.id,
                 "name": m.machine_name,
                 "bar_type": "bar_in_progress",
                 "text_type": "text_in_progress",
                 "bar_progress": 0,
-                "type":m.machine_type.machine_type_name,
-                "user":f"No User",
-                "status_message":"Not In Use",
+                "type": m.machine_type.machine_type_name,
+                "user": f"No User",
+                "status_message": "Not In Use",
                 "time_remaining_text": "",
                 "estimated_completion": "",
-                "time_remaining": ""
+                "time_remaining": "",
+                "current_usage_id": "",
+                "in_use": False
                 })
 
     return render(request, 'machine_usage/forms/volunteer_dashboard.html', {"machines":output})
@@ -743,7 +749,61 @@ def generate_failed_usage_form(request):
 #   API
 #
 
-@csrf_exempt # TODO REMOVE THIS, ONLY FOR DEBUG
+@csrf_exempt # TODO FIX THIS
+@login_required
+def clear_machine(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        if "machine_id" not in data:
+            return HttpResponse("No machine_id provided.", status=400)
+
+        machine = Machine.objects.get(id=int(data["machine_id"]))
+
+        if not machine.in_use:
+            return HttpResponse("Machine was not in use.", status=200)
+
+        usage = machine.current_job
+        usage.clear_time = timezone.now()
+        usage.complete = True
+        if (not usage.error) and (not usage.failed):
+            usage.status_message = "Cleared."
+        usage.save()
+
+        machine.current_job = None
+        machine.in_use = False
+        machine.save()
+        return HttpResponse("Machine cleared.", status=200)
+    else:
+        return HttpResponse("", status=405) # Method not allowed
+
+
+@csrf_exempt # TODO FIX THSI
+@login_required
+def fail_machine(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        if "machine_id" not in data:
+            return HttpResponse("No machine_id provided.", status=400)
+
+        machine = Machine.objects.get(id=int(data["machine_id"]))
+
+        if not machine.in_use:
+            return HttpResponse("Machine was not in use.", status=200)
+
+        usage = machine.current_job
+        usage.clear_time = timezone.now()
+        usage.failed = True
+        usage.status_message = "Failed."
+        usage.save()
+
+        utils.send_failure_email(usage)
+        return HttpResponse("Machine marked as failed.", status=200)
+    else:
+        return HttpResponse("", status=405) # Method not allowed
+
+@csrf_exempt # TODO REMOVE THIS DECORATOR, ONLY FOR DEBUG
 def machine_endpoint(request):
     if request.method == 'GET':
         output = []

@@ -36,4 +36,6 @@ urlpatterns = [
     path('resend_verification', views.resend_email_verification, name='resend_verification'),
 
     path('api/machines', views.machine_endpoint, name='machine_endpoint'),
+    path('api/machines/clear', views.clear_machine, name='clear_machine'),
+    path('api/machines/fail', views.fail_machine, name='fail_machine'),
 ]
