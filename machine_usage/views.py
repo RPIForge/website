@@ -733,6 +733,7 @@ def machine_endpoint(request):
                     "enabled": m.enabled,
                     "status": m.status_message,
                     "usage_policy": m.machine_type.usage_policy,
+                    "hourly_cost": float(m.machine_type.hourly_cost),
                     "slots": []
                 }
 

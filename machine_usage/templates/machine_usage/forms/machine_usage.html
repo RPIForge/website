@@ -97,6 +97,8 @@
             output = {};
             costs = {};
 
+            hourly_cost = 0.00;
+
             function update_machine_information() {
                 machine_information = JSON.parse($.get({
                     "url": "/api/machines",
@@ -131,6 +133,14 @@
                 }
 
                 slots = working_machine.slots;
+                hourly_cost = working_machine.hourly_cost;
+
+                if (slots.length == 0) {
+                    output["slot_usages"] = [];
+                    $("#available_machines")[0].style["display"] = "none";
+                    $("#usage_time")[0].style["display"] = "block";
+                    return true;
+                }
 
                 for (var i = 0; i < slots.length; i++) {
                     row = document.createElement("tr");
@@ -213,13 +223,17 @@
                 output["own_material"] = $("#own_material")[0].checked;
                 output["is_reprint"] = $("#is_reprint")[0].checked;
 
-                total_cost = 0.0;
+                material_cost = 0.0;
                 if (!output["own_material"] && !output["is_reprint"]) {
                     Object.keys(costs).forEach(function(key) {
-                        total_cost += parseFloat(costs[key]);
+                        material_cost += parseFloat(costs[key]);
                         console.log(key, costs[key]);
                     });
                 }
+
+                time_cost = (output["hours"] * hourly_cost) + (output["minutes"] * (hourly_cost / 60));
+
+                total_cost = time_cost + material_cost;
 
                 additional_text = "";
 
@@ -235,7 +249,7 @@
                     additional_text += "This print is an authorized reprint as per the reprint policy. ";
                 }
 
-                $("#total_cost_text")[0].innerText = "$" + total_cost.toFixed(2) + " ($0.00 of usage time and $" + total_cost.toFixed(2) + " of materials). " + additional_text;
+                $("#total_cost_text")[0].innerText = "$" + total_cost.toFixed(2) + " ($" + time_cost.toFixed(2) + " of usage time and $" + material_cost.toFixed(2) + " of materials). " + additional_text;
 
                 $("#checkboxes")[0].style["display"] = "none";
                 $("#total_cost")[0].style["display"] = "block";
@@ -258,9 +272,9 @@
 
             function display_result(data, status, xhr) {
 
-                console.log(data)
-                console.log(status)
-                console.log(xhr)
+                //console.log(data)
+                //console.log(status)
+                //console.log(xhr)
 
                 if (xhr.status !== 200) {
                     text = "ERROR: " + xhr.responseText
