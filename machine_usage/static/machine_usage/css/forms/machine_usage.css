@@ -308,6 +308,11 @@ main {
   color: #FFFFFF;
 }
 
+.title {
+  text-align: center;
+  margin-top: 0px;
+}
+
 select {
   padding: 12px 20px;
   width: 100%;

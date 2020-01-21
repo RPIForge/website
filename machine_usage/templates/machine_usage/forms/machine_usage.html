@@ -17,6 +17,9 @@
 
     <main class="bg_shade">
         <div id="available_machines">
+
+            <p class="title" id="machine_selection_title"><strong>Machine Selection</strong></p>
+
             <select id="machine_selection">
                 <option value selected disabled>Select a Machine</option>
                 {% for machine_type, machines in available_machines.items %}
@@ -47,6 +50,9 @@
         </div>
 
         <div id="usage_time">
+
+            <p class="title" id="usage_time_title"><strong>How long will this usage last?</strong></p>
+
             <input type="number" placeholder="Hours" id="usage_hours"/>
             <input type="number" placeholder="Minutes" id="usage_minutes"/>
 
@@ -54,6 +60,9 @@
         </div>
 
         <div id="checkboxes">
+
+            <p class="title" id="checkboxes_title"><strong>Special Options:</strong></p>
+
             <input type="checkbox" id="for_class"/> <label for="for_class">Is this machine usage for a class?</label><br />
             <input type="checkbox" id="own_material"/> <label for="own_material">Are you using your own material?</label><br />
             <input type="checkbox" id="is_reprint"/> <label for="is_reprint">Is this a reprint?</label><br /><br />
