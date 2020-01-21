@@ -499,7 +499,7 @@ def volunteer_dashboard(request):
                 percent_expired = (timezone.now() - fail_time).total_seconds() / (60 * 60)
                 bar_progress = int(100 * percent_expired)
 
-                time_remaining_text = "Restart By:"
+                time_remaining_text = "Hold Until:"
                 time_remaining = ""
                 estimated_completion = u.clear_time + timedelta(hours=1)
             else:
@@ -611,7 +611,7 @@ def generate_clear_machine_form(request):
 @login_required #TODO This should only be available to volunteers and up.
 def generate_failed_usage_form(request):
     if request.method == 'GET':
-        machines_in_use = Machine.objects.filter(in_use=True)
+        machines_in_use = Machine.objects.filter(in_use=True, failed=False)
         output = {}
 
         for m in machines_in_use:
