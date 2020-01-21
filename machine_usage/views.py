@@ -126,7 +126,7 @@ def render_begin_semester(request):
 
 def render_status(request):
 
-    machines = Machine.objects.all().order_by('machine_name')
+    machines = Machine.objects.filter(enabled=True).order_by('machine_name')
     output = []
 
     for m in machines:
@@ -464,6 +464,12 @@ def create_machine_usage(request):
         if not "is_reprint" in data:
             return HttpResponse("is_reprint missing from object.", status=400)
 
+        if not "hours" in data:
+            return HttpResponse("hours missing from object.", status=400)
+
+        if not "minutes" in data:
+            return HttpResponse("minutes missing from object.", status=400) # TODO Better verification...
+
         for_class = data["for_class"]
         own_material = data["own_material"]
         is_reprint = data["is_reprint"]
@@ -574,7 +580,7 @@ def create_user(request):
 @login_required
 def volunteer_dashboard(request):
 
-    machines = Machine.objects.all().order_by('machine_name')
+    machines = Machine.objects.filter(enabled=True).order_by('machine_name')
     output = []
 
     for m in machines:
