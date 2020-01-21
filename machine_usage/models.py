@@ -24,6 +24,8 @@ class UserProfile(models.Model):
 
 	email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
 
+	entertainment_mode = models.BooleanField(default=False)
+
 	def calculate_balance(self):
 		balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
 		for usage in self.usage_set.all():

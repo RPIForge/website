@@ -10,6 +10,10 @@
 		{% block custom_styles %}
 		{% endblock custom_styles %}
 
+		{% if user.userprofile.entertainment_mode %}
+		<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/entertainment.css' %}">
+		{% endif %}
+
 		{% block meta %}
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 		{% endblock meta %}
