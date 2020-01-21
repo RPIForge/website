@@ -515,7 +515,6 @@ def create_machine_usage(request):
 # Login intentionally not required for create_user - new users should be able to create their own accounts.
 def create_user(request):
     if request.method == 'POST':
-
         user_form = ForgeUserCreationForm(request.POST)
         profile_form = ForgeProfileCreationForm(request.POST)
 
@@ -533,6 +532,12 @@ def create_user(request):
             user.userprofile.major = user_major
 
             user.username = user.username.lower()
+
+            if request.POST["is_graduating"] == "on":
+                user.userprofile.is_graduating = True
+
+            if request.POST["accepts_charges"] == "on":
+                user.userprofile.is_active = True
 
             user.save()
 
