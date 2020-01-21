@@ -76,6 +76,15 @@
             <button id="submit">Submit</button>
         </div>
 
+        <div id="loading">
+            <p>Loading...</p>
+        </div>
+
+        <div id="result">
+            <p id="result_text"></p>
+            <button id="back_to_projects" onclick="window.location.href = '/dyn/project_list'">Back to Projects</button>
+        </div>
+
         <script type="text/javascript">
 
             machine_information = JSON.parse($.get({

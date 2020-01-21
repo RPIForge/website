@@ -255,6 +255,24 @@ main {
   display: none;
 }
 
+#loading {
+  background: #FFF;
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.25);
+  border-radius: 5px;
+
+  padding: 30px;
+  display: none;
+}
+
+#result {
+  background: #FFF;
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.25);
+  border-radius: 5px;
+
+  padding: 30px;
+  display: none;
+}
+
 #usage_hours {
   display: block;
   float: left;
