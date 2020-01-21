@@ -331,7 +331,7 @@ def list_users(request):
 @login_required     
 def list_active_usages(request):
     context = {
-        "table_headers":["User", "Machine", "Cost", "Start Time", "Status Message"],
+        "table_headers":["User", "Machine Type", "Machine", "Cost", "Start Time", "Status Message"],
         "table_rows":[],
         "page_title":"Active Usages",
         "edit_root":"machine_usage/usage"
@@ -340,7 +340,7 @@ def list_active_usages(request):
     active_usages = Usage.objects.filter(complete=False)
     for u in active_usages:
         context["table_rows"].append({
-            "row":[u.userprofile.user.username, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.status_message],
+            "row":[u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.status_message],
             "id":u.id
         })
 
@@ -349,7 +349,7 @@ def list_active_usages(request):
 @login_required     
 def list_usages(request):
     context = {
-        "table_headers":["User", "Machine", "Cost", "Start Time", "End Time", "Failed?", "Cost Overriden?", "Override Reason"],
+        "table_headers":["User", "Machine Type", "Machine", "Cost", "Start Time", "End Time", "Clear Time", "Complete?", "Failed?", "Cost Overriden?", "Override Reason"],
         "table_rows":[],
         "page_title":"Usages",
         "edit_root":"machine_usage/usage"
@@ -358,7 +358,7 @@ def list_usages(request):
     usages = Usage.objects.all()
     for u in usages:
         context["table_rows"].append({
-            "row":[u.userprofile.user.username, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.failed, u.cost_override, u.cost_override_reason],
+            "row":[u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.clear_time, u.complete, u.failed, u.cost_override, u.cost_override_reason],
             "id":u.id
         })
 
