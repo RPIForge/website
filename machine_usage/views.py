@@ -29,7 +29,7 @@ def render_equipment(request):
     return render(request, 'machine_usage/equipment.html', {})
 
 def render_hours(request):
-    return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "Hours" page.
+    return render(request, 'machine_usage/hours.html', {})
 
 def render_index(request):
     return render(request, 'machine_usage/index.html', {})
