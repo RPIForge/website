@@ -622,7 +622,7 @@ def generate_clear_machine_form(request):
 @login_required #TODO This should only be available to volunteers and up.
 def generate_failed_usage_form(request):
     if request.method == 'GET':
-        machines_in_use = Machine.objects.filter(in_use=True, failed=False)
+        machines_in_use = Machine.objects.filter(in_use=True).filter(current_job__failed=False)
         output = {}
 
         for m in machines_in_use:
