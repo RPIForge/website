@@ -127,6 +127,21 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
 	def __str__(self):
 		return self.machine_name
 
+	def time_used(self):
+		#print(self.machine_name)
+		elapsed_time = timedelta(hours=0, minutes=0)
+
+		for usage in self.usage_set.all():
+			#print(usage.elapsed_time())
+			elapsed_time += usage.elapsed_time()
+
+		#print(elapsed_time)
+		if (elapsed_time.days > 0):
+			return f"{elapsed_time.days}d {elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
+		else:
+			return f"{elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
+
+
 class Usage(models.Model):
 	machine = models.ForeignKey(
 		Machine,
@@ -183,6 +198,9 @@ class Usage(models.Model):
 
 	def set_end_time(self, hours, minutes):
 		self.end_time = self.start_time + timedelta(hours=hours, minutes=minutes)
+
+	def elapsed_time(self):
+		return (self.end_time - self.start_time)
 
 	def __str__(self):
 		return f"Usage of {self.machine} by {self.userprofile.user.username} at {self.start_time}"

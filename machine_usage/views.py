@@ -262,7 +262,7 @@ def list_projects(request):
 @login_required
 def list_machines(request):
     context = {
-        "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "In Use?"],
+        "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "Time Used", "In Use?"],
         "table_rows":[],
         "page_title":"Machines",
         "edit_root":"machine_usage/machine"
@@ -271,7 +271,7 @@ def list_machines(request):
     machines = Machine.objects.all()
     for m in machines:
 	    context["table_rows"].append({
-            "row":[m.machine_name, m.machine_type.machine_category, m.machine_type.machine_type_name, m.status_message, m.enabled, m.in_use],
+            "row":[m.machine_name, m.machine_type.machine_category, m.machine_type.machine_type_name, m.status_message, m.enabled, m.time_used(), m.in_use],
             "id":m.id
         })
 
