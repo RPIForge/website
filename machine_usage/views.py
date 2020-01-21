@@ -45,7 +45,7 @@ def render_login(request):
 
     elif request.method == 'POST':
 
-        rcs_id = request.POST['rcsid']
+        rcs_id = request.POST['rcsid'].lower()
         password = request.POST['password']
 
         user = authenticate(request, username=rcs_id, password=password)
@@ -515,6 +515,8 @@ def create_user(request):
             user.userprofile.rin = user_rin
             user.userprofile.gender = user_gender
             user.userprofile.major = user_major
+
+            user.username = user.username.lower()
 
             user.save()
 
