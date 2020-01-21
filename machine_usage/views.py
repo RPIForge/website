@@ -113,9 +113,13 @@ def render_begin_semester(request):
 
         if request.POST["accepts_charges"] == "yes":
             profile.is_active = True
+        else:
+            profile.is_active = False
 
         if request.POST["is_graduating"] == "yes":
             profile.is_graduating = True
+        else:
+            profile.is_graduating = False
 
         profile.save()
         return redirect('/myforge')
