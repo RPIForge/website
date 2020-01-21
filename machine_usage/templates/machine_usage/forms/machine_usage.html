@@ -65,7 +65,7 @@
             <p id="reprint_policy_title"><strong>Machine Policy:</strong></p><br />
             <!-- Insert policy of selected machine dynamically -->
 
-            <p id="reprint_policy_text">Machine usage policy goes here. Machine usage policy goes here. Machine usage policy goes here. Machine usage policy goes here. Machine usage policy goes here.</p><br /><br />
+            <p id="reprint_policy_text">If your print has failed and has consumed less than 50g/7mL of plastic you will not be charged for up to two additional reprint attempts. The volunteer present has final say. If you wish to appeal your claim, please email kronmm@rpi.edu.</p><br /><br />
 
             <button id="accept_policy">Accept and Continue</button>
         </div>
@@ -196,7 +196,7 @@
                 output["minutes"] = $("#usage_minutes")[0].value;
 
                 $("#usage_time")[0].style["display"] = "none";
-                $("#checkboxes")[0].style["display"] = "block";
+                $("#reprint_policy")[0].style["display"] = "block";
             }
 
             function checkboxes_next() {
@@ -205,7 +205,7 @@
                 output["is_reprint"] = $("#is_reprint")[0].checked;
 
                 $("#checkboxes")[0].style["display"] = "none";
-                $("#reprint_policy")[0].style["display"] = "block";
+                $("#total_cost")[0].style["display"] = "block";
             }
 
             function accept_policy() {
@@ -219,7 +219,7 @@
                 $("#total_cost_text")[0].innerText = "$" + total_cost.toFixed(2) + " ($0.00 of usage time and $" + total_cost.toFixed(2) + " of materials)";
 
                 $("#reprint_policy")[0].style["display"] = "none";
-                $("#total_cost")[0].style["display"] = "block";
+                $("#checkboxes")[0].style["display"] = "block";
             }
 
             function submit() {

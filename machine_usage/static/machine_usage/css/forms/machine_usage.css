@@ -216,6 +216,8 @@ main {
 
   padding: 30px;
   display: none;
+
+  width: 50%;
 }
 
 #reprint_policy_title {
