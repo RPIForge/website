@@ -21,7 +21,7 @@ urlpatterns = [
     path('forms/machine_form', views.generate_machine_form, name='machine_form'),
     path('forms/clear_machine', views.generate_clear_machine_form, name='clear_machine_form'),
     path('forms/failed_usage', views.generate_failed_usage_form, name='failed_usage'),
-
+    path('forms/force_email_verification', views.render_force_email_verification, name='force_email_verification'),
 
     path('dyn/project_list', views.list_projects, name='project_list'),
     path('dyn/machine_list', views.list_machines, name='machine_list'),

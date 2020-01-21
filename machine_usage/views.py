@@ -206,6 +206,17 @@ def resend_email_verification(request):
         utils.send_verification_email(request.user)
     return redirect('/myforge')
 
+@login_required # TODO restrict permissions
+def render_force_email_verification(request):
+    if request.method == "GET":
+        return render(request, "machine_usage/forms/force_email_verification.html", {})
+    elif request.method == "POST":
+        group = Group.objects.get(name="verified_email") # TODO Create this group if it doesn't exist - current solution is to add the group manually from the admin panel.
+        user = User.objects.get(username=request.POST["rcs_id"])
+        user.groups.add(group)
+        user.save()
+        return redirect('/forms/force_email_verification')
+
 def log_out(request):
     logout(request)
     return redirect('/')
