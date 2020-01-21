@@ -264,7 +264,7 @@ def list_machines(request):
 @login_required
 def list_machine_types(request):
     context = {
-	    "table_headers":["Type", "Category", "Slots", "Count", "Resource Types"],
+	    "table_headers":["Type", "Category", "Hourly Cost", "Slots", "Count", "Resource Types"],
 	    "table_rows":[],
         "page_title":"Machine Types",
         "edit_root":"machine_usage/machinetype"
@@ -286,7 +286,7 @@ def list_machine_types(request):
             resource_string = resource_string[:-2]
 
             context["table_rows"].append({
-                "row":[m.machine_type_name, m.machine_category, len(m.machineslot_set.all()), len(m.machine_set.all()), resource_string],
+                "row":[m.machine_type_name, m.machine_category, format_usd(m.hourly_cost), len(m.machineslot_set.all()), len(m.machine_set.all()), resource_string],
                 "id":m.id
             })
 
