@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from decimal import Decimal
 
@@ -200,7 +201,10 @@ class Usage(models.Model):
 		self.end_time = self.start_time + timedelta(hours=hours, minutes=minutes)
 
 	def elapsed_time(self):
-		return (self.end_time - self.start_time)
+		if self.complete or (self.end_time < timezone.now()):
+			return (self.end_time - self.start_time)
+		else:
+			return (timezone.now() - self.start_time)
 
 	def __str__(self):
 		return f"Usage of {self.machine} by {self.userprofile.user.username} at {self.start_time}"
