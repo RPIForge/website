@@ -18,6 +18,9 @@ class UserProfile(models.Model):
 	gender = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.gender)
 	major = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.major)
 
+	is_active = models.BooleanField(default=False)
+	is_graduating = models.BooleanField(default=False)
+
 	email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
 
 	def calculate_balance(self):

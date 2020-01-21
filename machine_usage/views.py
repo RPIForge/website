@@ -92,7 +92,40 @@ def render_verify_email(request):
        
 @login_required
 def render_myforge(request):
+    if not request.user.userprofile.is_active:
+        return redirect('/begin_semester')
+
+    if not request.user.groups.filter(name="verified_email").exists():
+        return redirect('/unverified_email')
+
     return render(request, 'machine_usage/myforge.html', {})
+
+@login_required
+def render_unverified_email(request):
+    return render(request, 'machine_usage/unverified_email.html', {})
+
+@login_required
+def render_begin_semester(request):
+    if request.method == "GET":
+        return render(request, 'machine_usage/begin_semester.html', {})
+    elif request.method == "POST":
+        profile = request.user.userprofile
+
+        if request.POST["accepts_charges"] == "yes":
+            profile.is_active = True
+
+        if request.POST["is_graduating"] == "yes":
+            profile.is_graduating = True
+
+        profile.save()
+        return redirect('/myforge')
+
+@login_required
+def resend_email_verification(request):
+    if not request.user.groups.filter(name="verified_email").exists():
+        print(f"Sending verification email to {request.user.email}")
+        utils.send_verification_email(request.user)
+    return redirect('/myforge')
 
 def log_out(request):
     logout(request)

@@ -1,0 +1,46 @@
+{% extends "machine_usage/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>Begin Semester</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/begin_semester.css' %}">
+{% endblock custom_styles %}
+	
+{% block main %}
+	<main class="bg_shade">
+		<div id="card_container" class="center_children fill_parent_horiz fill_screen_vert">
+			<div id="card">
+				<h1>Welcome back!</h1>
+				<form method="POST">
+					{% csrf_token %}
+					<p>Hey, {{ user.first_name }} - Welcome back to The Forge!</p>
+					<p>We've got a couple of quick questions for you before we take you to your homepage.</p><br />
+
+					<hr />
+
+					<p>
+						<strong>Are you planning on graduating at the end of this semester?</strong><br /><br />
+						<input type="radio" value="yes" name="is_graduating"/>Yes <br />
+						<input type="radio" value="no" name="is_graduating"/>No <br />
+					</p>
+
+					<hr />
+
+					<p>
+						<strong>Do you authorize The Forge to charge a $15 membership fee to your bursar account?</strong><br />
+						<em>(We have your RIN on file as {{ user.userprofile.rin }}).</em><br /><br />
+						<input type="radio" value="yes" name="accepts_charges"/>Yes <br />
+						<input type="radio" value="no" name="accepts_charges"/>No <br />
+					</p>
+
+					<hr />
+
+					<input type="submit" id="submit_button" />
+				</form>
+			</div>
+		</div>
+	</main>
+{% endblock main %}
