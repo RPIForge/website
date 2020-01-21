@@ -56,6 +56,14 @@ class Resource(models.Model):
 	def __str__(self):
 		return self.resource_name
 
+	def units_used(self):
+		used = 0
+
+		for slotusage in self.slotusage_set.all():
+			used += slotusage.amount
+
+		return used
+
 class MachineType(models.Model):
 	machine_type_name = models.CharField(max_length=255, unique=True)
 	machine_category = models.CharField(max_length=255, null=True)

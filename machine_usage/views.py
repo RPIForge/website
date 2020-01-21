@@ -311,7 +311,7 @@ def list_machine_types(request):
 @login_required
 def list_resources(request):
     context = {
-	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "In Stock?"],
+	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "Units Used", "In Stock?"],
 	    "table_rows":[],
         "page_title":"Resources",
         "edit_root":"machine_usage/resource"
@@ -320,7 +320,7 @@ def list_resources(request):
     resources = Resource.objects.all()
     for r in resources:
 	    context["table_rows"].append({
-            "row":[r.resource_name, r.unit, r.cost_per, r.in_stock],
+            "row":[r.resource_name, r.unit, format_usd(r.cost_per), f"{r.units_used():.2f} {r.unit}", r.in_stock],
             "id":r.id
         })
 
