@@ -54,6 +54,21 @@ def send_verification_email(user):
     body = f"Thanks for signing up for the Forge! Click <a clicktracking=off href='{verification_url}'>this link</a> to verify your email."
     send_email(user.email, subject, body)
 
+def send_failure_email(usage):
+    user = usage.userprofile.user
+
+    subject = f"Forge: Machine Failure"
+    body = f"Dear {user.first_name},\n\nUnfortunately, your recent machine usage has failed. "
+    body += f"You have one hour to return to The Forge and try again before the machine is freed for the next user.\n\nDetails:\n\n"
+    body += f"Machine Type: {usage.machine.machine_type.machine_type_name}\n"
+    body += f"Machine Name: {usage.machine.machine_name}\n"
+    body += f"Start Time: {usage.start_time}\n"
+    body += f"Fail Time: {usage.clear_time}\n\n"
+
+    print(subject)
+    print(body)
+
+    send_email(user.email, subject, body)
 #
 # CALENDAR FUNCTIONS
 #

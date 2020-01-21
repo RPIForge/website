@@ -143,6 +143,7 @@ class Usage(models.Model):
 	retry_count = models.PositiveIntegerField(default=0)
 
 	complete = models.BooleanField(default=False)
+	failed = models.BooleanField(default=False)
 	deleted = models.BooleanField(default=False)
 
 	def cost(self):

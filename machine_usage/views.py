@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models.base import ObjectDoesNotExist
+from django.utils import timezone
 
 # Importing Models
 from machine_usage.models import *
@@ -444,7 +445,7 @@ def generate_clear_machine_form(request):
         machine = Machine.objects.get(machine_name=machine_name)
 
         usage = machine.current_job
-        usage.clear_time = datetime.now()
+        usage.clear_time = timezone.now()
         usage.complete = True
         usage.save()
 
@@ -452,6 +453,36 @@ def generate_clear_machine_form(request):
         machine.in_use = False
         machine.save()
         return redirect('/forms/clear_machine')
+
+@login_required #TODO This should only be available to volunteers and up.
+def generate_failed_usage_form(request):
+    if request.method == 'GET':
+        machines_in_use = Machine.objects.filter(in_use=True)
+        output = {}
+
+        for m in machines_in_use:
+            type_name = m.machine_type.machine_type_name
+            if type_name not in output:
+                output[type_name] = []
+            output[type_name].append(m.machine_name)
+
+        return render(request, 'machine_usage/forms/failed_usage.html', {"machines_in_use":output})
+    else:
+        machine_name = request.POST["machine_name"]
+        machine = Machine.objects.get(machine_name=machine_name)
+
+        usage = machine.current_job
+        usage.clear_time = timezone.now()
+        usage.complete = True
+        usage.failed = True
+        usage.save()
+
+        machine.current_job = None
+        machine.in_use = False
+        machine.save()
+
+        utils.send_failure_email(usage)
+        return redirect('/forms/failed_usage')
 
 #
 #   API
