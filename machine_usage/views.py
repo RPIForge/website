@@ -360,12 +360,19 @@ def validate_machine(machine, slot_usages):
 
 def validate_slot(slot, material, quantity):
     try:
-        Decimal(quantity)
-        if quantity < 0:
+        qty = Decimal(quantity)
+        if qty < 0:
+            print("Negative Quantity")
             return False
     except Exception as e:
+        print(f"Quantity not a Decimal. Exception: {e}")
         return False
-    return slot.resource_allowed(material)
+    
+    if slot.resource_allowed(material):
+        return True
+    else:
+        print("Resource not allowed in slot")
+        return False
 
 # $.post("http://localhost:8000/api/machines", '{"machine_name":"Prusa Alpha", "hours":1, "minutes":30,"slot_usages":[{"name":"Filament", "resource":"PLA", "quantity":10}]}')
 @login_required
@@ -378,6 +385,7 @@ def create_machine_usage(request):
         validation_result = validate_machine(machine, data["slot_usages"])
 
         if not validation_result:
+            print(f"Invalid machine or schema. JSON: {request.body}")
             return HttpResponse("Invalid machine or schema.", status=400)
 
         slot_usages = []
@@ -391,6 +399,7 @@ def create_machine_usage(request):
 
             validation_result = validate_slot(slot, resource, quantity)
             if not validation_result:
+                print(f"Quantity for slot {slot_name} was not a valid decimal, or the resource provided was invalid. JSON: {request.body}")
                 return HttpResponse(f"Quantity for slot {slot_name} was not a valid decimal, or the resource provided was invalid.", status=400)
 
             su = SlotUsage()
@@ -544,7 +553,7 @@ def volunteer_dashboard(request):
 
 @login_required
 def machine_usage(request):
-    machines = Machine.objects.all()
+    machines = Machine.objects.all().order_by("machine_name")
     available_machines = {}
 
     for m in machines:
@@ -645,7 +654,7 @@ def machine_endpoint(request):
     if request.method == 'GET':
         output = []
 
-        machines = Machine.objects.all()
+        machines = Machine.objects.all().order_by("machine_name")
 
         for m in machines:
             if not m.deleted:
