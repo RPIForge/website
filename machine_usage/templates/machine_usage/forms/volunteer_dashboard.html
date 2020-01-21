@@ -17,7 +17,7 @@
 				}
 
 				$.post("/api/machines/fail", JSON.stringify({"machine_id":id}), function(data, status, xhr) {
-					alert("Operation successful.");
+					//alert("Operation successful.");
                     location.reload();
                 }).fail(function(xhr, status, error) {
                     alert("Error" + xhr.status + ": " +  xhr.responseText);
@@ -33,7 +33,7 @@
 				}
 
 				$.post("/api/machines/clear", JSON.stringify({"machine_id":id}), function(data, status, xhr) {
-					alert("Operation successful.");
+					//alert("Operation successful.");
                     location.reload();
                 }).fail(function(xhr, status, error) {
                     alert("Error" + xhr.status + ": " +  xhr.responseText);
