@@ -14,28 +14,316 @@
 
 {% block main %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
-    <script type="text/javascript">
-        function setFrame(src) {
-            $("#machine_form").attr("src", src);
-        }
-    </script>
 
     <main class="bg_shade">
-        <div id="machine_usage">
-            <div id="available_machines">
-                <h3>Available Machines</h3>
+        <div id="available_machines">
 
-                <ul class="block_list">
-                    {% for machine_type, machines in available_machines.items %}
-                        <li class="block_list_header">{{ machine_type }}</li>
-                        {% for machine_name in machines %}
-                            <li><a href="javascript:setFrame('/forms/machine_form?machine={{machine_name|urlencode}}')">{{ machine_name }}</a></li>
-                        {% endfor %}
+            <p class="title" id="machine_selection_title"><strong>Machine Selection</strong></p>
+
+            <select id="machine_selection">
+                <option value selected disabled>Select a Machine</option>
+                {% for machine_type, machines in available_machines.items %}
+                    <optgroup label="{{ machine_type }}">
+                    {% for machine_name in machines %}
+                        <option value="{{ machine_name }}">{{ machine_name }}</option>
                     {% endfor %}
-                </ul>
-            </div>
+                    </optgroup>
+                {% endfor %}
+            </select>
 
-            <iframe id="machine_form"></iframe>
+            <br /><br />
+
+            <button id="available_next">Next</button>
         </div>
+
+        <div id="material_usage">
+            <table id="slot_usage_table">
+                <tr>
+                    <th>Slot Name</th>
+                    <th>Material</th>
+                    <th>Quantity</th>
+                    <th>Cost</th>
+                </tr>
+            </table>
+            <br />
+            <button id="material_usage_next">Next</button>
+        </div>
+
+        <div id="usage_time">
+
+            <p class="title" id="usage_time_title"><strong>How long will this usage last?</strong></p>
+
+            <input type="number" placeholder="Hours" id="usage_hours"/>
+            <input type="number" placeholder="Minutes" id="usage_minutes"/>
+
+            <button id="usage_time_next">Next</button>
+        </div>
+
+        <div id="checkboxes">
+
+            <p class="title" id="checkboxes_title"><strong>Special Options:</strong></p>
+
+            <input type="checkbox" id="for_class"/> <label for="for_class">Is this machine usage for a class?</label><br />
+            <input type="checkbox" id="own_material"/> <label for="own_material">Are you using your own material?</label><br />
+            <input type="checkbox" id="is_reprint"/> <label for="is_reprint">Is this a reprint?</label><br /><br />
+
+            <button id="checkboxes_next">Next</button>
+        </div>
+
+        <div id="reprint_policy">
+            <p class="no_margin" id="reprint_policy_title"><strong>Machine Policy:</strong></p><br />
+            <!-- Insert policy of selected machine dynamically -->
+
+            <p class="no_margin" id="reprint_policy_text">If your print has failed and has consumed less than 50g/7mL of plastic you will not be charged for up to two additional reprint attempts. The volunteer present has final say. If you wish to appeal your claim, please email kronmm@rpi.edu.</p><br /><br />
+
+            <button id="accept_policy">Accept and Continue</button>
+        </div>
+
+        <div id="total_cost">
+            <p id="total_cost_title"><strong>Total Cost:</strong></p>
+            <p id="total_cost_text">If you're seeing this, something somewhere has gone very wrong.</p><br />
+            <button id="submit">Submit</button>
+        </div>
+
+        <div id="loading">
+            <p>Loading...</p>
+        </div>
+
+        <div id="result">
+            <p id="result_text"></p>
+            <button id="back_to_projects" onclick="window.location.href = '/dyn/project_list'">Back to Projects</button>
+        </div>
+
+        <script type="text/javascript">
+
+            machine_information = JSON.parse($.get({
+                "url": "/api/machines",
+                "async": false
+            }).responseText);
+
+            working_machine = null;
+
+            output = {};
+            costs = {};
+
+            output["hours"] = 0;
+            output["minutes"] = 0;
+
+            hourly_cost = 0.00;
+
+            function update_machine_information() {
+                machine_information = JSON.parse($.get({
+                    "url": "/api/machines",
+                    "async": false
+                }).responseText);
+            }
+
+            function available_next() {
+                selected = $("#machine_selection")[0].value;
+                working_machine = null;
+
+                update_machine_information();
+
+                if (selected === "Select a Machine") {
+                    return false;
+                }
+
+                for (var i = 0; i < machine_information.length; i++) {
+                    machine = machine_information[i];
+                    if (machine.name === selected) {
+                        working_machine = machine;
+                        output["machine_name"] = machine.name;
+                    }
+                }
+
+                if (working_machine === null) {
+                    return false;
+                }
+
+                if (working_machine.in_use || !(working_machine.enabled)) {
+                    return false;
+                }
+
+                slots = working_machine.slots;
+                hourly_cost = working_machine.hourly_cost;
+
+                if (slots.length == 0) {
+                    output["slot_usages"] = [];
+                    $("#available_machines")[0].style["display"] = "none";
+                    $("#usage_time")[0].style["display"] = "block";
+                    return true;
+                }
+
+                for (var i = 0; i < slots.length; i++) {
+                    row = document.createElement("tr");
+
+                    slot_name = document.createElement("td");
+                    slot_name.innerText = slots[i].slot_name;
+                    row.appendChild(slot_name);
+
+                    resources = document.createElement("td");
+                    resource_picker = document.createElement("select");
+                    resource_picker.setAttribute("onchange", "javascript:update_row(" + i +")");
+
+
+                    for (var j = 0; j < slots[i].allowed_resources.length; j++) {
+                        resource = slots[i].allowed_resources[j];
+
+                        option = document.createElement("option");
+                        option.setAttribute("data-unit", resource.unit);
+                        option.setAttribute("data-cost", resource.cost);
+                        option.innerText = resource.name;
+
+                        resource_picker.appendChild(option);
+                    }
+
+                    resources.appendChild(resource_picker);
+                    row.appendChild(resources);
+
+                    quantity = document.createElement("td");
+                    quantity_input = document.createElement("input");
+                    quantity_input.setAttribute("type", "number");
+                    quantity_input.setAttribute("placeholder", "units of material");
+                    quantity_input.setAttribute("oninput", "javascript:update_row(" + i +")");
+                    quantity.appendChild(quantity_input);
+                    row.appendChild(quantity);
+
+                    cost = document.createElement("td");
+                    cost.innerText = "$0.00";
+                    row.appendChild(cost);
+
+                    $("#slot_usage_table")[0].appendChild(row);
+                    update_row(i);
+                }
+
+                $("#available_machines")[0].style["display"] = "none";
+                $("#material_usage")[0].style["display"] = "block";
+            }
+
+            function material_usage_next() {
+                rows = $("#slot_usage_table tr");
+
+                output["slot_usages"] = [];
+
+                // rows[0] contains the headers!
+                for (var i = 1; i < rows.length; i++) {
+                    usage = {};
+                    cols = rows[i].children;
+
+                    usage["name"] = cols[0].innerText;
+                    usage["resource"] = cols[1].children[0].value;
+                    usage["quantity"] = cols[2].children[0].value;
+
+                    costs[usage["name"]] = cols[3].innerText.substring(1); // Extract '$'
+                    output["slot_usages"].push(usage);
+                }
+
+                $("#material_usage")[0].style["display"] = "none";
+                $("#usage_time")[0].style["display"] = "block";
+            }
+
+            function usage_time_next() {
+
+                if ( ($("#usage_hours")[0].value === "") || ($("#usage_minutes")[0].value === "") ) {
+                    alert("Please enter values in both fields.");
+                    return false;
+                }
+
+                output["hours"] = $("#usage_hours")[0].value;
+                output["minutes"] = $("#usage_minutes")[0].value;
+
+                $("#usage_time")[0].style["display"] = "none";
+                $("#reprint_policy")[0].style["display"] = "block";
+            }
+
+            function checkboxes_next() {
+                output["for_class"] = $("#for_class")[0].checked;
+                output["own_material"] = $("#own_material")[0].checked;
+                output["is_reprint"] = $("#is_reprint")[0].checked;
+
+                material_cost = 0.0;
+                if (!output["own_material"] && !output["is_reprint"]) {
+                    Object.keys(costs).forEach(function(key) {
+                        material_cost += parseFloat(costs[key]);
+                        console.log(key, costs[key]);
+                    });
+                }
+
+                time_cost = (output["hours"] * hourly_cost) + (output["minutes"] * (hourly_cost / 60));
+
+                total_cost = time_cost + material_cost;
+
+                additional_text = "";
+
+                if (output["for_class"]) {
+                    additional_text += "This machine usage is for a class. ";
+                }
+
+                if (output["own_material"]) {
+                    additional_text += "You are using your own material for this machine usage. ";
+                }
+
+                if (output["is_reprint"]) {
+                    additional_text += "This print is an authorized reprint as per the reprint policy. ";
+                }
+
+                $("#total_cost_text")[0].innerText = "$" + total_cost.toFixed(2) + " ($" + time_cost.toFixed(2) + " of usage time and $" + material_cost.toFixed(2) + " of materials). " + additional_text;
+
+                $("#checkboxes")[0].style["display"] = "none";
+                $("#total_cost")[0].style["display"] = "block";
+            }
+
+            function accept_policy() {
+                $("#reprint_policy")[0].style["display"] = "none";
+                $("#checkboxes")[0].style["display"] = "block";
+            }
+
+            function submit() {
+                $("#total_cost")[0].style["display"] = "none";
+                $("#loading")[0].style["display"] = "block";
+                $.post("/api/machines", JSON.stringify(output), function(data, status, xhr) {
+                    display_result(data, status, xhr);
+                }).fail(function(xhr, status, error) {
+                    display_result(error, status, xhr);
+                });
+            }
+
+            function display_result(data, status, xhr) {
+
+                //console.log(data)
+                //console.log(status)
+                //console.log(xhr)
+
+                if (xhr.status !== 200) {
+                    text = "ERROR: " + xhr.responseText
+                } else {
+                    text = "Success!"
+                }
+
+                $("#result_text")[0].innerText = text;
+
+                $("#loading")[0].style["display"] = "none";
+                $("#result")[0].style["display"] = "block";
+            }
+
+            function update_row(row_index) {
+                row = $("#slot_usage_table tr")[row_index + 1]; // +1 to account for header
+                material = $(row.children[1].children[0]).children("option:selected")[0].innerText;
+                unit = $(row.children[1].children[0]).children("option:selected")[0].getAttribute("data-unit");
+                cost_per = $(row.children[1].children[0]).children("option:selected")[0].getAttribute("data-cost");
+                quantity = row.children[2].children[0].value;
+                cost = cost_per * quantity;
+
+                row.children[3].innerText = "$" + cost.toFixed(2);
+                row.children[2].children[0].setAttribute("placeholder", unit + " of " + material);
+            }
+
+            $("#available_next").on("click", available_next);
+            $("#material_usage_next").on("click", material_usage_next);
+            $("#usage_time_next").on("click", usage_time_next);
+            $("#checkboxes_next").on("click", checkboxes_next);
+            $("#accept_policy").on("click", accept_policy);
+            $("#submit").on("click", submit);
+        </script>
     </main>
 {% endblock main %}

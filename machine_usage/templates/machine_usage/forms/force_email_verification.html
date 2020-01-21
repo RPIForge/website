@@ -1,0 +1,30 @@
+{% extends "machine_usage/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>Use A Machine</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/clear_machine.css' %}">
+{% endblock custom_styles %}
+    
+{% block header %}
+{% endblock header%}
+
+{% block main %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+
+    <main class="bg_shade">
+        <div class="card center_text">
+            <form action="/forms/force_email_verification" method="POST">
+                {% csrf_token %}
+                <p class="no_margin"><strong>Verify A User's Email</strong></p><br />
+                <input type="text" name="rcs_id" placeholder="RCS ID" />
+                <br /><br />
+
+                <input type="submit" value="Verify" />
+            </form>
+        </div>
+    </main>
+{% endblock main %}

@@ -3,8 +3,8 @@
 	</head>
 	<body>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
-		<input type="number" name="hours" />
-		<input type="number" name="minutes" />
+		<input type="number" name="hours" placeholder="Hours" />
+		<input type="number" name="minutes" placeholder="Minutes" /><br /><br />
 		{% for slot in slots %}
 			{{ slot.name }}
 			<input type="number" name="{{slot.name}}_qty" data-slot-name="{{ slot.name }}" value="0" />

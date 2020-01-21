@@ -21,6 +21,19 @@
                     {% csrf_token %}
                     {{ user_form }}
                     {{ profile_form }}
+                    
+                    <br /><br />
+
+                    <input type="checkbox" name="is_graduating" id="is_graduating"/>
+                    <label for="is_graduating">Are you graduating this semester?</label>
+
+                    <br />
+
+                    <input type="checkbox" name="accepts_charges" id="accepts_charges" required/>
+                    <label for="accepts_charges">I acknowledge that $15 will be charged to my bursar account.</label>
+
+                    <br /><br />
+                    
                     <button type="submit" id="submit_button">Sign Up</button>
                 </form>
             </div>

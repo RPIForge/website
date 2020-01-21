@@ -1,0 +1,40 @@
+{% extends "machine_usage/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>Use A Machine</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/clear_machine.css' %}">
+{% endblock custom_styles %}
+    
+{% block header %}
+{% endblock header%}
+
+{% block main %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+
+    <main class="bg_shade">
+        <div class="card center_text">
+            <form action="/forms/clear_machine" method="POST">
+                {% csrf_token %}
+                <p class="no_margin"><strong>Clear A Machine</strong></p><br />
+                <select id="machine_selection" name="machine_name">
+                    <option value selected disabled>Select a Machine</option>
+                    {% for machine_type, machines in machines_in_use.items %}
+                        <optgroup label="{{ machine_type }}">
+                        {% for machine_name in machines %}
+                            <option value="{{ machine_name }}">{{ machine_name }}</option>
+                        {% endfor %}
+                        </optgroup>
+                    {% endfor %}
+                </select>
+
+                <br /><br />
+
+                <input type="submit" value="Clear" />
+            </form>
+        </div>
+    </main>
+{% endblock main %}

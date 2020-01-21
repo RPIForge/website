@@ -49,10 +49,23 @@ def send_verification_email(user):
 
     params_string = urllib.parse.urlencode(params)
 
-    verification_url = f"https://www.rpiforge.dev/verify_email?{params_string}" # TODO replace URL with config value
+    base_url = os.environ.get('SITE_URL')
+    verification_url = f"https://{base_url}/verify_email?{params_string}" # TODO replace URL with config value
     body = f"Thanks for signing up for the Forge! Click <a clicktracking=off href='{verification_url}'>this link</a> to verify your email."
     send_email(user.email, subject, body)
 
+def send_failure_email(usage):
+    user = usage.userprofile.user
+
+    subject = f"Forge: Machine Failure"
+    body = f"Dear {user.first_name},<br /><br />Unfortunately, your recent machine usage has failed. "
+    body += f"You have one hour to return to The Forge and try again before the machine is freed for the next user.<br /><br />Details:<br /><br />"
+    body += f"Machine Type: {usage.machine.machine_type.machine_type_name}<br />"
+    body += f"Machine Name: {usage.machine.machine_name}<br />"
+    body += f"Start Time: {usage.start_time}<br />"
+    body += f"Fail Time: {usage.clear_time}"
+    
+    send_email(user.email, subject, body)
 #
 # CALENDAR FUNCTIONS
 #

@@ -2,20 +2,23 @@
 {% load static %}
 
 {% block custom_styles %}
-	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/homepage.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/login.css' %}">
+	<style>
+		.nav_list {
+			display: none;
+		}
+	</style>
 {% endblock custom_styles %}
-
+	
 {% block main %}
-	<main class="home_main">
-		<div id="cover" class="center_children fill_parent_horiz fill_screen_vert">
-			<div id="cover_text">
-			    <h2>{{message}}</h2>
-                            <form action="/">
-                                 <input type="submit" value="Continue to Home Page" />
-                            </form>
-                                
-                        </div>
+	<main class="bg_shade">
+		<div id="login_form_container" class="center_children fill_parent_horiz fill_screen_vert">
+			<div id="login_form">
+				<h2>{{message}}</h2>
+				<form method="GET" action="/">
+					<button id="create_account_button" onclick="location.href='/';return false;">Continue</button>
+				</form>
+			</div>
 		</div>
-
 	</main>
 {% endblock main %}

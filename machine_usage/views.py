@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models.base import ObjectDoesNotExist
+from django.utils import timezone
 
 # Importing Models
 from machine_usage.models import *
@@ -14,13 +15,14 @@ from django.contrib.auth.models import User, Group
 from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
 
 # Importing Helper Functions
-import machine_usage.utils
-import machine_usage.lists
+import machine_usage.lists as lists
+import machine_usage.utils as utils
 
 # Importing Other Libraries
 import json
 from datetime import datetime
 from decimal import Decimal
+from datetime import datetime, timedelta
 
 #
 #   Pages/Login
@@ -30,40 +32,7 @@ def render_equipment(request):
     return render(request, 'machine_usage/equipment.html', {})
 
 def render_hours(request):
-    # Make sure we only support GET requests, so we can make POST do something later if needed
-    if request.method == 'GET':
-        # Get the verification token from the request, or a NoneType if the request is malformed.
-        hour = request.GET.get("date", None)
-
-
-        #initalize calendar
-        calendar = machine_usage.utils.google_calendar()
-
-        #get hours
-        if hour:
-            hour = datetime.strptime(hour,"%m-%d-%Y")
-            week_hours = calendar.get_hours(hour)
-        else:
-            week_hours = calendar.get_hours()
-
-        output_hours = []
-        for days in range(7):
-            day_information = {'name':machine_usage.lists.days_of_the_week[days],'hours':''}
-
-            if(week_hours[days]):
-                hour_list = []
-                for hour in week_hours[days]:
-                    start_time = datetime.strftime(hour[0],"%I:%M %p")
-                    end_time = datetime.strftime(hour[1],"%I:%M %p")
-                    hour_list.append(str(start_time)+" - "+str(end_time))
-
-                    day_information['hours'] = " , ".join(hour_list)
-            else:
-                day_information['hours'] = "The Forge is closed"
-            output_hours.append(day_information)
-
-        print(output_hours)
-        return render(request, 'machine_usage/calendar.html', {'result_hours':output_hours}) # TO-DO: Implement the "Hours" page.
+    return render(request, 'machine_usage/hours.html', {})
 
 def render_index(request):
     return render(request, 'machine_usage/index.html', {})
@@ -78,7 +47,7 @@ def render_login(request):
 
     elif request.method == 'POST':
 
-        rcs_id = request.POST['rcsid']
+        rcs_id = request.POST['rcsid'].lower()
         password = request.POST['password']
 
         user = authenticate(request, username=rcs_id, password=password)
@@ -94,9 +63,6 @@ def render_news(request):
 
 def render_our_space(request):
     return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "Our Space" page.
-
-def render_status(request):
-    return render(request, 'machine_usage/index.html', {}) # TO-DO: Implement the "Status" page.
 
 def render_verify_email(request):
     # Make sure we only support GET requests, so we can make POST do something later if needed
@@ -126,7 +92,137 @@ def render_verify_email(request):
 
 @login_required
 def render_myforge(request):
+    if not request.user.userprofile.is_active:
+        return redirect('/begin_semester')
+
+    if not request.user.groups.filter(name="verified_email").exists():
+        return redirect('/unverified_email')
+
     return render(request, 'machine_usage/myforge.html', {})
+
+@login_required
+def render_unverified_email(request):
+    if request.user.groups.filter(name="verified_email").exists():
+        return redirect('/myforge')
+    return render(request, 'machine_usage/unverified_email.html', {})
+
+@login_required
+def render_begin_semester(request):
+    if request.method == "GET":
+        return render(request, 'machine_usage/begin_semester.html', {})
+    elif request.method == "POST":
+        profile = request.user.userprofile
+
+        if request.POST["accepts_charges"] == "yes":
+            profile.is_active = True
+        else:
+            profile.is_active = False
+
+        if request.POST["is_graduating"] == "yes":
+            profile.is_graduating = True
+        else:
+            profile.is_graduating = False
+
+        profile.save()
+        return redirect('/myforge')
+
+def render_status(request):
+
+    machines = Machine.objects.filter(enabled=True).order_by('machine_name')
+    output = []
+
+    for m in machines:
+        if m.in_use:
+            u = m.current_job
+            if u.failed:
+                bar_type = "bar_failed"
+                text_type = "text_failed"
+            elif u.complete:
+                bar_type = "bar_complete"
+                text_type = "text_complete"
+            elif u.error:
+                bar_type = "bar_error"
+                text_type = "text_error"
+            else:
+                bar_type = "bar_in_progress"
+                text_type = "text_in_progress"
+
+            if u.complete:
+                bar_progress = 100
+                time_remaining_text = "Time of Completion:"
+                time_remaining = f""
+                estimated_completion = u.end_time
+            elif u.failed:
+
+                fail_time = u.clear_time
+                expiration_time = u.clear_time + timedelta(hours=1)
+
+                percent_expired = (timezone.now() - fail_time).total_seconds() / (60 * 60)
+                bar_progress = int(100 * percent_expired)
+
+                time_remaining_text = "Restart By:"
+                time_remaining = ""
+                estimated_completion = u.clear_time + timedelta(hours=1)
+            else:
+                duration = u.end_time - u.start_time
+                elapsed = timezone.now() - u.start_time
+                percent_complete = elapsed.total_seconds() / duration.total_seconds()
+                bar_progress = int(100 * percent_complete)
+
+                time_remaining_text = "Estimated Completion:"
+                time_remaining = f""
+                estimated_completion = u.end_time
+
+            if m.current_job.userprofile.anonymous_usages:
+                user_name = "[hidden]"
+            else:
+                user_name = f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}."
+
+            output.append({
+                "name": m.machine_name,
+                "bar_type": bar_type,
+                "text_type": text_type,
+                "bar_progress":bar_progress,
+                "type":m.machine_type.machine_type_name,
+                "user":user_name,
+                "status_message":m.current_job.status_message,
+                "time_remaining_text": time_remaining_text,
+                "estimated_completion": estimated_completion,
+                "time_remaining": time_remaining
+            })
+        else:
+            output.append({
+                "name": m.machine_name,
+                "bar_type": "bar_in_progress",
+                "text_type": "text_in_progress",
+                "bar_progress": 0,
+                "type":m.machine_type.machine_type_name,
+                "user":f"No User",
+                "status_message":"Not In Use",
+                "time_remaining_text": "",
+                "estimated_completion": "",
+                "time_remaining": ""
+                })
+
+    return render(request, 'machine_usage/status.html', {"machines":output})
+
+@login_required
+def resend_email_verification(request):
+    if not request.user.groups.filter(name="verified_email").exists():
+        print(f"Sending verification email to {request.user.email}")
+        utils.send_verification_email(request.user)
+    return redirect('/myforge')
+
+@login_required # TODO restrict permissions
+def render_force_email_verification(request):
+    if request.method == "GET":
+        return render(request, "machine_usage/forms/force_email_verification.html", {})
+    elif request.method == "POST":
+        group = Group.objects.get(name="verified_email") # TODO Create this group if it doesn't exist - current solution is to add the group manually from the admin panel.
+        user = User.objects.get(username=request.POST["rcs_id"])
+        user.groups.add(group)
+        user.save()
+        return redirect('/forms/force_email_verification')
 
 def log_out(request):
     logout(request)
@@ -163,28 +259,33 @@ def list_projects(request):
     for u in usages:
         context["table_rows"].append([u.start_time, u.machine.machine_name, format_usd(u.cost())])
 
-    return render(request, 'machine_usage/forms/list_items.html', context)
+    return render(request, 'machine_usage/forms/list_items_readonly.html', context)
 
 @login_required
 def list_machines(request):
     context = {
-        "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "In Use?"],
+        "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "Time Used", "In Use?"],
         "table_rows":[],
-        "page_title":"Machines"
+        "page_title":"Machines",
+        "edit_root":"machine_usage/machine"
     }
 
     machines = Machine.objects.all()
     for m in machines:
-	    context["table_rows"].append([m.machine_name, m.machine_type.machine_category, m.machine_type.machine_type_name, m.status_message, m.enabled, m.in_use])
+	    context["table_rows"].append({
+            "row":[m.machine_name, m.machine_type.machine_category, m.machine_type.machine_type_name, m.status_message, m.enabled, m.time_used(), m.in_use],
+            "id":m.id
+        })
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
 @login_required
 def list_machine_types(request):
     context = {
-	    "table_headers":["Type", "Category", "Slots", "Count", "Resource Types"],
+	    "table_headers":["Type", "Category", "Hourly Cost", "Slots", "Count", "Resource Types"],
 	    "table_rows":[],
-        "page_title":"Machine Types"
+        "page_title":"Machine Types",
+        "edit_root":"machine_usage/machinetype"
     }
 
     machine_types = MachineType.objects.all()
@@ -202,21 +303,28 @@ def list_machine_types(request):
                 resource_string += r + ", "
             resource_string = resource_string[:-2]
 
-            context["table_rows"].append([m.machine_type_name, m.machine_category, len(m.machineslot_set.all()), len(m.machine_set.all()), resource_string])
+            context["table_rows"].append({
+                "row":[m.machine_type_name, m.machine_category, format_usd(m.hourly_cost), len(m.machineslot_set.all()), len(m.machine_set.all()), resource_string],
+                "id":m.id
+            })
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
 @login_required
 def list_resources(request):
     context = {
-	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "In Stock?"],
+	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "Units Used", "In Stock?"],
 	    "table_rows":[],
-        "page_title":"Resources"
+        "page_title":"Resources",
+        "edit_root":"machine_usage/resource"
     }
 
     resources = Resource.objects.all()
     for r in resources:
-	    context["table_rows"].append([r.resource_name, r.unit, r.cost_per, r.in_stock])
+	    context["table_rows"].append({
+            "row":[r.resource_name, r.unit, format_usd(r.cost_per), f"{r.units_used():.2f} {r.unit}", r.in_stock],
+            "id":r.id
+        })
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
@@ -225,12 +333,52 @@ def list_users(request):
     context = {
         "table_headers":["Name", "RIN", "Outstanding Balance"],
         "table_rows":[],
-        "page_title":"Users"
+        "page_title":"Users",
+        "edit_root":"auth/user"
     }
 
     users = UserProfile.objects.all()
     for u in users:
-        context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
+        context["table_rows"].append({
+            "row":[u.user.username, u.rin, format_usd(u.calculate_balance())],
+            "id":u.id
+        })
+
+    return render(request, 'machine_usage/forms/list_items.html', context)
+
+@login_required     
+def list_active_usages(request):
+    context = {
+        "table_headers":["User", "Machine Type", "Machine", "Cost", "Start Time", "Status Message"],
+        "table_rows":[],
+        "page_title":"Active Usages",
+        "edit_root":"machine_usage/usage"
+    }
+
+    active_usages = Usage.objects.filter(complete=False)
+    for u in active_usages:
+        context["table_rows"].append({
+            "row":[u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.status_message],
+            "id":u.id
+        })
+
+    return render(request, 'machine_usage/forms/list_items.html', context)
+
+@login_required     
+def list_usages(request):
+    context = {
+        "table_headers":["User", "Machine Type", "Machine", "Cost", "Start Time", "End Time", "Clear Time", "Complete?", "Failed?", "Cost Overriden?", "Override Reason"],
+        "table_rows":[],
+        "page_title":"Usages",
+        "edit_root":"machine_usage/usage"
+    }
+
+    usages = Usage.objects.all()
+    for u in usages:
+        context["table_rows"].append({
+            "row":[u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.clear_time, u.complete, u.failed, u.cost_override, u.cost_override_reason],
+            "id":u.id
+        })
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
@@ -282,12 +430,20 @@ def validate_machine(machine, slot_usages):
 
 def validate_slot(slot, material, quantity):
     try:
-        Decimal(quantity)
+        qty = Decimal(quantity)
+        if qty < 0:
+            print("Negative Quantity")
+            return False
     except Exception as e:
+        print(f"Quantity not a Decimal. Exception: {e}")
         return False
-    return slot.resource_allowed(material)
+    
+    if slot.resource_allowed(material):
+        return True
+    else:
+        print("Resource not allowed in slot")
+        return False
 
-# $.post("http://localhost:8000/api/machines", '{"machine_name":"Prusa Alpha", "hours":1, "minutes":30,"slot_usages":[{"name":"Filament", "resource":"PLA", "quantity":10}]}')
 @login_required
 def create_machine_usage(request):
     if request.method == 'POST':
@@ -298,7 +454,27 @@ def create_machine_usage(request):
         validation_result = validate_machine(machine, data["slot_usages"])
 
         if not validation_result:
+            print(f"Invalid machine or schema. JSON: {request.body}")
             return HttpResponse("Invalid machine or schema.", status=400)
+
+        if not "for_class" in data:
+            return HttpResponse("for_class missing from object.", status=400)
+
+        if not "own_material" in data:
+            return HttpResponse("own_material missing from object.", status=400)
+
+        if not "is_reprint" in data:
+            return HttpResponse("is_reprint missing from object.", status=400)
+
+        if not "hours" in data:
+            return HttpResponse("hours missing from object.", status=400)
+
+        if not "minutes" in data:
+            return HttpResponse("minutes missing from object.", status=400) # TODO Better verification...
+
+        for_class = data["for_class"]
+        own_material = data["own_material"]
+        is_reprint = data["is_reprint"]
 
         slot_usages = []
 
@@ -311,6 +487,7 @@ def create_machine_usage(request):
 
             validation_result = validate_slot(slot, resource, quantity)
             if not validation_result:
+                print(f"Quantity for slot {slot_name} was not a valid decimal, or the resource provided was invalid. JSON: {request.body}")
                 return HttpResponse(f"Quantity for slot {slot_name} was not a valid decimal, or the resource provided was invalid.", status=400)
 
             su = SlotUsage()
@@ -324,6 +501,11 @@ def create_machine_usage(request):
         u.userprofile = request.user.userprofile
         u.save() # Necessary so start_time gets set to current time before referencing it below
         u.set_end_time(int(data["hours"]), int(data["minutes"]))
+
+        u.for_class = for_class
+        u.own_material = own_material
+        u.is_reprint = is_reprint
+
         u.save()
 
         for su in slot_usages:
@@ -334,14 +516,13 @@ def create_machine_usage(request):
         machine.current_job = u
         machine.save()
 
-        return redirect('/')
+        return HttpResponse("Usage successfully recorded.", status=200)
     else:
         return HttpResponse("", status=405) # Method not allowed
 
 # Login intentionally not required for create_user - new users should be able to create their own accounts.
 def create_user(request):
     if request.method == 'POST':
-
         user_form = ForgeUserCreationForm(request.POST)
         profile_form = ForgeProfileCreationForm(request.POST)
 
@@ -358,13 +539,25 @@ def create_user(request):
             user.userprofile.gender = user_gender
             user.userprofile.major = user_major
 
+            user.username = user.username.lower()
+
+            if ("is_graduating" in request.POST) and (request.POST["is_graduating"] == "on"):
+                user.userprofile.is_graduating = True
+            else:
+                user.userprofile.is_graduating = False
+
+            if ("accepts_charges" in request.POST) and (request.POST["accepts_charges"] == "on"):
+                user.userprofile.is_active = True
+            else:
+                user.userprofile.is_active = False
+
             user.save()
 
             email = profile_form.cleaned_data.get('email')
 
             if not user.groups.filter(name="verified_email").exists():
                 print(f"Sending verification email to {user.email}")
-                machine_usage.utils.send_verification_email(user)
+                utils.send_verification_email(user)
 
             login(request, user)
             return redirect('/myforge')
@@ -374,15 +567,103 @@ def create_user(request):
         user_form = ForgeUserCreationForm()
         profile_form = ForgeProfileCreationForm()
 
-        return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form':profile_form})
+        return render(request, 'machine_usage/forms/create_user.html', {'user_form': user_form, 'profile_form': profile_form})
+
+# <div class="card">
+#     <div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
+#     <div class="card_text {{machine.text_type}}">
+#         <div class="machine_name">{{ machine.name }}</div>
+#         <div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
+#         <div class="status_message">{{ machine.status_message }}</div>
+#         <div class="time_remaining">{{machine.time_remaining_text}} <br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
+#     </div>
+# </div>
 
 @login_required
 def volunteer_dashboard(request):
-    return render(request, 'machine_usage/forms/volunteer_dashboard.html', {})
+
+    machines = Machine.objects.filter(enabled=True).order_by('machine_name')
+    output = []
+
+    for m in machines:
+        if m.in_use:
+            u = m.current_job
+            if u.failed:
+                bar_type = "bar_failed"
+                text_type = "text_failed"
+            elif u.complete:
+                bar_type = "bar_complete"
+                text_type = "text_complete"
+            elif u.error:
+                bar_type = "bar_error"
+                text_type = "text_error"
+            else:
+                bar_type = "bar_in_progress"
+                text_type = "text_in_progress"
+
+            if u.complete:
+                bar_progress = 100
+                time_remaining_text = "Time of Completion:"
+                time_remaining = f""
+                estimated_completion = u.end_time
+            elif u.failed:
+
+                fail_time = u.clear_time
+                expiration_time = u.clear_time + timedelta(hours=1)
+
+                percent_expired = (timezone.now() - fail_time).total_seconds() / (60 * 60)
+                bar_progress = int(100 * percent_expired)
+
+                time_remaining_text = "Hold Until:"
+                time_remaining = ""
+                estimated_completion = u.clear_time + timedelta(hours=1)
+            else:
+                duration = u.end_time - u.start_time
+                elapsed = timezone.now() - u.start_time
+                percent_complete = elapsed.total_seconds() / duration.total_seconds()
+                bar_progress = int(100 * percent_complete)
+
+                time_remaining_text = "Estimated Completion:"
+                time_remaining = f""
+                estimated_completion = u.end_time
+
+            output.append({
+                "id": m.id,
+                "name": m.machine_name,
+                "bar_type": bar_type,
+                "text_type": text_type,
+                "bar_progress": bar_progress,
+                "type": m.machine_type.machine_type_name,
+                "user": f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}.",
+                "status_message":m.current_job.status_message,
+                "time_remaining_text": time_remaining_text,
+                "estimated_completion": estimated_completion,
+                "time_remaining": time_remaining,
+                "current_usage_id": m.current_job.id,
+                "in_use": True
+            })
+        else:
+            output.append({
+                "id": m.id,
+                "name": m.machine_name,
+                "bar_type": "bar_in_progress",
+                "text_type": "text_in_progress",
+                "bar_progress": 0,
+                "type": m.machine_type.machine_type_name,
+                "user": f"No User",
+                "status_message": "Not In Use",
+                "time_remaining_text": "",
+                "estimated_completion": "",
+                "time_remaining": "",
+                "current_usage_id": "",
+                "in_use": False
+                })
+
+    return render(request, 'machine_usage/forms/volunteer_dashboard.html', {"machines":output})
 
 @login_required
 def machine_usage(request):
-    machines = Machine.objects.all()
+    machines = Machine.objects.all().order_by("machine_name")
     available_machines = {}
 
     for m in machines:
@@ -421,16 +702,125 @@ def generate_machine_form(request):
 
     return render(request, 'machine_usage/forms/machine_form.html', {"slots":sorted(slots, key=lambda k: k["name"]), "machine_name":machine_name})
 
+@login_required #TODO This should only be available to volunteers and up.
+def generate_clear_machine_form(request):
+    if request.method == 'GET':
+        machines_in_use = Machine.objects.filter(in_use=True)
+        output = {}
+
+        for m in machines_in_use:
+            type_name = m.machine_type.machine_type_name
+            if type_name not in output:
+                output[type_name] = []
+            output[type_name].append(m.machine_name)
+
+        return render(request, 'machine_usage/forms/clear_machine.html', {"machines_in_use":output})
+    else:
+        machine_name = request.POST["machine_name"]
+        machine = Machine.objects.get(machine_name=machine_name)
+
+        usage = machine.current_job
+        usage.clear_time = timezone.now()
+        usage.complete = True
+        if (not usage.error) and (not usage.failed):
+            usage.status_message = "Cleared."
+        usage.save()
+
+        machine.current_job = None
+        machine.in_use = False
+        machine.save()
+        return redirect('/forms/clear_machine')
+
+@login_required #TODO This should only be available to volunteers and up.
+def generate_failed_usage_form(request):
+    if request.method == 'GET':
+        machines_in_use = Machine.objects.filter(in_use=True).filter(current_job__failed=False)
+        output = {}
+
+        for m in machines_in_use:
+            type_name = m.machine_type.machine_type_name
+            if type_name not in output:
+                output[type_name] = []
+            output[type_name].append(m.machine_name)
+
+        return render(request, 'machine_usage/forms/failed_usage.html', {"machines_in_use":output})
+    else:
+        machine_name = request.POST["machine_name"]
+        machine = Machine.objects.get(machine_name=machine_name)
+
+        usage = machine.current_job
+        usage.clear_time = timezone.now()
+        usage.failed = True
+        usage.status_message = "Failed."
+        usage.save()
+
+        utils.send_failure_email(usage)
+        return redirect('/forms/failed_usage')
+
 #
 #   API
 #
 
-@csrf_exempt # TODO REMOVE THIS, ONLY FOR DEBUG
+@csrf_exempt # TODO FIX THIS
+@login_required
+def clear_machine(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        if "machine_id" not in data:
+            return HttpResponse("No machine_id provided.", status=400)
+
+        machine = Machine.objects.get(id=int(data["machine_id"]))
+
+        if not machine.in_use:
+            return HttpResponse("Machine was not in use.", status=200)
+
+        usage = machine.current_job
+        usage.clear_time = timezone.now()
+        usage.complete = True
+        if (not usage.error) and (not usage.failed):
+            usage.status_message = "Cleared."
+        usage.save()
+
+        machine.current_job = None
+        machine.in_use = False
+        machine.save()
+        return HttpResponse("Machine cleared.", status=200)
+    else:
+        return HttpResponse("", status=405) # Method not allowed
+
+
+@csrf_exempt # TODO FIX THSI
+@login_required
+def fail_machine(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        if "machine_id" not in data:
+            return HttpResponse("No machine_id provided.", status=400)
+
+        machine = Machine.objects.get(id=int(data["machine_id"]))
+
+        if not machine.in_use:
+            return HttpResponse("Machine was not in use.", status=200)
+
+        usage = machine.current_job
+        usage.clear_time = timezone.now()
+        usage.failed = True
+        usage.status_message = "Failed."
+        usage.save()
+
+        utils.send_failure_email(usage)
+        return HttpResponse("Machine marked as failed.", status=200)
+    else:
+        return HttpResponse("", status=405) # Method not allowed
+
+@csrf_exempt # TODO REMOVE THIS DECORATOR, ONLY FOR DEBUG
 def machine_endpoint(request):
     if request.method == 'GET':
         output = []
 
-        machines = Machine.objects.all()
+        machines = Machine.objects.all().order_by("machine_name")
 
         for m in machines:
             if not m.deleted:
@@ -439,6 +829,8 @@ def machine_endpoint(request):
                     "in_use": m.in_use,
                     "enabled": m.enabled,
                     "status": m.status_message,
+                    "usage_policy": m.machine_type.usage_policy,
+                    "hourly_cost": float(m.machine_type.hourly_cost),
                     "slots": []
                 }
 
@@ -451,7 +843,7 @@ def machine_endpoint(request):
 
                     for r in s.allowed_resources.all():
                         if r.in_stock and not r.deleted:
-                            slot_entry["allowed_resources"].append({"name":r.resource_name,"unit":r.unit, "cost":float(r.cost_per)})
+                            slot_entry["allowed_resources"].append({"name":r.resource_name, "unit":r.unit, "cost":float(r.cost_per)})
 
                     machine_entry["slots"].append(slot_entry)
 

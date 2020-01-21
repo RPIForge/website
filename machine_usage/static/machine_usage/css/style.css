@@ -200,6 +200,22 @@ main {
 	align-items: center;
 }
 
+.center_text {
+	text-align: center;
+}
+
+/*
+  DEFINE A CLASS WITH NO PADDING
+*/
+
+.no_padding {
+	padding: 0px;
+}
+
+.no_margin {
+	margin: 0px;
+}
+
 /*
   DIV PATTERNS
 */

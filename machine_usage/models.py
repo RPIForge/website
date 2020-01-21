@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from decimal import Decimal
 
@@ -18,7 +19,13 @@ class UserProfile(models.Model):
 	gender = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.gender)
 	major = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.major)
 
+	is_active = models.BooleanField(default=False)
+	is_graduating = models.BooleanField(default=False)
+	anonymous_usages = models.BooleanField(default=False)
+
 	email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
+
+	entertainment_mode = models.BooleanField(default=False)
 
 	def calculate_balance(self):
 		balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
@@ -31,7 +38,7 @@ class UserProfile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+    if created and not kwargs.get('raw', False): # `and not ...` included to allow fixture imports.
         email_verification_token = str(uuid.uuid4())
         UserProfile.objects.create(user=instance, email_verification_token=email_verification_token)
 
@@ -50,9 +57,19 @@ class Resource(models.Model):
 	def __str__(self):
 		return self.resource_name
 
+	def units_used(self):
+		used = 0
+
+		for slotusage in self.slotusage_set.all():
+			used += slotusage.amount
+
+		return used
+
 class MachineType(models.Model):
 	machine_type_name = models.CharField(max_length=255, unique=True)
 	machine_category = models.CharField(max_length=255, null=True)
+
+	usage_policy = models.CharField(max_length=4096, default="")
 
 	hourly_cost = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
 
@@ -111,6 +128,21 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
 	def __str__(self):
 		return self.machine_name
 
+	def time_used(self):
+		#print(self.machine_name)
+		elapsed_time = timedelta(hours=0, minutes=0)
+
+		for usage in self.usage_set.all():
+			#print(usage.elapsed_time())
+			elapsed_time += usage.elapsed_time()
+
+		#print(elapsed_time)
+		if (elapsed_time.days > 0):
+			return f"{elapsed_time.days}d {elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
+		else:
+			return f"{elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
+
+
 class Usage(models.Model):
 	machine = models.ForeignKey(
 		Machine,
@@ -123,23 +155,58 @@ class Usage(models.Model):
 	)
 
 	for_class = models.BooleanField(default=False)
+	is_reprint = models.BooleanField(default=False)
+	own_material = models.BooleanField(default=False)
+
+	cost_override = models.BooleanField(default=False)
+	overridden_cost = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+	cost_override_reason = models.CharField(max_length=512, default="", blank=True)
 	
 	start_time = models.DateTimeField(auto_now_add=True)
 	end_time = models.DateTimeField(null=True, blank=True) # null/blank allowed for check-in/check-out machines
 
+	clear_time = models.DateTimeField(null=True, blank=True)
+
 	retry_count = models.PositiveIntegerField(default=0)
 
+	status_message = models.CharField(max_length=255, default="In Progress.", blank=False)
+
 	complete = models.BooleanField(default=False)
+	error = models.BooleanField(default=False)
+	failed = models.BooleanField(default=False)
+	
 	deleted = models.BooleanField(default=False)
 
 	def cost(self):
 		cost = Decimal(0.00)
+
+		if self.cost_override:
+			return self.overridden_cost
+
+		if self.own_material:
+			return cost
+
+		if self.is_reprint:
+			return cost
+
 		for slot in self.slotusage_set.all():
 			cost += Decimal(slot.cost())
+
+		usage_time = (self.end_time - self.start_time).total_seconds()
+		cost += Decimal(self.machine.machine_type.hourly_cost / (60 * 60)) * Decimal(usage_time)
+
 		return cost
 
 	def set_end_time(self, hours, minutes):
 		self.end_time = self.start_time + timedelta(hours=hours, minutes=minutes)
+
+	def elapsed_time(self):
+		if self.failed:
+			return (self.clear_time - self.start_time)
+		elif self.complete or (self.end_time < timezone.now()):
+			return (self.end_time - self.start_time)
+		else:
+			return (timezone.now() - self.start_time)
 
 	def __str__(self):
 		return f"Usage of {self.machine} by {self.userprofile.user.username} at {self.start_time}"

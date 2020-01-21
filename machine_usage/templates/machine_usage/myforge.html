@@ -1,5 +1,6 @@
 {% extends "machine_usage/generic.html" %}
 {% load static %}
+{% load in_group %}
 
 {% block page_title %}
 <title>My Forge</title>
@@ -13,27 +14,43 @@
 	<section id="myforge_sidebar">
 		<ul class="block_list">
 			<li class="block_list_header">User Functions</li>
-				<li><a href="javascript:setFrame('forms/machine_usage')">Use A Machine</a></li>
 				<li><a href="javascript:setFrame('dyn/project_list')">View Your Projects</a></li>
+				<li><a href="javascript:setFrame('forms/machine_usage')">Use A Machine</a></li>
 				<li><a href="javascript:setFrame('https://docs.google.com/forms/d/e/1FAIpQLSfEj3o6wlmHYNSDVT1U8dTkul1DSuRhhokQO5S1YNnTeAYpqw/viewform')">Send Feedback</a></li>
+				<!--<li><a href="">Account Settings</a></li>-->
+				<li><a href="http://rpiforge.slack.com/">Join Our Slack!</a></li>
 
+			{% if request.user|in_group:"volunteers" %}
 			<li class="block_list_header">Volunteer Functions</li>
 				<li><a href="javascript:setFrame('dyn/volunteer_dashboard')">Volunteer Dashboard</a></li>
-				<li><a href="javascript:setFrame('forms/create_user')">Create User</a></li>
+				<li><a href="javascript:setFrame('forms/clear_machine')">Clear A Machine</a></li>
+				<li><a href="javascript:setFrame('forms/failed_usage')">Failed Usage Email</a></li>
+				<!--<li><a href="javascript:setFrame('forms/create_user')">Create User</a></li>-->
+			{% endif %}
 
+			{% if request.user|in_group:"managers" %}
 			<li class="block_list_header">Manager Functions</li>
 				<li><a href="javascript:setFrame('dyn/machine_type_list')">Machine Types</a></li>
 				<li><a href="javascript:setFrame('dyn/machine_list')">Machines</a></li>
 				<li><a href="javascript:setFrame('dyn/resource_list')">Resources</a></li>
 				<li><a href="javascript:setFrame('dyn/user_list')">Users</a></li>
-				<li><a href="#">View Statistics</a></li>
-				<li><a href="#">Generate Reports</a></li>
+				<li><a href="javascript:setFrame('dyn/active_usage_list')">Active Machine Usages</a></li>
+				<li><a href="javascript:setFrame('dyn/usage_list')">All Machine Usages</a></li>
+				<!--<li><a href="#">View Statistics</a></li>-->
+				<!--<li><a href="#">Generate Reports</a></li>-->
+				<li><a href="javascript:setFrame('forms/force_email_verification')">Force Email Verification</a></li>
+			{% endif %}
 
+			{% if request.user|in_group:"admins" %}
 			<li class="block_list_header">Administrator Functions</li>
-				<li><a href="#">Third-Party Machine Usage</a></li>
-				<li><a href="#">View Manager Logs</a></li>
-				<li><a href="/admin">Edit Database (ADVANCED)</a></li>
-				<li><a href="#">End Semester</a></li>
+				<!--<li><a href="#">Third-Party Machine Usage</a></li>-->
+				<!--<li><a href="#">View Manager Logs</a></li>-->
+				<li><a href="javascript:setFrame('/admin')">Edit Configuration</a></li>
+				<!--<li><a href="">End Semester</a></li>
+				<li><a href="">Disable Senior Charges</a></li>-->
+				<!--<li><a href="#">End Semester</a></li>-->
+			{% endif %}
+
 		</ul>
 	</section>
 {% endblock pre_main %}
@@ -47,5 +64,7 @@
 	function setFrame(src) {
 		$("#myforge_frame").attr("src", src);
 	}
+
+	setFrame('dyn/project_list');
 </script>
 {% endblock scripts %}
