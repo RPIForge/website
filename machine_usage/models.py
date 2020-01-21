@@ -20,6 +20,7 @@ class UserProfile(models.Model):
 
 	is_active = models.BooleanField(default=False)
 	is_graduating = models.BooleanField(default=False)
+	anonymous_usages = models.BooleanField(default=False)
 
 	email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
 

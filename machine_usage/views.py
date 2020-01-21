@@ -171,13 +171,18 @@ def render_status(request):
                 time_remaining = f""
                 estimated_completion = u.end_time
 
+            if m.current_job.userprofile.anonymous_usages:
+                user_name = "[hidden]"
+            else:
+                user_name = f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}."
+
             output.append({
                 "name": m.machine_name,
                 "bar_type": bar_type,
                 "text_type": text_type,
                 "bar_progress":bar_progress,
                 "type":m.machine_type.machine_type_name,
-                "user":f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}.",
+                "user":user_name,
                 "status_message":m.current_job.status_message,
                 "time_remaining_text": time_remaining_text,
                 "estimated_completion": estimated_completion,
