@@ -361,6 +361,8 @@ def validate_machine(machine, slot_usages):
 def validate_slot(slot, material, quantity):
     try:
         Decimal(quantity)
+        if quantity < 0:
+            return False
     except Exception as e:
         return False
     return slot.resource_allowed(material)
