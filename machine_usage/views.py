@@ -681,6 +681,8 @@ def generate_clear_machine_form(request):
         usage = machine.current_job
         usage.clear_time = timezone.now()
         usage.complete = True
+        if (not usage.error) and (not usage.failed):
+            usage.status_message = "Cleared."
         usage.save()
 
         machine.current_job = None
