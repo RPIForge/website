@@ -31,7 +31,7 @@ class UserProfile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created:
+    if created and not kwargs.get('raw', False): # `and not ...` included to allow fixture imports.
         email_verification_token = str(uuid.uuid4())
         UserProfile.objects.create(user=instance, email_verification_token=email_verification_token)
 
