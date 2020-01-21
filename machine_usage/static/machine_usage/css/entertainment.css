@@ -30,6 +30,10 @@ body {
 	-webkit-animation: rotation 7s infinite linear;
 }
 
+div {
+	-webkit-animation: reverse_rotation 5s infinite linear;
+}
+
 @keyframes fadein {
   from {
     opacity: 0;
@@ -45,5 +49,14 @@ body {
 		}
 		to {
 				-webkit-transform: rotate(359deg);
+		}
+}
+
+@-webkit-keyframes reverse_rotation {
+		from {
+				-webkit-transform: rotate(359deg);
+		}
+		to {
+				-webkit-transform: rotate(0deg);
 		}
 }
