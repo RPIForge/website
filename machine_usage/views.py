@@ -102,6 +102,8 @@ def render_myforge(request):
 
 @login_required
 def render_unverified_email(request):
+    if request.user.groups.filter(name="verified_email").exists():
+        return redirect('/myforge')
     return render(request, 'machine_usage/unverified_email.html', {})
 
 @login_required
