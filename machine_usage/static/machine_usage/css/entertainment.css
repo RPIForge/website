@@ -27,7 +27,7 @@ a {
 }*/
 
 body {
-	-webkit-animation: rotation 2s infinite linear;
+	-webkit-animation: rotation 7s infinite linear;
 }
 
 @keyframes fadein {
