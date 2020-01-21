@@ -241,19 +241,23 @@ def list_projects(request):
     for u in usages:
         context["table_rows"].append([u.start_time, u.machine.machine_name, format_usd(u.cost())])
 
-    return render(request, 'machine_usage/forms/list_items.html', context)
+    return render(request, 'machine_usage/forms/list_items_readonly.html', context)
 
 @login_required
 def list_machines(request):
     context = {
         "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "In Use?"],
         "table_rows":[],
-        "page_title":"Machines"
+        "page_title":"Machines",
+        "edit_root":"machine_usage/machine"
     }
 
     machines = Machine.objects.all()
     for m in machines:
-	    context["table_rows"].append([m.machine_name, m.machine_type.machine_category, m.machine_type.machine_type_name, m.status_message, m.enabled, m.in_use])
+	    context["table_rows"].append({
+            "row":[m.machine_name, m.machine_type.machine_category, m.machine_type.machine_type_name, m.status_message, m.enabled, m.in_use],
+            "id":m.id
+        })
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
@@ -262,7 +266,8 @@ def list_machine_types(request):
     context = {
 	    "table_headers":["Type", "Category", "Slots", "Count", "Resource Types"],
 	    "table_rows":[],
-        "page_title":"Machine Types"
+        "page_title":"Machine Types",
+        "edit_root":"machine_usage/machinetype"
     }
 
     machine_types = MachineType.objects.all()
@@ -280,7 +285,10 @@ def list_machine_types(request):
                 resource_string += r + ", "
             resource_string = resource_string[:-2]
 
-            context["table_rows"].append([m.machine_type_name, m.machine_category, len(m.machineslot_set.all()), len(m.machine_set.all()), resource_string])
+            context["table_rows"].append({
+                "row":[m.machine_type_name, m.machine_category, len(m.machineslot_set.all()), len(m.machine_set.all()), resource_string],
+                "id":m.id
+            })
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
@@ -289,12 +297,16 @@ def list_resources(request):
     context = {
 	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "In Stock?"],
 	    "table_rows":[],
-        "page_title":"Resources"
+        "page_title":"Resources",
+        "edit_root":"machine_usage/resource"
     }
 
     resources = Resource.objects.all()
     for r in resources:
-	    context["table_rows"].append([r.resource_name, r.unit, r.cost_per, r.in_stock])
+	    context["table_rows"].append({
+            "row":[r.resource_name, r.unit, r.cost_per, r.in_stock],
+            "id":r.id
+        })
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
@@ -303,12 +315,52 @@ def list_users(request):
     context = {
         "table_headers":["Name", "RIN", "Outstanding Balance"],
         "table_rows":[],
-        "page_title":"Users"
+        "page_title":"Users",
+        "edit_root":"auth/user"
     }
 
     users = UserProfile.objects.all()
     for u in users:
-        context["table_rows"].append([u.user.username, u.rin, format_usd(u.calculate_balance())])
+        context["table_rows"].append({
+            "row":[u.user.username, u.rin, format_usd(u.calculate_balance())],
+            "id":u.id
+        })
+
+    return render(request, 'machine_usage/forms/list_items.html', context)
+
+@login_required     
+def list_active_usages(request):
+    context = {
+        "table_headers":["User", "Machine", "Cost", "Start Time", "Status Message"],
+        "table_rows":[],
+        "page_title":"Active Usages",
+        "edit_root":"machine_usage/usage"
+    }
+
+    active_usages = Usage.objects.filter(complete=False)
+    for u in active_usages:
+        context["table_rows"].append({
+            "row":[u.userprofile.user.username, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.status_message],
+            "id":u.id
+        })
+
+    return render(request, 'machine_usage/forms/list_items.html', context)
+
+@login_required     
+def list_usages(request):
+    context = {
+        "table_headers":["User", "Machine", "Cost", "Start Time", "End Time", "Failed?", "Cost Overriden?", "Override Reason"],
+        "table_rows":[],
+        "page_title":"Usages",
+        "edit_root":"machine_usage/usage"
+    }
+
+    usages = Usage.objects.all()
+    for u in usages:
+        context["table_rows"].append({
+            "row":[u.userprofile.user.username, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.failed, u.cost_override, u.cost_override_reason],
+            "id":u.id
+        })
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 

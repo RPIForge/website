@@ -28,6 +28,8 @@ urlpatterns = [
     path('dyn/machine_type_list', views.list_machine_types, name='machine_type_list'),
     path('dyn/resource_list', views.list_resources, name='resource_list'),
     path('dyn/user_list', views.list_users, name='user_list'),
+    path('dyn/active_usage_list', views.list_active_usages, name='active_usage_list'),
+    path('dyn/usage_list', views.list_usages, name='usage_list'),
     path('dyn/volunteer_dashboard', views.volunteer_dashboard, name='volunteer_dashboard'),
 
     path('verify_email', views.render_verify_email, name='verify_email'),

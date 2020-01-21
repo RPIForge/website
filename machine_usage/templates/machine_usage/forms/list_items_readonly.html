@@ -23,17 +23,15 @@
 			{% for header in table_headers %}
 				<th>{{ header }}</th>
 			{% endfor %}
-				<th>Actions</th>
 			</tr>
 			</thead>
 
 			<tbody>
 			{% for row in table_rows %}
 			<tr>
-			{% for item in row.row %}
+			{% for item in row %}
 				<td>{{ item }}</td>
 			{% endfor %}
-				<td><a class="edit_link" href="/admin/{{ edit_root }}/{{ row.id }}/change"><i class="fas fa-edit" title="Edit"></i></a></td>
 			</tr>
 			{% endfor %}
 			</tbody>
