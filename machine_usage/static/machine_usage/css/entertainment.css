@@ -36,6 +36,12 @@ div {
 
 *:after {
 	content: "FRORGÉ";
+	-webkit-animation: fadein 10s infinite linear;
+	z-index: 99999;
+}
+
+section {
+	-webkit-animation: rotation 1s infinite linear;
 }
 
 @keyframes fadein {
