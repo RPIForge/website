@@ -34,6 +34,10 @@ div {
 	-webkit-animation: reverse_rotation 5s infinite linear;
 }
 
+*:after {
+	content: "FRORGÉ";
+}
+
 @keyframes fadein {
   from {
     opacity: 0;
@@ -46,17 +50,25 @@ div {
 @-webkit-keyframes rotation {
 		from {
 				-webkit-transform: rotate(0deg);
+				color: #0F0;
+				font-size: 5px;
+				background-repeat: no-repeat;
 		}
 		to {
 				-webkit-transform: rotate(359deg);
+				color: #00F;
+				font-size: 50px;
+				background-repeat: repeat;
 		}
 }
 
 @-webkit-keyframes reverse_rotation {
 		from {
 				-webkit-transform: rotate(359deg);
+				color: #F00;
 		}
 		to {
 				-webkit-transform: rotate(0deg);
+				color: #00F;
 		}
 }
