@@ -27,11 +27,11 @@ a {
 }*/
 
 body {
-	-webkit-animation: rotation 7s infinite linear;
+	-webkit-animation: rotation 2s infinite linear;
 }
 
 div {
-	-webkit-animation: reverse_rotation 5s infinite linear;
+	-webkit-animation: reverse_rotation 2s infinite linear;
 }
 
 *:after {
@@ -41,7 +41,7 @@ div {
 }
 
 section {
-	-webkit-animation: rotation 1s infinite linear;
+	-webkit-animation: rotation 2s infinite linear;
 }
 
 @keyframes fadein {
