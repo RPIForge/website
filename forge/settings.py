@@ -133,3 +133,7 @@ STATIC_URL = '/static/'
 # Login
 
 LOGIN_URL = '/login'
+
+# Allow pages to be loaded in a frame
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
