@@ -107,6 +107,8 @@ def render_unverified_email(request):
 @login_required
 def render_begin_semester(request):
     if request.method == "GET":
+        if request.user.userprofile.is_active:
+            return redirect('/myforge')
         return render(request, 'machine_usage/begin_semester.html', {})
     elif request.method == "POST":
         profile = request.user.userprofile
