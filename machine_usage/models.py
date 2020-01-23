@@ -196,7 +196,7 @@ class Usage(models.Model):
 			usage_time = (self.end_time - self.start_time).total_seconds()
 		else:
 			usage_time = 0
-			
+
 		cost += Decimal(self.machine.machine_type.hourly_cost / (60 * 60)) * Decimal(usage_time)
 
 		return cost
@@ -207,7 +207,7 @@ class Usage(models.Model):
 	def elapsed_time(self):
 		if self.failed:
 			return (self.clear_time - self.start_time)
-		elif (self.end_time is not None) and self.complete or (self.end_time < timezone.now()): # Validate this
+		elif (self.end_time is not None) and (self.complete or (self.end_time < timezone.now())): # Validate this
 			return (self.end_time - self.start_time)
 		else:
 			return (timezone.now() - self.start_time)
