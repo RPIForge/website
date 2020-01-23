@@ -139,6 +139,26 @@ main {
 	padding-top: 15px;
 }
 
+.toolbox_right {
+	position: relative;
+    right: 0px;
+    top: -180px;
+    height: 100px;
+    width: 25px;
+    margin-top: auto;
+    margin-bottom: auto;
+    background: #FFF;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-left: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-top: 1px solid gray;
+
+    padding-top: 15px;
+
+    float: right;
+}
+
 .toolbox_button {
 	color: #000;
 }
