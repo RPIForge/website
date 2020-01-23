@@ -661,7 +661,7 @@ def volunteer_dashboard(request):
 
 @login_required
 def machine_usage(request):
-    machines = Machine.objects.all().order_by("machine_name")
+    machines = Machine.objects.all().filter(deleted=False, in_use=False, enabled=True).order_by("machine_name")
     available_machines = {}
 
     for m in machines:
