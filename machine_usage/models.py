@@ -192,7 +192,11 @@ class Usage(models.Model):
 		for slot in self.slotusage_set.all():
 			cost += Decimal(slot.cost())
 
-		usage_time = (self.end_time - self.start_time).total_seconds()
+		if self.end_time is not None:
+			usage_time = (self.end_time - self.start_time).total_seconds()
+		else:
+			usage_time = 0
+			
 		cost += Decimal(self.machine.machine_type.hourly_cost / (60 * 60)) * Decimal(usage_time)
 
 		return cost
