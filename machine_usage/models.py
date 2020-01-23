@@ -203,7 +203,7 @@ class Usage(models.Model):
 	def elapsed_time(self):
 		if self.failed:
 			return (self.clear_time - self.start_time)
-		elif self.complete or (self.end_time < timezone.now()):
+		elif (self.end_time is not None) and self.complete or (self.end_time < timezone.now()): # Validate this
 			return (self.end_time - self.start_time)
 		else:
 			return (timezone.now() - self.start_time)
