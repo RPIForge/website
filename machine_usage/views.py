@@ -15,10 +15,12 @@ from django.contrib.auth.models import User, Group
 from machine_usage.forms import ForgeUserCreationForm, ForgeProfileCreationForm
 
 # Importing Helper Functions
+import machine_usage.lists as lists
 import machine_usage.utils as utils
 
 # Importing Other Libraries
 import json
+from datetime import datetime
 from decimal import Decimal
 from datetime import datetime, timedelta
 
@@ -55,7 +57,7 @@ def render_login(request):
             return redirect('/myforge')
         else:
             return render(request, 'machine_usage/login.html', {"error":"Login failed."})
- 
+
 def render_news(request):
     return render(request, 'machine_usage/news.html', {}) # TO-DO: Implement the "News" page.
 
@@ -67,10 +69,10 @@ def render_verify_email(request):
     if request.method == 'GET':
         # Get the verification token from the request, or a NoneType if the request is malformed.
         token = request.GET.get("token", None)
-        
+
         if token is None:
             return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"error", "message":"Invalid Request: No token provided."})
-            
+
         # See if we have a user that corresponds to the token.
         try:
             user_profile = UserProfile.objects.get(email_verification_token=token)
@@ -78,16 +80,16 @@ def render_verify_email(request):
             return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"error", "message":"Invalid Token."})
 
         user = user_profile.user
-        
+
         if(user.groups.filter(name="verified_email")):
             return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"info", "message":"Email already verified."})
         else:
             group = Group.objects.get(name="verified_email") # TODO Create this group if it doesn't exist - current solution is to add the group manually from the admin panel.
             user.groups.add(group)
             user.save()
-            return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"success", "message":"Successfully verified email!"}) 
+            return render(request, 'machine_usage/verify_email.html', {"has_message":True, "message_type":"success", "message":"Successfully verified email!"})
 
-       
+
 @login_required
 def render_myforge(request):
     if not request.user.userprofile.is_active:
@@ -328,7 +330,7 @@ def list_resources(request):
 
     return render(request, 'machine_usage/forms/list_items.html', context)
 
-@login_required		
+@login_required
 def list_users(request):
     context = {
         "table_headers":["Name", "RIN", "Outstanding Balance"],
@@ -533,7 +535,7 @@ def create_user(request):
             user_rin = profile_form.cleaned_data.get('rin')
             user_gender = profile_form.cleaned_data.get('gender')
             user_major = profile_form.cleaned_data.get('major')
-            
+
             # Update and save profile
             user.userprofile.rin = user_rin
             user.userprofile.gender = user_gender
@@ -846,7 +848,7 @@ def machine_endpoint(request):
                             slot_entry["allowed_resources"].append({"name":r.resource_name, "unit":r.unit, "cost":float(r.cost_per)})
 
                     machine_entry["slots"].append(slot_entry)
-                
+
                 output.append(machine_entry)
 
         return HttpResponse(json.dumps(output))
