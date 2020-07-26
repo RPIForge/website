@@ -14,6 +14,8 @@ import uuid
 from datetime import datetime, timedelta
 
 class UserProfile(models.Model):
+	#class Meta:
+	#	db_table = ''
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	rin = models.PositiveIntegerField(default=None, null=True, blank=True, unique=True)
 	gender = models.CharField(max_length=255, default="", blank=True, choices=machine_usage.lists.gender)

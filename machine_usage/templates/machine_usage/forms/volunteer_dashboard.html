@@ -58,9 +58,14 @@
 						<div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
 						{% if machine.in_use %}
 						<div class="toolbox">
-							<a class="toolbox_button" href="javascript:clear_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-broom" title="Clear"></i></i></a><br /><br />
-							<a class="toolbox_button" href="javascript:fail_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-fire" title="Fail"></i></a><br /><br />
+							<a class="toolbox_button" href="javascript:clear_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-broom" title="Clear"></i></a><br /><br />
+							<a class="toolbox_button" href="javascript:fail_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-dumpster-fire" title="Fail"></i></a><br /><br />
 							<a class="toolbox_button" href="javascript:edit_usage({{ machine.current_usage_id }})"><i class="fas fa-edit" title="Edit"></i></a><br /><br />
+						</div>
+						<div class="toolbox_right">
+							<a class="toolbox_button" href="javascript:clear_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-exclamation-triangle" title="Error"></i></a><br /><br />
+							<!--<a class="toolbox_button" href="javascript:fail_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-fire" title="Fail"></i></a><br /><br />
+							<a class="toolbox_button" href="javascript:edit_usage({{ machine.current_usage_id }})"><i class="fas fa-edit" title="Edit"></i></a><br /><br /> TODO: Send email to user, change estimated completion time-->
 						</div>
 						{% endif %}
 					</div>
