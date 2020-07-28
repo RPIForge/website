@@ -19,7 +19,7 @@ To automatically install requirements run the following command:
 	- pip install -r requirements.txt
 
 
-The app currently expects a database user `postgresql@localhost:5432` with password `password`. This behavior will be changed shortly to use environment variables to store database credentials. The program also currently expects a `forge_devel` database to have already been created. These settings can be found in `forge/settings.py`.
+The app currently expects a database user `postgres@localhost:5432` with password `password`. This behavior will be changed shortly to use environment variables to store database credentials. The program also currently expects a `forge_devel` database to have already been created. These settings can be found in `forge/settings.py`.
 
 Before running the app for the first time, you should set up the database through Django. You can do this by running:
 
