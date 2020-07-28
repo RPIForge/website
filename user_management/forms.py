@@ -5,8 +5,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db.models.base import ObjectDoesNotExist 
 
 #class import
-import machine_usage.lists
-from machine_usage.models import UserProfile
+import user_management.lists
+from user_management.models import UserProfile
+
 
 class ForgeUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
@@ -44,8 +45,8 @@ class ForgeUserCreationForm(UserCreationForm):
 
 class ForgeProfileCreationForm(forms.ModelForm):
     rin = forms.IntegerField()
-    gender = forms.Select(choices=machine_usage.lists.gender)
-    major = forms.Select(choices=machine_usage.lists.major)
+    gender = forms.Select(choices=user_management.lists.gender)
+    major = forms.Select(choices=user_management.lists.major)
     
     def __init__(self, *args, **kwargs):
         super(ForgeProfileCreationForm, self).__init__(*args, **kwargs)

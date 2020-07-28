@@ -1,0 +1,24 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+
+{% block custom_styles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'forge/css/login.css' %}">
+	<style>
+		.nav_list {
+			display: none;
+		}
+	</style>
+{% endblock custom_styles %}
+	
+{% block main %}
+	<main class="bg_shade">
+		<div id="login_form_container" class="center_children fill_parent_horiz fill_screen_vert">
+			<div id="login_form">
+				<h2>{{message}}</h2>
+				<form method="GET" action="/">
+					<button id="create_account_button" onclick="location.href='/';return false;">Continue</button>
+				</form>
+			</div>
+		</div>
+	</main>
+{% endblock main %}

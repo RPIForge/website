@@ -1,0 +1,7 @@
+{% load static %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+
+{% if user.is_authenticated %}
+<script src="{% static 'machine_usage/js/logout.js' %}"></script>
+{% endif %}

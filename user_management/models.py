@@ -1,0 +1,47 @@
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from decimal import Decimal
+
+import user_management.lists
+
+import uuid
+
+from datetime import datetime, timedelta
+
+class UserProfile(models.Model):
+	#class Meta:
+	#	db_table = ''
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	rin = models.PositiveIntegerField(default=None, null=True, blank=True, unique=True)
+	gender = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.gender)
+	major = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.major)
+
+	is_active = models.BooleanField(default=False)
+	is_graduating = models.BooleanField(default=False)
+	anonymous_usages = models.BooleanField(default=False)
+
+	email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
+
+	entertainment_mode = models.BooleanField(default=False)
+
+	def calculate_balance(self):
+		balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
+		for usage in self.usage_set.all():
+			balance += usage.cost()
+		return balance
+
+	def __str__(self):
+		return f"{self.user.username} ({self.rin})"
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created and not kwargs.get('raw', False): # `and not ...` included to allow fixture imports.
+        email_verification_token = str(uuid.uuid4())
+        UserProfile.objects.create(user=instance, email_verification_token=email_verification_token)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.userprofile.save()

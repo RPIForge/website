@@ -1,0 +1,98 @@
+{% load static %}
+
+<!--TODO: Add an error block that checks for an error in session storage, and displays it if it exists. -->
+
+<html>
+	{% block head %}
+	<head>
+		<link rel="icon" href="{% static 'forge/img/favicon/favicon.ico' %}" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="{% static 'forge/css/style.css' %}">
+		{% block custom_styles %}
+		{% endblock custom_styles %}
+
+		{% if user.userprofile.entertainment_mode %}
+		<link rel="stylesheet" type="text/css" href="{% static 'forge/css/entertainment.css' %}">
+		{% endif %}
+
+		{% block meta %}
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+		{% endblock meta %}
+
+		{% block user_analytics %}
+		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-153495688-1"></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'UA-153495688-1');
+		</script>
+
+			<!-- Quantcast Tag -->
+			<script type="text/javascript">
+				var _qevents = _qevents || [];
+
+				(function() {
+				var elem = document.createElement('script');
+				elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+				elem.async = true;
+				elem.type = "text/javascript";
+				var scpt = document.getElementsByTagName('script')[0];
+				scpt.parentNode.insertBefore(elem, scpt);
+				})();
+
+				_qevents.push({
+				qacct:"p-m4RPhcz_K_-XN"
+			});
+			</script>
+
+			<noscript>
+				<div style="display:none;">
+					<img src="//pixel.quantserve.com/pixel/p-m4RPhcz_K_-XN.gif" border="0" height="1" width="1" alt="Quantcast"/>
+				</div>
+			</noscript>
+			<!-- End Quantcast tag -->
+
+		{% endblock user_analytics %}
+
+		{% block page_title %}
+		<title>{{page_title}}</title>
+		{% endblock page_title %}
+	</head>
+	{% endblock head %}
+	
+	{% block body %}
+	<body>
+		{% block header %}
+		{% include "forge/components/header.html" %}
+		{% endblock header %}
+
+		{% block pre_main %}
+		{% endblock pre_main%}
+
+		{% block main %}
+		<main>
+		</main>
+		{% endblock main %}
+		
+		{% block post_main %}
+		{% endblock post_main %}
+
+		{% block footer %}
+		<footer>
+		</footer>
+		{% endblock footer %}
+	</body>
+	{% endblock body %}
+
+	{# Load scripts and fonts at the end of the page to improve load time. #}
+
+	{% include "forge/components/scripts.html" %}
+	{% block scripts %}
+	{% endblock scripts %}
+
+	{% include "forge/components/fonts.html" %}
+	{% block fonts %}
+	{% endblock fonts %}
+
+</html>

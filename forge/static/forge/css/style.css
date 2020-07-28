@@ -165,7 +165,7 @@ header::after {
 
 .home_main {
 	padding-top: 5.55vh;
-	background-image: url("/static/machine_usage/img/cover_lowres.png");
+	background-image: url("/forge/static/forge/img/cover_lowres.png");
 	background-size: cover;
 	background-position: center center;
 
