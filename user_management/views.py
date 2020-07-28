@@ -14,6 +14,56 @@ from user_management.forms import ForgeUserCreationForm, ForgeProfileCreationFor
 # Importing Helper Functions
 import forge.utils as utils
 
+
+
+
+
+@login_required
+def render_begin_semester(request):
+    if request.method == "GET":
+        if request.user.userprofile.is_active:
+            return redirect('/myforge')
+        return render(request, 'user_management/begin_semester.html', {})
+    elif request.method == "POST":
+        profile = request.user.userprofile
+
+        if request.POST["accepts_charges"] == "yes":
+            profile.is_active = True
+        else:
+            profile.is_active = False
+
+        if request.POST["is_graduating"] == "yes":
+            profile.is_graduating = True
+        else:
+            profile.is_graduating = False
+
+        profile.save()
+        return redirect('/myforge')
+
+
+
+
+@login_required # TODO restrict permissions
+def render_force_email_verification(request):
+    if request.method == "GET":
+        return render(request, "user_management/forms/force_email_verification.html", {})
+    elif request.method == "POST":
+        group = Group.objects.get(name="verified_email") # TODO Create this group if it doesn't exist - current solution is to add the group manually from the admin panel.
+        user = User.objects.get(username=request.POST["rcs_id"])
+        user.groups.add(group)
+        user.save()
+        return redirect('/forms/force_email_verification')
+
+
+
+@login_required
+def render_unverified_email(request):
+    if request.user.groups.filter(name="verified_email").exists():
+        return redirect('/myforge')
+    return render(request, 'user_management/unverified_email.html', {})
+
+
+
 #render login 
 def render_login(request):
     if request.method == 'GET':
@@ -31,6 +81,7 @@ def render_login(request):
         user = authenticate(request, username=rcs_id, password=password)
 
         if user is not None:
+            player, created = UserProfile.objects.get_or_create(user=user)
             login(request, user)
             return redirect('/myforge')
         else:

@@ -20,49 +20,6 @@ from datetime import datetime, timedelta
 
 
 
-@login_required
-def render_unverified_email(request):
-    if request.user.groups.filter(name="verified_email").exists():
-        return redirect('/myforge')
-    return render(request, 'machine_usage/unverified_email.html', {})
-
-@login_required
-def render_begin_semester(request):
-    if request.method == "GET":
-        if request.user.userprofile.is_active:
-            return redirect('/myforge')
-        return render(request, 'machine_usage/begin_semester.html', {})
-    elif request.method == "POST":
-        profile = request.user.userprofile
-
-        if request.POST["accepts_charges"] == "yes":
-            profile.is_active = True
-        else:
-            profile.is_active = False
-
-        if request.POST["is_graduating"] == "yes":
-            profile.is_graduating = True
-        else:
-            profile.is_graduating = False
-
-        profile.save()
-        return redirect('/myforge')
-
-
-
-
-@login_required # TODO restrict permissions
-def render_force_email_verification(request):
-    if request.method == "GET":
-        return render(request, "machine_usage/forms/force_email_verification.html", {})
-    elif request.method == "POST":
-        group = Group.objects.get(name="verified_email") # TODO Create this group if it doesn't exist - current solution is to add the group manually from the admin panel.
-        user = User.objects.get(username=request.POST["rcs_id"])
-        user.groups.add(group)
-        user.save()
-        return redirect('/forms/force_email_verification')
-
-
 
 def validate_machine_usage_json(json_dict):
     if not (type(json_dict) == dict):

@@ -7,6 +7,7 @@ from django.utils import timezone
 # Importing Models
 from django.contrib.auth.models import User, Group
 
+from machine_management.models import *
 # Importing Other Libraries
 import json
 from datetime import datetime
@@ -29,7 +30,7 @@ def render_myforge(request):
     if not request.user.groups.filter(name="verified_email").exists():
         return redirect('/unverified_email')
 
-    return render(request, 'machine_usage/myforge.html', {})
+    return render(request, 'myforge/myforge.html', {})
 
 
 
@@ -38,11 +39,9 @@ def format_usd(fp):
 
 @login_required
 def list_projects(request):
-
     #
     # TODO: Display this on a template that doesn't show actions - e.g. is read-only.
-    #
-
+    
     user_profile = request.user.userprofile
 
     context = {
