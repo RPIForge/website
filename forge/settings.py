@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'forge.apps.MyForgeConfig',
     'forge.apps.UserManagementConfig',
     'forge.apps.ForgeConfig',
+    'forge.apps.APIConfig',
     
     'django.contrib.admin',
     'django.contrib.auth',
@@ -84,7 +85,7 @@ WSGI_APPLICATION = 'forge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'forge_devel',
+        'NAME': 'forge_devel_refactor',
         'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',

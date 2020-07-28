@@ -2,11 +2,11 @@
 <html>
 	<head>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
-		<script type="application/javascript" src="{% static 'machine_usage/js/loading-bar.js' %}"></script>
+		<script type="application/javascript" src="{% static 'forge/js/loading-bar.js' %}"></script>
 		<script src="https://kit.fontawesome.com/73db8a1232.js" crossorigin="anonymous"></script>
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css" rel="stylesheet">
-		<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/loading-bar.css' %}" />
-		<link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/status.css' %}" />
+		<link rel="stylesheet" type="text/css" href="{% static 'forge/css/loading-bar.css' %}" />
+		<link rel="stylesheet" type="text/css" href="{% static 'forge/css/status.css' %}" />
 
 		<script type="text/javascript">
 			function fail_usage(id, name) {
@@ -42,7 +42,7 @@
 			}
 
 			function edit_usage(usage_id) {
-				window.location.href = "/admin/machine_usage/usage/" + usage_id + "/change/";
+				window.location.href = "/admin/forge/usage/" + usage_id + "/change/";
 			}
 		</script>
 	</head>
