@@ -46,13 +46,19 @@ def render_begin_semester(request):
 @login_required # TODO restrict permissions
 def render_force_email_verification(request):
     if request.method == "GET":
-        return render(request, "user_management/forms/force_email_verification.html", {})
+        return render(request, "user_management/forms/force_email_verification.html", {'outcome':'none'})
     elif request.method == "POST":
-        group = Group.objects.get(name="verified_email") # TODO Create this group if it doesn't exist - current solution is to add the group manually from the admin panel.
-        user = User.objects.get(username=request.POST["rcs_id"])
+        group = Group.objects.get_or_create(name="verified_email") 
+        try:
+            user = User.objects.get(username=request.POST["rcs_id"])
+        except User.DoesNotExist:
+        
+            return render(request, "user_management/forms/force_email_verification.html", {'outcome':'failure'})
+       
         user.groups.add(group)
         user.save()
-        return redirect('/forms/force_email_verification')
+        
+        return render(request, "user_management/forms/force_email_verification.html", {'outcome':'success'})
 
 
 

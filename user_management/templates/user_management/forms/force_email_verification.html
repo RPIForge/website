@@ -1,4 +1,4 @@
-{% extends "machine_usage/generic.html" %}
+{% extends "forge/generic.html" %}
 {% load static %}
 
 {% block page_title %}
@@ -6,7 +6,7 @@
 {% endblock page_title %}
 
 {% block custom_styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/clear_machine.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/clear_machine.css' %}">
 {% endblock custom_styles %}
     
 {% block header %}
@@ -19,7 +19,12 @@
         <div class="card center_text">
             <form action="/forms/force_email_verification" method="POST">
                 {% csrf_token %}
+				
+				
                 <p class="no_margin"><strong>Verify A User's Email</strong></p><br />
+				{% if outcome == 'failure' %}
+					<h5> user not found </h5>
+				{% endif %}
                 <input type="text" name="rcs_id" placeholder="RCS ID" />
                 <br /><br />
 

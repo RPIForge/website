@@ -53,8 +53,8 @@
 
             <p class="title" id="usage_time_title"><strong>How long will this usage last?</strong></p>
 
-            <input type="number" placeholder="Hours" id="usage_hours"/>
-            <input type="number" placeholder="Minutes" id="usage_minutes"/>
+            <input type="number" step="1" placeholder="Hours" id="usage_hours"/>
+            <input type="number" step="1" placeholder="Minutes" id="usage_minutes"/>
 
             <button id="usage_time_next">Next</button>
         </div>
@@ -228,7 +228,12 @@
                     alert("Please enter values in both fields.");
                     return false;
                 }
-
+				
+				if(parseInt($("#usage_hours")[0].value).toString()!=$("#usage_hours")[0].value.toString() || parseInt($("#usage_hours")[1].value).toString()!=$("#usage_hours")[1].value.toString() ) {
+					alert("Both numbers must be whole numbers.");
+					return false;
+				}
+				
                 output["hours"] = $("#usage_hours")[0].value;
                 output["minutes"] = $("#usage_minutes")[0].value;
 

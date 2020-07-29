@@ -12,5 +12,6 @@ urlpatterns = [
     path('dyn/user_list', views.list_users, name='user_list'),
     path('dyn/active_usage_list', views.list_active_usages, name='active_usage_list'),
     path('dyn/usage_list', views.list_usages, name='usage_list'),
+    path('dyn/volunteer_chat', views.volunteer_chat, name='volunteer_chat'),
     path('dyn/volunteer_dashboard', views.volunteer_dashboard, name='volunteer_dashboard')
 ]

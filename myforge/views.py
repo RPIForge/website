@@ -1,6 +1,7 @@
 # Importing Django Utils
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
@@ -16,10 +17,6 @@ from datetime import datetime, timedelta
 
 
 #
-#   Forms/Tables
-#
-
-#
 #   TODO: This checks for login, but not for admin! Make sure only admins have access to these views.
 #
 @login_required
@@ -32,6 +29,9 @@ def render_myforge(request):
 
     return render(request, 'myforge/myforge.html', {})
 
+@login_required
+def volunteer_chat(request):
+    return HttpResponseRedirect("http://10.0.0.24:8000/chat/room1/")
 
 
 def format_usd(fp):
