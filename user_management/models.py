@@ -12,35 +12,41 @@ import uuid
 from datetime import datetime, timedelta
 
 class UserProfile(models.Model):
-	#class Meta:
-	#	db_table = ''
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	rin = models.PositiveIntegerField(default=None, null=True, blank=True, unique=True)
-	gender = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.gender)
-	major = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.major)
+    #class Meta:
+    #    db_table = ''
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    rin = models.PositiveIntegerField(default=None, null=True, blank=True, unique=True)
+    gender = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.gender)
+    major = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.major)
 
-	is_active = models.BooleanField(default=False)
-	is_graduating = models.BooleanField(default=False)
-	anonymous_usages = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
+    is_graduating = models.BooleanField(default=False)
+    anonymous_usages = models.BooleanField(default=False)
 
-	email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
+    email_verification_token = models.CharField(max_length=255, default="", blank=True, unique=True)
 
-	entertainment_mode = models.BooleanField(default=False)
+    entertainment_mode = models.BooleanField(default=False)
+    
+    uuid = models.UUIDField(default = uuid.uuid4, editable = False) 
 
-	def calculate_balance(self):
-		balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
-		for usage in self.usage_set.all():
-			balance += usage.cost()
-		return balance
+    def calculate_balance(self):
+        balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
+        for usage in self.usage_set.all():
+            balance += usage.cost()
+        return balance
 
-	def __str__(self):
-		return f"{self.user.username} ({self.rin})"
+    def __str__(self):
+        return f"{self.user.username} ({self.rin})"
+    
+    class Meta:
+        db_table = 'user_management_userprofile'
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created and not kwargs.get('raw', False): # `and not ...` included to allow fixture imports.
         email_verification_token = str(uuid.uuid4())
-        UserProfile.objects.create(user=instance, email_verification_token=email_verification_token)
+        new_uuid = str(uuid.uuid4())
+        UserProfile.objects.create(user=instance, email_verification_token=email_verification_token, uuid=new_uuid)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

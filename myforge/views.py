@@ -9,6 +9,9 @@ from django.utils import timezone
 from django.contrib.auth.models import User, Group
 
 from machine_management.models import *
+
+
+
 # Importing Other Libraries
 import json
 from datetime import datetime
@@ -29,9 +32,14 @@ def render_myforge(request):
 
     return render(request, 'myforge/myforge.html', {})
 
+
+@login_required
+def user_chat(request):
+    return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
+
 @login_required
 def volunteer_chat(request):
-    return HttpResponseRedirect("http://10.0.0.24:8000/chat/room1/")
+    return HttpResponseRedirect("http://10.0.0.24:8000/volunteer/chat?uuid={}".format(request.user.userprofile.uuid))
 
 
 def format_usd(fp):

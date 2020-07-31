@@ -8,13 +8,15 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models.base import ObjectDoesNotExist
 from django.utils import timezone
-
+from django.core.exceptions import ValidationError
 #importing functions
 
 from machine_usage.views import create_machine_usage
 # Importing Models
 from machine_management.models import *
 from django.contrib.auth.models import User, Group
+from user_management.models import *
+
 
 # Importing Other Libraries
 import json
@@ -119,3 +121,45 @@ def machine_endpoint(request):
         return create_machine_usage(request) # Make sure this still checks for login!
     else:
         return HttpResponse("", status=405) # Method not allowed
+        
+        
+@csrf_exempt # TODO REMOVE THIS DECORATOR, ONLY FOR DEBUG
+def verify_user(request):
+    if request.method == 'GET':
+        uuid = request.GET.get('uuid', '')
+        try:
+            userprofile = UserProfile.objects.get(uuid=uuid)
+        except  UserProfile.DoesNotExist:
+            return HttpResponse(status=204)
+        except ValidationError:
+            return HttpResponse(status=404)
+        
+        user = userprofile.user
+        
+        if(user.groups.filter(name="admins").exists()):
+            return HttpResponse("admins")
+        elif(user.groups.filter(name="managers").exists()):
+            return HttpResponse("managers")
+        elif(user.groups.filter(name="volunteers").exists()):
+            return HttpResponse("volunteers")
+        else:
+            return HttpResponse("user")
+            
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
