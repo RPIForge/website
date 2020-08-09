@@ -1,0 +1,36 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>Use A Machine</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/machine_usage.css' %}">
+{% endblock custom_styles %}
+
+{% block main %}
+	<main class="bg_shade">
+
+	
+    
+		
+        <div id="help_select">
+			<p class="title" id="machine_selection_title"><strong>Please enter your information and select your help topic</strong><br>if rejoining just click submit</p>
+			 <form action="/dyn/user_chat_join" method="get">
+				<label for="name">Name:</label><br>
+				<input type="text" id="name" name="name"><br>
+				
+				<input type="checkbox" id="3dprinting" name="checks[]" value="3dprinting">
+				<label for="3dprinting">3d printing help/request</label><br>
+				<input type="checkbox" id="lazercutter" name="checks[]" value="lazercutter">
+				<label for="lazercutter">Lazer Cutter help/request</label><br>
+				<input type="checkbox" id="generalhelp" name="checks[]" value="generalhelp">
+				<label for="generalhelp">General help</label><br>
+				<input type="submit" value="Submit">
+			</form> 
+        </div>
+
+    </main>
+{% endblock main %}
+

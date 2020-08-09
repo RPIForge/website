@@ -28,6 +28,9 @@ urlpatterns = [
     path('news', views.render_news, name='news'),
     path('hours', views.render_hours, name='hours'),
     
+    #chat is handled in myforge for now
+    #path('chat', myforge.views.user_chat_join, name='chat'),
+    
     path('', include("myforge.urls")),
     path('', include("machine_usage.urls")),
     path('', include("user_management.urls")),

@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'forge.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': {    
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'forge_devel_refactor',
         'USER': 'postgres',
@@ -143,3 +143,8 @@ LOGIN_URL = '/login'
 # Allow pages to be loaded in a frame
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+CHAT_SITE_URL="10.0.0.143"
+CHAT_SITE_PORT=8000
+
+

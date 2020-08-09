@@ -17,6 +17,17 @@
   overflow: hidden;
 }
 
+
+#general_frame {
+  position: absolute;
+  height: 100%;
+  width: 80%;
+  right: 0px;
+  top: 0px;
+  border: none;
+  overflow: hidden;
+}
+
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 

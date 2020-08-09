@@ -4,12 +4,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.conf import settings
 
 # Importing Models
 from django.contrib.auth.models import User, Group
 
 from machine_management.models import *
-
 
 
 # Importing Other Libraries
@@ -33,15 +33,40 @@ def render_myforge(request):
     return render(request, 'myforge/myforge.html', {})
 
 
-@login_required
 def user_chat(request):
-    return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
+    #return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
+    return render(request, 'myforge/user_chat_info.html', {})
+
+
+def user_chat_join(request):
+    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/user/chat"
+    if request.user.is_authenticated:
+        url=url+"?uuid={}".format(request.user.userprofile.uuid)
+        url=url+"&name={}".format(request.user.get_full_name())
+    else:
+        url=url+"?uuid={}".format("")
+        url=url+"&name={}".format(request.GET.get("name","no name"))
+        
+    checks = request.GET.getlist("checks[]")
+    print(request.GET)
+    if(checks is not []):
+        url=url+"&request="
+        for item in checks:
+            url=url+item+","
+        url=url[:-1]
+    
+    return render(request, 'myforge/forms/user_chat_template.html', {'channels_link':url})
+    
 
 @login_required
-def volunteer_chat(request):
-    return HttpResponseRedirect("http://10.0.0.24:8000/volunteer/chat?uuid={}".format(request.user.userprofile.uuid))
+def volunteer_chat_join(request):
+    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/volunteer/select"
+    url=url+"?uuid={}".format(request.user.userprofile.uuid)+"&name={}".format(request.user.get_full_name())
+    return redirect(url)
 
 
+    
+    
 def format_usd(fp):
     return f"${fp:.2f}"
 

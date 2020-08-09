@@ -123,7 +123,6 @@ def machine_endpoint(request):
         return HttpResponse("", status=405) # Method not allowed
         
         
-@csrf_exempt # TODO REMOVE THIS DECORATOR, ONLY FOR DEBUG
 def verify_user(request):
     if request.method == 'GET':
         uuid = request.GET.get('uuid', '')
