@@ -40,15 +40,17 @@ def user_chat(request):
 
 def user_chat_join(request):
     url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/user/chat"
+   
     if request.user.is_authenticated:
         url=url+"?uuid={}".format(request.user.userprofile.uuid)
         url=url+"&name={}".format(request.user.get_full_name())
+        url=url+"&email={}".format(request.user.email)
     else:
         url=url+"?uuid={}".format("")
         url=url+"&name={}".format(request.GET.get("name","no name"))
+        url=url+"&email={}".format(request.GET.get("email",""))
         
     checks = request.GET.getlist("checks[]")
-    print(request.GET)
     if(checks is not []):
         url=url+"&request="
         for item in checks:

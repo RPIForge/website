@@ -16,10 +16,15 @@
     
 		
         <div id="help_select">
-			<p class="title" id="machine_selection_title"><strong>Please enter your information and select your help topic</strong><br>if rejoining just click submit</p>
+			<p class="title" id="machine_selection_title"><strong>Please enter your information and select your help topic</strong><br>if rejoining use same email submit</p>
 			 <form action="/dyn/user_chat_join" method="get">
+				{% if not request.user.is_authenticated %}
 				<label for="name">Name:</label><br>
 				<input type="text" id="name" name="name"><br>
+				<label for="email">Email:</label><br>
+				<input  type="email" id="email" name="email"><br>
+				
+				{% endif %}
 				
 				<input type="checkbox" id="3dprinting" name="checks[]" value="3dprinting">
 				<label for="3dprinting">3d printing help/request</label><br>
@@ -27,6 +32,10 @@
 				<label for="lazercutter">Lazer Cutter help/request</label><br>
 				<input type="checkbox" id="generalhelp" name="checks[]" value="generalhelp">
 				<label for="generalhelp">General help</label><br>
+				
+				<label for="policy"><a href="url">The policy</a></label><br>
+				<input  type="checkbox" id="policy" name="policy" value="policy">
+				
 				<input type="submit" value="Submit">
 			</form> 
         </div>
