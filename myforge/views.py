@@ -35,29 +35,15 @@ def render_myforge(request):
 
 def user_chat(request):
     #return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
-    return render(request, 'myforge/user_chat_info.html', {})
-
-
-def user_chat_join(request):
-    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/user/chat"
-   
+    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/user/info"
     if request.user.is_authenticated:
         url=url+"?uuid={}".format(request.user.userprofile.uuid)
         url=url+"&name={}".format(request.user.get_full_name())
         url=url+"&email={}".format(request.user.email)
-    else:
-        url=url+"?uuid={}".format("")
-        url=url+"&name={}".format(request.GET.get("name","no name"))
-        url=url+"&email={}".format(request.GET.get("email",""))
         
-    checks = request.GET.getlist("checks[]")
-    if(checks is not []):
-        url=url+"&request="
-        for item in checks:
-            url=url+item+","
-        url=url[:-1]
-    
+        
     return render(request, 'myforge/forms/user_chat_template.html', {'channels_link':url})
+
     
 
 @login_required
