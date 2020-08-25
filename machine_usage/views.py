@@ -252,14 +252,14 @@ def list_projects(request):
     user_profile = request.user.userprofile
 
     context = {
-        "table_headers":["Date", "Machine", "Cost"],
+        "table_headers":["Semester", "Date", "Machine", "Cost"],
         "table_rows":[],
         "page_title":"Projects"
     }
 
     usages = user_profile.usage_set.all()
     for u in usages:
-        context["table_rows"].append([u.start_time, u.machine.machine_name, format_usd(u.cost())])
+        context["table_rows"].append([u.semester, u.start_time, u.machine.machine_name, format_usd(u.cost())])
 
     return render(request, 'machine_usage/forms/list_items_readonly.html', context)
 
@@ -369,7 +369,7 @@ def list_active_usages(request):
 @login_required     
 def list_usages(request):
     context = {
-        "table_headers":["User", "Machine Type", "Machine", "Cost", "Start Time", "End Time", "Clear Time", "Complete?", "Failed?", "Cost Overriden?", "Override Reason"],
+        "table_headers":["Semester", "User", "Machine Type", "Machine", "Cost", "Start Time", "End Time", "Clear Time", "Complete?", "Failed?", "Cost Overriden?", "Override Reason"],
         "table_rows":[],
         "page_title":"Usages",
         "edit_root":"machine_usage/usage"
@@ -378,7 +378,7 @@ def list_usages(request):
     usages = Usage.objects.all()
     for u in usages:
         context["table_rows"].append({
-            "row":[u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.clear_time, u.complete, u.failed, u.cost_override, u.cost_override_reason],
+            "row":[u.semester, u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.clear_time, u.complete, u.failed, u.cost_override, u.cost_override_reason],
             "id":u.id
         })
 
@@ -499,6 +499,7 @@ def create_machine_usage(request):
             su.amount = Decimal(quantity)
 
         u = Usage()
+        u.semester = Semester.objects.get(current=True)
         u.machine = machine
         u.userprofile = request.user.userprofile
         u.save() # Necessary so start_time gets set to current time before referencing it below

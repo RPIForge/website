@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'forge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'forge_devel',
+        'NAME': 'forge_devel_master',
         'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': '127.0.0.1',
