@@ -119,6 +119,7 @@ def create_machine_usage(request):
             su.amount = Decimal(quantity)
 
         u = Usage()
+        u.semester = Semester.objects.get(current=True)
         u.machine = machine
         u.userprofile = request.user.userprofile
         u.save() # Necessary so start_time gets set to current time before referencing it below
@@ -249,4 +250,3 @@ def generate_failed_usage_form(request):
 
         utils.send_failure_email(usage)
         return redirect('/forms/failed_usage')
-
