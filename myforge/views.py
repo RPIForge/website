@@ -52,6 +52,17 @@ def volunteer_chat_join(request):
     url=url+"?uuid={}".format(request.user.userprofile.uuid)+"&name={}".format(request.user.get_full_name())
     return redirect(url)
 
+@login_required
+def user_chat_history(request):
+    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/user/history/select"
+    url=url+"?uuid={}".format(request.user.userprofile.uuid)+"&email={}".format(request.user.email)
+    return redirect(url)
+    
+@login_required
+def manager_chat_history(request):
+    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/manager/history/select"
+    url=url+"?uuid={}".format(request.user.userprofile.uuid)
+    return redirect(url)
 
     
     

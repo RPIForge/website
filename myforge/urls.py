@@ -15,6 +15,8 @@ urlpatterns = [
     
     #chat functionality
     path('dyn/volunteer_chat_join', views.volunteer_chat_join, name='volunteer_chat'),
+    path('dyn/chat_history', views.user_chat_history, name='chat_history'),
+    path('dyn/manager_chat_history', views.manager_chat_history, name='chat_history'),
 
     #move to main some day
     path('chat', views.user_chat, name='chat'),
