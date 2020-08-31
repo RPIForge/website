@@ -21,7 +21,7 @@ import forge.utils as utils
 @login_required
 def render_begin_semester(request):
     if request.method == "GET":
-        if request.user.userprofile.is_active:
+        if request.user.groups.filter(name = "member").exists():
             return redirect('/myforge')
         return render(request, 'user_management/begin_semester.html', {})
     elif request.method == "POST":
@@ -38,6 +38,9 @@ def render_begin_semester(request):
             profile.is_graduating = False
 
         profile.save()
+        
+        member_group, created = Group.objects.get_or_create(name='member')
+        member_group.user_set.add(request.user)
         return redirect('/myforge')
 
 

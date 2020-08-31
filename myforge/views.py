@@ -24,7 +24,7 @@ from datetime import datetime, timedelta
 #
 @login_required
 def render_myforge(request):
-    if not request.user.userprofile.is_active:
+    if(not request.user.groups.filter(name = "member").exists()):
         return redirect('/begin_semester')
 
     if not request.user.groups.filter(name="verified_email").exists():
