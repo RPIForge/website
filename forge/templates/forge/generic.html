@@ -80,6 +80,10 @@
 
 		{% block footer %}
 		<footer>
+			<div id="chat_container">
+				<div id="chat_footer_tab" onclick='function(){document.getElementById("chat_contents").style.display = (document.getElementById("chat_contents").style.display == "block" ? "none" : "block");}'>Chat</div>
+				<div id="chat_contents"></div>
+			</div>
 		</footer>
 		{% endblock footer %}
 	</body>
