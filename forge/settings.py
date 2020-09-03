@@ -139,9 +139,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 LOGIN_URL = '/login'
 
-# Allow pages to be loaded in a frame
-
-X_FRAME_OPTIONS = 'SAMEORIGIN'
-
 CHAT_SITE_URL="172.18.200.254"
 CHAT_SITE_PORT=8000
+
+
+# Allow pages to be loaded in a frame
+#X_FRAME_OPTIONS = 'SAMEORIGIN'
+X_FRAME_OPTIONS = 'ALLOW-FROM '+CHAT_SITE_URL
+

@@ -85,8 +85,8 @@
 				<div id="chat_footer_tab" onclick='toggle_chat();'>Chat</div>
 				<div id="chat_contents">
 					<!-- look in forge/context_processors.py for more information on how this is done -->
-					<iframe id="chat_iframe" src="{{CHANNELS_URL}}" scrolling="no"></iframe>
-						
+					<iframe id="chat_iframe"   scrolling="no"></iframe>
+					<script> var chat_url = "{{CHANNELS_URL}}";</script>
 				</div>
 			</div>
 		</footer>
