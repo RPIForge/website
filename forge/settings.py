@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'forge.context_processors.channels_url'
             ],
         },
     },
@@ -142,5 +143,5 @@ LOGIN_URL = '/login'
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-CHAT_SITE_URL="172.18.198.142"
+CHAT_SITE_URL="172.18.200.254"
 CHAT_SITE_PORT=8000

@@ -179,6 +179,8 @@ header::after {
 	background-position: center center;
 
 	height: 94.45vh !important;
+	z-index: auto;
+
 }
 
 /*
@@ -192,7 +194,7 @@ main {
 	top: 0px;
 	left: 0px;
 
-	z-index: 10;
+	z-index: auto;
 }
 
 .bg_shade {
