@@ -1,6 +1,8 @@
 {% load static %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+<script src="{% static 'forge/js/chat.js' %}"></script>
+
 
 {% if user.is_authenticated %}
 <script src="{% static 'forge/js/logout.js' %}"></script>

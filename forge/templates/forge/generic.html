@@ -7,6 +7,7 @@
 	<head>
 		<link rel="icon" href="{% static 'forge/img/favicon/favicon.ico' %}" type="image/x-icon" />
 		<link rel="stylesheet" type="text/css" href="{% static 'forge/css/style.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'forge/css/chat.css' %}">
 		{% block custom_styles %}
 		{% endblock custom_styles %}
 
@@ -81,7 +82,7 @@
 		{% block footer %}
 		<footer>
 			<div id="chat_container">
-				<div id="chat_footer_tab" onclick='function(){document.getElementById("chat_contents").style.display = (document.getElementById("chat_contents").style.display == "block" ? "none" : "block");}'>Chat</div>
+				<div id="chat_footer_tab" onclick='toggle_chat();'>Chat</div>
 				<div id="chat_contents"></div>
 			</div>
 		</footer>

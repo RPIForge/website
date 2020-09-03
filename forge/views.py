@@ -1,7 +1,7 @@
 # Importing Django Utils
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-
+from  django.utils import timezone
 # Importing Models
 from machine_management.models import Machine
 from django.contrib.auth.models import User, Group
