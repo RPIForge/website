@@ -5,21 +5,31 @@
 	display: flex;
 	flex-direction: column;
 	width: 20vw;
-	margin-right: 5%;
+	margin-right: auto;
+	margin-left: 3%;
 }
 
 #chat_footer_tab {
 	width: 100%;
-    background-color: #AF0909;
-    padding: 15;
+    background-color: #3A3A3A;
     border-radius: 10px 10px 0 0;
-    color: #FFF;
+    color: white;
     font-size: 1.2em;
+	height: 100%;
+	min-height: 4.5vh;
+}
+
+#chat_footer_text {
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 #chat_contents {
+	
 	display: none;
-	height: 35vh;
+	height: 100%;
+	min-height: 35vh;
 	background-color: #fff;
 	width: 100%;
 }
@@ -30,3 +40,6 @@
 	height: 100%;
 	border: none;
 }
+
+
+

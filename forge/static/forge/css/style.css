@@ -10,10 +10,10 @@ body {
 footer {
 	position: fixed;
     bottom: 0;
-    margin-left: 5vw;
-    width: 90vw;
-    display: flex;
+    width: 100%;
+	display: flex;
     flex-direction: row-reverse;
+	
 }
 
 input[type=text] {
@@ -291,25 +291,3 @@ main {
 	color: white;
 }
 
-#chat_container {
-	display: flex;
-	flex-direction: column;
-	width: 20vw;
-}
-
-#chat_footer_tab {
-	width: 100%;
-    background-color: #AF0909;
-    padding: 15;
-    border-radius: 10px 10px 0 0;
-    color: #FFF;
-    font-size: 1.2em;
-}
-
-#chat_contents {
-	display: none;
-	height: 35vh;
-	background-color: #fff;
-	width: 100%;
-	padding: 15;
-}
