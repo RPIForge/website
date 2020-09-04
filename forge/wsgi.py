@@ -10,7 +10,11 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 import os
 
 from django.core.wsgi import get_wsgi_application
+import sys
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'testtree.settings')
+sys.path.append('/home/honakm/website')
+sys.path.append('/home/honakm/website/forge')
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'forge.settings')
 
 application = get_wsgi_application()

@@ -28,50 +28,50 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    'forge.apps.MachineUsageConfig',
-    'forge.apps.MachineManagementConfig',
-    'forge.apps.MyForgeConfig',
-    'forge.apps.UserManagementConfig',
-    'forge.apps.ForgeConfig',
-    'forge.apps.APIConfig',
-    
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-]
+            'forge.apps.MachineUsageConfig',
+                'forge.apps.MachineManagementConfig',
+                    'forge.apps.MyForgeConfig',
+                        'forge.apps.UserManagementConfig',
+                            'forge.apps.ForgeConfig',
+                                'forge.apps.APIConfig',
+                                    
+                                    'django.contrib.admin',
+                                        'django.contrib.auth',
+                                            'django.contrib.contenttypes',
+                                                'django.contrib.sessions',
+                                                    'django.contrib.messages',
+                                                        'django.contrib.staticfiles',
+                                                        ]
 
 MIDDLEWARE = [
-    
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+            
+            'django.middleware.security.SecurityMiddleware',
+                'django.contrib.sessions.middleware.SessionMiddleware',
+                    'django.middleware.common.CommonMiddleware',
+                        'django.middleware.csrf.CsrfViewMiddleware',
+                            'django.contrib.auth.middleware.AuthenticationMiddleware',
+                                'django.contrib.messages.middleware.MessageMiddleware',
+                                    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+                                    ]
 
 ROOT_URLCONF = 'forge.urls'
 
 TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'forge.context_processors.channels_url'
-            ],
-        },
-    },
-]
+            {
+                        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                                'DIRS': [],
+                                        'APP_DIRS': True,
+                                                'OPTIONS': {
+                                                                'context_processors': [
+                                                                                    'django.template.context_processors.debug',
+                                                                                                    'django.template.context_processors.request',
+                                                                                                                    'django.contrib.auth.context_processors.auth',
+                                                                                                                                    'django.contrib.messages.context_processors.messages',
+                                                                                                                                                    'forge.context_processors.channels_url'
+                                                                                                                                                                ],
+                                                                        },
+                                                    },
+            ]
 
 WSGI_APPLICATION = 'forge.wsgi.application'
 
@@ -81,39 +81,39 @@ WSGI_APPLICATION = 'forge.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {    
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'forge_devel_refactor',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-}
+            'default': {    
+                        'ENGINE': 'django.db.backends.postgresql',
+                                'NAME': 'forge_devel_refactor',
+                                        'USER': 'postgres',
+                                                'PASSWORD': 'password',
+                                                        'HOST': '127.0.0.1',
+                                                                'PORT': '5432',
+                                                                    }
+            }
 
 PASSWORD_HASHERS = [
-    'django.contrib.auth.hashers.Argon2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
-]
+            'django.contrib.auth.hashers.Argon2PasswordHasher',
+                'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+                    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+                        'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+                        ]
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+            {
+                        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+                            },
+                {
+                            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+                                },
+                    {
+                                'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+                                    },
+                        {
+                                    'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+                                        },
+                        ]
 
 
 # Internationalization
@@ -144,6 +144,5 @@ CHAT_SITE_PORT=8000
 
 
 # Allow pages to be loaded in a frame
-#X_FRAME_OPTIONS = 'SAMEORIGIN'
+#X_FRAME_OPTIONS = 'SAMEORIGIN'l
 X_FRAME_OPTIONS = 'ALLOW-FROM '+CHAT_SITE_URL
-
