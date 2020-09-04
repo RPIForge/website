@@ -1,17 +1,37 @@
 
 
 function toggle_chat(){
+	var chat_container =  document.getElementById("chat_container");
+	var chat_contents = document.getElementById("chat_contents");
+	var chat_footer = document.getElementById("chat_footer_tab");
+	var chat_iframe = document.getElementById('chat_iframe')
 	
-	if(document.getElementById("chat_contents").style.display=="block"){
-		document.getElementById("chat_contents").style.display = "none";
-		document.getElementById("chat_footer_tab").style.height = "";
+	
+	
+	if(chat_contents.style.display=="block"){
+		chat_container.style.width = "5vw";
+		chat_contents.style.display = "none";
+		chat_footer.style.height = "";
+		
 	} else {
-		document.getElementById("chat_contents").style.display = "block";
-		document.getElementById("chat_footer_tab").style.height = "3%";
+		chat_contents.style.display = "block";
+		chat_container.style.width = "20vw";
+		chat_footer.style.height = "3%";
 	}
-	console.log(document.getElementById('chat_iframe').src)
-	if(document.getElementById('chat_iframe').src == ''){
-		document.getElementById('chat_iframe').src = chat_url;
+	
+	if(chat_iframe.src == ''){
+		chat_iframe.src = chat_url;
 	}	
+	
+
+	
+	$( chat_iframe ).ready(function() {
+		chat_contents.style.height = $(chat_iframe).contents().height() + 'px';
+		console.log($(chat_iframe).contents().height());
+	});
+}
+
+function resize_chat(obj){
+	
 	
 }
