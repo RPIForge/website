@@ -11,7 +11,7 @@ main {
 	width: 250px;
 
 	background: #EEE;
-	z-index: 99;
+	z-index: 80;
 }
 
 #myforge_frame {
