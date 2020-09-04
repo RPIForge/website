@@ -22,14 +22,7 @@ function toggle_chat(){
 	if(chat_iframe.src == ''){
 		chat_iframe.src = chat_url;
 	}	
-	
-
-	
-	$( chat_iframe ).ready(function() {
-		chat_contents.style.height = $(chat_iframe).contents().height() + 'px';
-		console.log($(chat_iframe).contents().height());
-	});
-}
+}	
 
 function resize_chat(obj){
 	
