@@ -32,14 +32,23 @@ def render_myforge(request):
 
     return render(request, 'myforge/myforge.html', {})
 
+def get_chat_url(path):
+    if request.is_secure():
+        url="https://"+settings.CHAT_SITE_URL+":443"+path
+        if request.user.is_authenticated:
+            url=url+"?uuid={}".format(request.user.userprofile.uuid)
+            url=url+"&name={}".format(request.user.get_full_name())
+            url=url+"&email={}".format(request.user.email)
+    else:
+        url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+path
+        if request.user.is_authenticated:
+            url=url+"?uuid={}".format(request.user.userprofile.uuid)
+            url=url+"&name={}".format(request.user.get_full_name())
+            url=url+"&email={}".format(request.user.email)
 
 def user_chat(request):
     #return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
-    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/user/info"
-    if request.user.is_authenticated:
-        url=url+"?uuid={}".format(request.user.userprofile.uuid)
-        url=url+"&name={}".format(request.user.get_full_name())
-        url=url+"&email={}".format(request.user.email)
+    url = get_chat_url('/user/info')
         
         
     return render(request, 'myforge/forms/user_chat_template.html', {'channels_link':url})
@@ -48,20 +57,17 @@ def user_chat(request):
 
 @login_required
 def volunteer_chat_join(request):
-    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/volunteer/select"
-    url=url+"?uuid={}".format(request.user.userprofile.uuid)+"&name={}".format(request.user.get_full_name())
+    url = get_chat_url('/volunteer/select')
     return redirect(url)
 
 @login_required
 def user_chat_history(request):
-    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/user/history/select"
-    url=url+"?uuid={}".format(request.user.userprofile.uuid)+"&email={}".format(request.user.email)
+    url = get_chat_url('/user/history/select')
     return redirect(url)
     
 @login_required
 def manager_chat_history(request):
-    url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/manager/history/select"
-    url=url+"?uuid={}".format(request.user.userprofile.uuid)
+    url = get_chat_url("/manager/history/select")
     return redirect(url)
 
     
