@@ -1,4 +1,24 @@
 
+function getWidth() {
+  return Math.max(
+    document.body.scrollWidth,
+    document.documentElement.scrollWidth,
+    document.body.offsetWidth,
+    document.documentElement.offsetWidth,
+    document.documentElement.clientWidth
+  );
+}
+
+function getHeight() {
+  return Math.max(
+    document.body.scrollHeight,
+    document.documentElement.scrollHeight,
+    document.body.offsetHeight,
+    document.documentElement.offsetHeight,
+    document.documentElement.clientHeight
+  );
+}
+
 
 function toggle_chat(){
 	var chat_container =  document.getElementById("chat_container");
@@ -9,13 +29,17 @@ function toggle_chat(){
 	
 	
 	if(chat_contents.style.display=="block"){
-		chat_container.style.width = "5vw";
+		var new_width = Math.min(getWidth()*0.50,256);
+		console.log(screen.width);
+		chat_container.style.minWidth  =  new_width+"px";
 		chat_contents.style.display = "none";
 		chat_footer.style.height = "";
 		
 	} else {
 		chat_contents.style.display = "block";
-		chat_container.style.width = "20vw";
+		var new_width = Math.min(getWidth()*0.94,512);
+		console.log(screen.width);
+		chat_container.style.minWidth  =  new_width+"px";
 		chat_footer.style.height = "3%";
 	}
 	

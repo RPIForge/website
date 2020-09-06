@@ -129,7 +129,7 @@ header::after {
 	width: 100%;
 	position: absolute;
 	left: 0px;
-	top: calc(5.55vh - 4px);
+	top: 5.55vh;
 	content: '';
 }
 

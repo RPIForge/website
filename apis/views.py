@@ -141,6 +141,8 @@ def verify_user(request):
             return HttpResponse("managers")
         elif(user.groups.filter(name="volunteers").exists()):
             return HttpResponse("volunteers")
+        elif(user.groups.filter(name="member").exists()):
+            return HttpResponse("member")
         else:
             return HttpResponse("user")
             
