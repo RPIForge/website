@@ -32,7 +32,7 @@ def render_myforge(request):
 
     return render(request, 'myforge/myforge.html', {})
 
-def get_chat_url(path):
+def get_chat_url(request, path):
     if request.is_secure():
         url="https://"+settings.CHAT_SITE_URL+":443"+path
         if request.user.is_authenticated:
@@ -49,7 +49,7 @@ def get_chat_url(path):
 
 def user_chat(request):
     #return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
-    url = get_chat_url('/user/info')
+    url = get_chat_url(request, '/user/info')
         
         
     return render(request, 'myforge/forms/user_chat_template.html', {'channels_link':url})
@@ -58,17 +58,17 @@ def user_chat(request):
 
 @login_required
 def volunteer_chat_join(request):
-    url = get_chat_url('/volunteer/select')
+    url = get_chat_url(request, '/volunteer/select')
     return redirect(url)
 
 @login_required
 def user_chat_history(request):
-    url = get_chat_url('/user/history/select')
+    url = get_chat_url(request, '/user/history/select')
     return redirect(url)
     
 @login_required
 def manager_chat_history(request):
-    url = get_chat_url("/manager/history/select")
+    url = get_chat_url(request, "/manager/history/select")
     return redirect(url)
 
     
