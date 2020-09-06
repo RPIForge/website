@@ -45,6 +45,7 @@ def get_chat_url(path):
             url=url+"?uuid={}".format(request.user.userprofile.uuid)
             url=url+"&name={}".format(request.user.get_full_name())
             url=url+"&email={}".format(request.user.email)
+    return url
 
 def user_chat(request):
     #return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
