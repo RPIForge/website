@@ -1,0 +1,68 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance:textfield;
+}
+
+::-webkit-input-placeholder {
+   text-align: center;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+   text-align: center;  
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+   text-align: center;  
+}
+
+:-ms-input-placeholder {  
+   text-align: center; 
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.left_pad {
+  padding-left: 25px;
+}
+
+.top_pad {
+  padding-top: 10px;
+}
+
+.card {
+  background: #FFF;
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.25);
+  border-radius: 5px;
+  padding: 30px;
+}
+
+select {
+  padding: 12px 20px;
+}
+
+input[type=submit] {
+  font: inherit;
+  padding: 5px 20px;
+  width: 35%;
+  border-radius: 5px;
+  color: #FFF;
+  background-color: #AF0909;
+  border: none;
+  margin-top: 5px;
+  width: 100%;
+}
+
+form {
+  margin: 0px;
+}

@@ -1,0 +1,29 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>User Chat</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+<style>
+#general_frame {	
+	padding-top: 5vh;
+	height: 95vh;
+	width: 100%;
+	background: #EEE;
+}
+</style>
+{% endblock custom_styles %}
+
+{% block main %}
+	<main class="bg_shade">
+	
+	<iframe id="general_frame" src="{{channels_link}}">
+	</iframe>
+
+    </main>
+{% endblock main %}
+
+{% block footer %}
+{% endblock footer %}

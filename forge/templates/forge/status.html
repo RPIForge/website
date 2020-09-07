@@ -1,0 +1,74 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>Machine Status</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'forge/css/loading-bar.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'forge/css/status.css' %}" />
+{% endblock custom_styles %}
+	
+{% block main %}
+	<main class="bg_shade">
+		<div id="card_container" class="center_children">
+			{% for machine in machines %}
+			<div class="card">
+				<div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
+				<div class="card_text {{machine.text_type}}">
+					<div class="machine_name">{{ machine.name }}</div>
+					<div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
+					<div class="status_message">{{ machine.status_message }}</div>
+					<div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</main>
+{% endblock main %}
+
+{% block scripts %}
+	<script type="application/javascript" src="{% static 'forge/js/loading-bar.js' %}"></script>
+	<script>
+		function progress_bar(idx, elem, color1, color2, speed) {
+			var bar = new ldBar(elem,
+			{
+				"type": 'fill',
+				"path": 'M15 5L85 5A5 5 0 0 1 85 15L15 15A5 5 0 0 1 15 5',
+				"stroke": '#f00',
+				"fill": 'data:ldbar/res,stripe(' + color1 + ',' + color2 + ',' + speed + ')',
+				"fill-dir": "ltr",
+				"fill-background": '#ddd',
+				"fill-background-extrude": 1,
+				"bbox": "10 5 80 10"
+			});
+		}
+
+		function in_progress(idx, elem) {
+			progress_bar(idx, elem, "#050", "#0A0", "1");
+		}
+
+		function error(idx, elem) {
+			progress_bar(idx, elem, "#FFF000", "#ADA52C", "1"); // TODO Change these colors to yellow/dark yellow
+		}
+
+		function complete(idx, elem) {
+			progress_bar(idx, elem, "#9EA2A2", "#AB2328", "0");
+		}
+
+		function failed(idx, elem) {
+			progress_bar(idx, elem, "#500", "#A00", "4");
+		}
+
+		function refresh_bars() {
+			$(".bar_in_progress").each(in_progress);
+			$(".bar_complete").each(complete);
+			$(".bar_failed").each(failed);
+			$(".bar_error").each(error);
+
+		}
+
+		refresh_bars();
+</script>
+{% endblock scripts %}

@@ -1,0 +1,118 @@
+/*
+	Overrides
+*/
+
+header {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  height: 5.55vh;
+  width: 100%;
+  z-index: 100;
+  background: transparent;
+}
+
+header::after {
+  background: transparent;
+}
+
+#nav_logo {
+  display: none;
+}
+
+.nav_list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  margin-right: 50px;
+  margin-top: 15px;
+}
+
+.nav_list li {
+  float: right;
+  margin-right: 20px;
+  display: block;
+}
+
+.nav_item {
+  color: rgba(255, 255, 255, .5);
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+  text-decoration: none;
+}
+
+.nav_item:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/*
+	Unique
+*/
+
+#cover {
+  margin-top: 5.55vh;
+  height: 94.45vh;
+}
+
+#cover_text img {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+#cover_logo {
+  height: 10vh;
+}
+
+#cover_text {
+  color: #FFF;
+  max-width: 1000px;
+  height: auto;
+  text-align: center;
+}
+
+#cover_text h1 {
+  font-size: 6vw;
+  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 0px;
+}
+
+#cover_text {
+  font-size: 1.2em;
+  /*font-family: 'Roboto', sans-serif;*/
+  text-decoration: none;
+  font-weight: normal;
+  
+}
+
+#cover_text h1::after { /*Horizontal red line under "THE FORGE"*/
+  display: block;
+  height: 4px;
+  width: 100px;
+  background: #AF0909;
+  content: '';
+
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#social_links {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  color: rgba(255, 255, 255, .5);
+  padding-bottom: 15px;
+  padding-right: 50px;
+  font-size: 2em;
+}
+
+#social_links i:hover {
+  color: rgba(255, 255, 255, .75);
+}
+
+#social_links a {
+  color: rgba(255, 255, 255, .5);
+}
+
+#social_links a:hover {
+  color: rgba(255, 255, 255, .75);
+}

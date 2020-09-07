@@ -1,0 +1,37 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>The Forge</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'forge/css/homepage.css' %}">
+{% endblock custom_styles %}
+
+{% block main %}
+	<main class="home_main">
+		
+		<div id="cover" class="center_children fill_parent_horiz fill_screen_vert" >
+			<div id="cover_text">
+				<h1>THE FORGE</h1> <br/>
+				<div class="show_on_desktop">
+					<p>The Forge provides a collaborative environment for students at Rensselaer to explore rapid prototyping and design. We promote communication and sharing of expertise between our members and volunteers. We also provide our members with access to a wide range of equipment - including but not limited to 3D printers, a laser cutter, and an electronics workstation. Additionally, we host workshops, design competitions, and outreach events every semester.
+					<br /><br />Drop in and check us out: We're located in <strong>CII 2037A</strong>!</p>
+					<br />
+					<img id="cover_logo" src="{% static 'forge/img/logo_no_text.png' %}" />
+				</div>
+				<div class="show_on_mobile">
+					<p>We are Rensselaer Polytechnic Institutes only interdisciplinary makerspace, and are 100% student run!</p>
+					<br />
+				</div>
+			</div>
+		</div>
+
+		<div id="social_links">
+			<a href="https://www.facebook.com/RPIMakerSpace/"><i class="fab fa-facebook-square"></i></a>
+			<a href="https://www.instagram.com/the_forge_rpi/"><i class="fab fa-instagram"></i></a>
+			<a href="mailto:theforge@rpi.edu"><i class="fas fa-envelope-open-text"></i></a>
+		</div>
+	</main>
+{% endblock main %}

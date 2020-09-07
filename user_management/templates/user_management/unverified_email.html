@@ -1,0 +1,38 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>Unverified Email</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'forge/css/unverified_email.css' %}">
+{% endblock custom_styles %}
+	
+{% block main %}
+
+	<script type="text/javascript">
+		function resend_verification() {
+			$("#resend_button")[0].innerText = "Sent!";
+			$("#resend_button").attr("disabled", true);
+			$("#resend_button")[0].style["background-color"] = "#999";
+			$.get('/resend_verification');
+			return false;
+		}
+	</script>
+
+	<main class="bg_shade">
+		<div id="card_container" class="center_children fill_parent_horiz fill_screen_vert">
+			<div id="card">
+				<h1>Unverified Email</h1>
+
+				<p>You must verify your email before using this site. To do so, click the link in the message that was sent to your email address.</p>
+				<p>If you did not receive an email, set your spam filter to allow messages from no_reply@rpiforge.dev and click the button below.</p>
+				<p>Your email is on file as {{user.email}}. If this is incorrect, get in touch with an e-board member.</p>
+				<p>NOTE: If you created your account on the beta site (before 1/20/2020), click the button below and click the link in the new email.</p>
+
+				<button id="resend_button" onclick="resend_verification()">Resend Email</button>
+			</div>
+		</div>
+	</main>
+{% endblock main %}

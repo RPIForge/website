@@ -1,0 +1,42 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>Sign Up</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/form.css' %}">
+{% endblock custom_styles %}
+    
+{% block header %}
+{% endblock header%}
+
+{% block main %}
+    <main class="bg_shade">
+        <div id="form_container" class="center_children fill_parent_horiz fill_screen_vert">
+            <div id="form">
+                <h1>Create an Account</h1>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ user_form }}
+                    {{ profile_form }}
+                    
+                    <br /><br />
+
+                    <input type="checkbox" name="is_graduating" id="is_graduating"/>
+                    <label for="is_graduating">Are you graduating this semester?</label>
+
+                    <br />
+
+                    <input type="checkbox" name="accepts_charges" id="accepts_charges" required/>
+                    <label for="accepts_charges">I acknowledge that $15 will be charged to my bursar account.</label>
+
+                    <br /><br />
+                    
+                    <button type="submit" id="submit_button">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock main %}
