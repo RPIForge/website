@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models.base import ObjectDoesNotExist
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.conf import settings # import the settings file
+
 #importing functions
 
 from machine_usage.views import create_machine_usage
@@ -148,7 +150,16 @@ def verify_user(request):
             
     
     
-    
+def current_volunteers(request):
+    if request.method == 'GET':
+        if(settings.CALENDAR == None):
+            return HttpResponse(503)
+        else:
+            output = []
+            events = settings.CALENDAR.get_current_events()
+            for names in events:
+                output.append(names['description'])
+            return HttpResponse(json.dumps(output))
     
     
     

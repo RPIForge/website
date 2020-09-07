@@ -146,3 +146,13 @@ CHAT_SITE_PORT=8000
 # Allow pages to be loaded in a frame
 #X_FRAME_OPTIONS = 'SAMEORIGIN'l
 X_FRAME_OPTIONS = 'ALLOW-FROM '+CHAT_SITE_URL
+
+#initialize google calendar
+try:
+    from forge.utils import google_calendar
+    CALENDAR = google_calendar()
+    print("SUCCESSFULLY STARTED CALENDAR")
+except:
+    CALENDAR = None
+    print("FAILED TO START CALENDAR")
+    
