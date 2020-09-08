@@ -75,7 +75,7 @@ def render_status(request):
             if m.current_job.userprofile.anonymous_usages:
                 user_name = "[hidden]"
             else:
-                user_name = f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1]}."
+                user_name = f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1].capitalize()}."
 
             output.append({
                 "name": m.machine_name,
