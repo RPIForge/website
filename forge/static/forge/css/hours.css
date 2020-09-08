@@ -5,4 +5,7 @@
   padding: 10px;
   text-align: center;
   background: #FFF;
+  position: relative; 
+  overflow: auto;
 }
+
