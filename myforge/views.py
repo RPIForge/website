@@ -101,7 +101,7 @@ def list_machines(request):
         "table_headers":["Name", "Category", "Type", "Status Message", "Enabled", "Time Used", "In Use?"],
         "table_rows":[],
         "page_title":"Machines",
-        "edit_root":"myforge/machine"
+        "edit_root":"machine_management/machine"
     }
 
     machines = Machine.objects.all()
@@ -119,7 +119,7 @@ def list_machine_types(request):
 	    "table_headers":["Type", "Category", "Hourly Cost", "Slots", "Count", "Resource Types"],
 	    "table_rows":[],
         "page_title":"Machine Types",
-        "edit_root":"myforge/machinetype"
+        "edit_root":"machine_management/machinetype"
     }
 
     machine_types = MachineType.objects.all()
@@ -150,7 +150,7 @@ def list_resources(request):
 	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "Units Used", "In Stock?"],
 	    "table_rows":[],
         "page_title":"Resources",
-        "edit_root":"myforge/resource"
+        "edit_root":"machine_management/resource"
     }
 
     resources = Resource.objects.all()
@@ -186,7 +186,7 @@ def list_active_usages(request):
         "table_headers":["User", "Machine Type", "Machine", "Cost", "Start Time", "Status Message"],
         "table_rows":[],
         "page_title":"Active Usages",
-        "edit_root":"myforge/usage"
+        "edit_root":"machine_management/usage"
     }
 
     active_usages = Usage.objects.filter(complete=False)
@@ -204,7 +204,7 @@ def list_usages(request):
         "table_headers":["Semester", "User", "Machine Type", "Machine", "Cost", "Start Time", "End Time", "Clear Time", "Complete?", "Failed?", "Cost Overriden?", "Override Reason"],
         "table_rows":[],
         "page_title":"Usages",
-        "edit_root":"myforge/usage"
+        "edit_root":"machine_management/usage"
     }
 
     usages = Usage.objects.all()
