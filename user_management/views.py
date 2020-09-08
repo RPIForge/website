@@ -28,6 +28,8 @@ def render_begin_semester(request):
         profile = request.user.userprofile
 
         if request.POST["accepts_charges"] == "yes":
+            member_group, created = Group.objects.get_or_create(name='member')
+            member_group.user_set.add(request.user)
             profile.is_active = True
         else:
             profile.is_active = False
@@ -39,8 +41,7 @@ def render_begin_semester(request):
 
         profile.save()
         
-        member_group, created = Group.objects.get_or_create(name='member')
-        member_group.user_set.add(request.user)
+        
         return redirect('/myforge')
 
 

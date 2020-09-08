@@ -10,7 +10,7 @@ main {
 	top: 5.55vh;
 	left: 0px;
 	height: 94.45vh;
-	width: max(100px, 15vw);
+	width: max(100px, 12vw);
 
 	background: #EEE;
 	z-index: 80;
@@ -21,9 +21,9 @@ main {
 	position: absolute;
 	height: 94.55vh;
 	background: #EEEEEE;
-	width: min(100vw - 100px, 85vw);
+	width: min(100vw - 100px, 88vw);
 	top: 5.5vh;
-	left: max(100px, 15vw);
+	left: max(100px, 12vw);
 	border: none;
 }
 
