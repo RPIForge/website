@@ -27,14 +27,14 @@ def render_begin_semester(request):
     elif request.method == "POST":
         profile = request.user.userprofile
 
-        if request.POST["accepts_charges"] == "yes":
+        if request.POST.get("accepts_charges","") == "yes":
             member_group, created = Group.objects.get_or_create(name='member')
             member_group.user_set.add(request.user)
             profile.is_active = True
         else:
             profile.is_active = False
 
-        if request.POST["is_graduating"] == "yes":
+        if request.POST.get("is_graduating","") == "yes":
             profile.is_graduating = True
         else:
             profile.is_graduating = False
@@ -54,7 +54,7 @@ def render_force_email_verification(request):
     elif request.method == "POST":
         group = Group.objects.get_or_create(name="verified_email") 
         try:
-            user = User.objects.get(username=request.POST["rcs_id"])
+            user = User.objects.get(username=request.POST.get("rcs_id",""))
         except User.DoesNotExist:
         
             return render(request, "user_management/forms/force_email_verification.html", {'outcome':'failure'})
