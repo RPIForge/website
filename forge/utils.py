@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from dateutil.parser import isoparse
 import os
 from pytz import timezone
+from django.conf import settings
 
 
 #
@@ -39,7 +40,7 @@ def send_email(to_email, subject, html_string):
     )
 
     try:
-        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        sg = SendGridAPIClient(settings.EMAIL_HOST_PASSWORD)
         response = sg.send(message)
     except Exception as e:
         print(f"Error while sending email: {str(e)}")

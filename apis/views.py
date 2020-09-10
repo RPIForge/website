@@ -12,13 +12,13 @@ from django.core.exceptions import ValidationError
 from django.conf import settings # import the settings file
 
 #importing functions
-
 from machine_usage.views import create_machine_usage
+from forge import utils
+
 # Importing Models
 from machine_management.models import *
 from django.contrib.auth.models import User, Group
 from user_management.models import *
-
 
 
 # Importing Other Libraries
@@ -26,9 +26,6 @@ import json
 from datetime import datetime
 from decimal import Decimal
 from datetime import datetime, timedelta
-
-#import local libraries
-from forge import utils
 
 #
 #   API
@@ -163,6 +160,8 @@ def current_volunteers(request):
             events = settings.CALENDAR.get_current_events()
             for names in events:
                 output.append(names['description'])
+                
+            
             return HttpResponse(json.dumps(output))
     
     
