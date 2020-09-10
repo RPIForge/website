@@ -125,7 +125,8 @@ class Semester(models.Model):
 class Usage(models.Model):
     machine = models.ForeignKey(
         Machine,
-        on_delete = models.CASCADE
+        on_delete = models.SET_NULL,
+        null=True
     )
 
     userprofile = models.ForeignKey(
@@ -135,7 +136,8 @@ class Usage(models.Model):
 
     semester = models.ForeignKey(
         Semester,
-        on_delete=models.SET(None)
+        on_delete=models.SET_NULL,
+        null=True
     )
     
     for_class = models.BooleanField(default=False)
