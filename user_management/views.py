@@ -52,16 +52,16 @@ def render_force_email_verification(request):
     if request.method == "GET":
         return render(request, "user_management/forms/force_email_verification.html", {'outcome':'none'})
     elif request.method == "POST":
-        group = Group.objects.get_or_create(name="verified_email") 
+        group = Group.objects.get_or_create(name="verified_email")[0]
         try:
             user = User.objects.get(username=request.POST.get("rcs_id",""))
         except User.DoesNotExist:
         
             return render(request, "user_management/forms/force_email_verification.html", {'outcome':'failure'})
-       
-        user.groups.add(group)
-        user.save()
         
+
+        group.user_set.add(user)
+
         return render(request, "user_management/forms/force_email_verification.html", {'outcome':'success'})
 
 
