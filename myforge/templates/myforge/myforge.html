@@ -67,8 +67,15 @@
 
 {% block scripts %}
 <script>
+    var disable_logout = false;
+    
 	function setFrame(src) {
 		$("#myforge_frame").attr("src", src);
+        if(src == 'dyn/volunteer_chat_join'){
+            disable_logout = true;
+        } else {
+            disable_logout = false;
+        }
 	}
 
 	setFrame('dyn/project_list');

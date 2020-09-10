@@ -139,8 +139,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 LOGIN_URL = '/login'
 
-CHAT_SITE_URL="172.18.54.169"
-CHAT_SITE_PORT=8000
+CHAT_SITE_URL="127.0.0.1"
+CHAT_SITE_PORT=8001
 
 
 # Allow pages to be loaded in a frame

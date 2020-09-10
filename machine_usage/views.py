@@ -123,7 +123,7 @@ def create_machine_usage(request):
         u.machine = machine
         u.userprofile = request.user.userprofile
         u.save() # Necessary so start_time gets set to current time before referencing it below
-        u.set_end_time(int(data["hours"]), int(data["minutes"]))
+        u.set_end_time(float(data["hours"]), float(data["minutes"]))
 
         u.for_class = for_class
         u.own_material = own_material

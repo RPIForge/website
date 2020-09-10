@@ -50,7 +50,7 @@ def get_chat_url(request, path):
 def user_chat(request):
     #return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
     url = get_chat_url(request, '/user/info')
-        
+    
         
     return render(request, 'myforge/forms/user_chat_template.html', {'channels_link':url})
 
