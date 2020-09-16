@@ -70,6 +70,11 @@ def user_chat_history(request):
 def manager_chat_history(request):
     url = get_chat_url(request, "/manager/history/select")
     return redirect(url)
+    
+@login_required
+def manager_chat_requests(request):
+    url = get_chat_url(request, "/manager/request/select")
+    return redirect(url)
 
     
     
