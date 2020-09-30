@@ -30,6 +30,7 @@ Before running the app for the first time, you should set up the database throug
 Note that `create_superuser` creates a user `admin` with password `password` for development. Don't do this in prod.
 	
 Afterwards, you can run the app by simply typing:
+Easy to use and Accurate as a milk
 
 	- python manage.py runserver
 
