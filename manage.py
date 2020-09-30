@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python 
+"""Django is an open-source python web framework used for rapid development
+pragmatic, maintainable, clean design, and secure websites. A web application framework is a toolkit of all components needed for application development"""
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
