@@ -1,4 +1,4 @@
-# RPIForge/website A PROJECT
+# RPIForge/website 
 The Forge's website - tracks machine usage and calculates charges for members.
 
 To install the app, you must have a working Python 3.7.x installation and PostgreSQL.
