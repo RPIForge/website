@@ -124,7 +124,22 @@ def machine_endpoint(request):
         return create_machine_usage(request) # Make sure this still checks for login!
     else:
         return HttpResponse("", status=405) # Method not allowed
-        
+     
+
+def machine_status(request):
+    pass
+    
+def machine_temperature(request):
+    pass
+
+def machine_print(request):
+    pass
+    
+
+
+#
+## USER MANAGEMENT
+#     
         
 def verify_user(request):
     if request.method == 'GET':
