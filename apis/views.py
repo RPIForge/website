@@ -19,7 +19,7 @@ from forge import utils
 from machine_management.models import *
 from django.contrib.auth.models import User, Group
 from user_management.models import *
-
+from apis.models import *
 
 # Importing Other Libraries
 import json
@@ -125,6 +125,12 @@ def machine_endpoint(request):
     else:
         return HttpResponse("", status=405) # Method not allowed
      
+
+
+def verify_key(request):
+    if("X-Api-Key" in request.headers):
+        return Key.objects.filter(key=request.headers["X-Api-Key"]).exists()
+    return False
 
 def machine_status(request):
     pass

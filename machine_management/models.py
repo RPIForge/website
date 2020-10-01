@@ -74,6 +74,7 @@ class MachineSlot(models.Model):
         return True
 
 class Machine(models.Model): # TODO make sure names of all slots added to machine are unique in scope
+    machine_id = models.AutoField(primary_key=True)  
     machine_name = models.CharField(max_length=255, unique=True)
     machine_type = models.ForeignKey(
         MachineType,
@@ -83,7 +84,7 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
     in_use = models.BooleanField(default=False)
     current_job = models.OneToOneField(
         "Usage",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name="current_machine" # Can we make this None? You can already see a usage's machine from usage.machine.
@@ -108,7 +109,28 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
             return f"{elapsed_time.days}d {elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
         else:
             return f"{elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
+    
+    
+    
+class ToolTemperature(models.Model): 
+    tool_name = models.CharField(max_length=255)
+    tool_time = models.DateTimeField()
+    tool_temperature = models.FloatField()
+    tool_temperature_goal = models.FloatField()
+    
+    
+    machine = models.ForeignKey(
+        Machine,
+        on_delete = models.SET_NULL,
+        null=True
+    )
 
+    
+    def __str__(self):
+        return "{}'s {} is {} degrees at {}".format(machine.machine_name, self.tool_name, self.tool_temperature, self.tool_time)  
+
+    
+            
 
 class Semester(models.Model):
     year = models.IntegerField(blank=False)
