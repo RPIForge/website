@@ -1,3 +1,4 @@
+Updated grammer 
 # RPIForge/website 
 The Forge's website - tracks machine usage and calculates charges for members.
 
