@@ -1,7 +1,7 @@
 # RPIForge/website 
-The Forge's website - tracks machine usage and calculates charges for members.
+The Forge's amazing website - tracks machine usage and calculates charges for members.
 
-To install the app, you must have a working Python 3.7.x installation and PostgreSQL.
+To install the application, you must have a working Python 3.7.x installation and PostgreSQL.
 
 Required Python libraries:
 
