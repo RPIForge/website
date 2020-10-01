@@ -113,7 +113,7 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
     
 class ToolTemperature(models.Model): 
     tool_name = models.CharField(max_length=255)
-    tool_time = models.DateTimeField()
+    tool_time = models.DateTimeField(auto_now_add=True)
     tool_temperature = models.FloatField()
     tool_temperature_goal = models.FloatField()
     
@@ -126,7 +126,7 @@ class ToolTemperature(models.Model):
 
     
     def __str__(self):
-        return "{}'s {} is {} degrees at {}".format(machine.machine_name, self.tool_name, self.tool_temperature, self.tool_time)  
+        return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.tool_name, self.tool_temperature, self.tool_time)  
 
     
             

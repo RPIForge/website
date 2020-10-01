@@ -174,22 +174,86 @@ def machine_status(request):
                 usage.status_message = "Completed."
                 usage.complete = True
                 usage.end_time = timezone.now()
-                usage.save()
         elif(machine_status=="printing"):
             machine.in_use = True
             if(usage):
                 usage.status_message = "In Progress."
         elif(machine_status=="error"):
             usage.error = True
+        
+        machine.save()
+        if(usage):
             usage.save()
+            
         return HttpResponse("Status set", status=200)
         
-    
+@csrf_exempt  
 def machine_temperature(request):
-    pass
+    if(request.method == 'POST'):
+        if(not verify_key(request)):
+            return HttpResponse("Invalid or missing API Key", status=403)
+            
+        temperature_data = json.loads(request.body)
+        
+        
+        machine_id = request.GET.get("machine_id",None)
+        if(not machine_id):
+            return HttpResponse("No machine_id provided.", status=400)
+        machine_id = int(machine_id)          
+        machine = Machine.objects.get(id=machine_id)
+        
+        for tool in temperature_data:
+            temperature = ToolTemperature()
+            temperature.machine = machine
+            temperature.tool_name = tool["tool_name"]
+            temperature.tool_temperature = tool["temperature"]
+            temperature.tool_temperature_goal = tool["goal"]
+            temperature.save()
+            
+        return HttpResponse("Data recorded", status=200)
+    return HttpResponse("Invalid request", status=405)
+    
+@csrf_exempt  
+def machine_information(request):
+    if(request.method == 'GET'):
+        machine_id = request.GET.get("machine_id",None)
+        if(not machine_id):
+            return HttpResponse("No machine_id provided.", status=400)
+        machine_id = int(machine_id)          
+        machine = Machine.objects.get(id=machine_id)
+        
+        usage = machine.current_job
+        
+        response = {'status':"No job running"}
+        if(usage):
+            response['status'] = usage.status_message
+            response['start_time'] = usage.start_time
+            response['completion_time'] = usage.end_time
+            
+            
+        return HttpResponse(json.dumps(response), status=200)
+            
+    if(request.method == 'POST'):
+        if(not verify_key(request)):
+            return HttpResponse("Invalid or missing API Key", status=403)
+            
+        print_information = json.loads(request.body)
+        
+        machine_id = request.GET.get("machine_id",None)
+        if(not machine_id):
+            return HttpResponse("No machine_id provided.", status=400)
+        machine_id = int(machine_id)          
+        machine = Machine.objects.get(id=machine_id)
+        
+        usage = machine.current_job
+        if(usage and "completion" in print_information):
+            time_information = print_information["completion"].split('.')[0]
+            usage.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+            usage.save()
+            
+        return HttpResponse("Data recorded", status=200)
 
-def machine_print(request):
-    pass
+    return HttpResponse("Invalid request", status=405)
     
 
 
