@@ -132,8 +132,58 @@ def verify_key(request):
         return Key.objects.filter(key=request.headers["X-Api-Key"]).exists()
     return False
 
+
+#get or set machine status. machine id must be in data
+#available statuses:
+##completed: print ended
+##printing: printing 
+##error: printer errored out
+@csrf_exempt
 def machine_status(request):
-    pass
+    if(request.method == 'GET'):
+        
+        machine_id = request.GET.get("machine_id",None)
+        
+        if(not machine_id):
+            return HttpResponse("No machine_id provided.", status=400)
+        machine_id = int(machine_id)
+        
+        machine = Machine.objects.get(id=machine_id)
+        if(machine.current_job != None):
+            return HttpResponse(machine.current_job.status_message, status=200)
+        else:
+            return HttpResponse("Idle.", status=200)
+        
+    else:
+        if(not verify_key(request)):
+            return HttpResponse("Invalid or missing API Key", status=403)
+        
+        machine_id = request.GET.get("machine_id",None)
+        if(not machine_id):
+            return HttpResponse("No machine_id provided.", status=400)
+        machine_id = int(machine_id)
+        
+        machine_status = request.GET.get("status",None)
+        if(not machine_status):
+            return HttpResponse("No status provided.", status=400)
+            
+        machine = Machine.objects.get(id=machine_id)
+        usage = machine.current_job
+        if(machine_status=="completed"):
+            if(usage):
+                usage.status_message = "Completed."
+                usage.complete = True
+                usage.end_time = timezone.now()
+                usage.save()
+        elif(machine_status=="printing"):
+            machine.in_use = True
+            if(usage):
+                usage.status_message = "In Progress."
+        elif(machine_status=="error"):
+            usage.error = True
+            usage.save()
+        return HttpResponse("Status set", status=200)
+        
     
 def machine_temperature(request):
     pass

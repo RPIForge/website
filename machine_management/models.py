@@ -74,7 +74,6 @@ class MachineSlot(models.Model):
         return True
 
 class Machine(models.Model): # TODO make sure names of all slots added to machine are unique in scope
-    machine_id = models.AutoField(primary_key=True)  
     machine_name = models.CharField(max_length=255, unique=True)
     machine_type = models.ForeignKey(
         MachineType,
