@@ -140,8 +140,8 @@ def verify_key(request):
 ##error: printer errored out
 @csrf_exempt
 def machine_status(request):
+    
     if(request.method == 'GET'):
-        
         machine_id = request.GET.get("machine_id",None)
         
         if(not machine_id):
@@ -155,6 +155,7 @@ def machine_status(request):
             return HttpResponse("Idle.", status=200)
         
     else:
+        
         if(not verify_key(request)):
             return HttpResponse("Invalid or missing API Key", status=403)
         
@@ -166,8 +167,9 @@ def machine_status(request):
         machine_status = request.GET.get("status",None)
         if(not machine_status):
             return HttpResponse("No status provided.", status=400)
-            
         machine = Machine.objects.get(id=machine_id)
+
+        
         usage = machine.current_job
         if(machine_status=="completed"):
             if(usage):
