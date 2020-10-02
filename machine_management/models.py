@@ -183,7 +183,10 @@ class Usage(models.Model):
     failed = models.BooleanField(default=False)
     
     deleted = models.BooleanField(default=False)
-
+    
+    file_id = models.CharField(max_length=36, null=True, blank=True, default=None)
+    
+    
     def cost(self):
         cost = Decimal(0.00)
 

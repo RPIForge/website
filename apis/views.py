@@ -248,9 +248,14 @@ def machine_information(request):
         machine = Machine.objects.get(id=machine_id)
         
         usage = machine.current_job
-        if(usage and "completion" in print_information):
-            time_information = print_information["completion"].split('.')[0]
-            usage.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+        if(usage):
+            if("completion" in print_information):
+                time_information = print_information["completion"].split('.')[0]
+                usage.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+            
+            if("file" in print_information):
+                usage.file_id = print_information["file"]
+            
             usage.save()
             
         return HttpResponse("Data recorded", status=200)
