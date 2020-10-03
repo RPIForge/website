@@ -44,6 +44,7 @@ def clear_machine(request):
         machine = Machine.objects.get(id=int(data["machine_id"]))
 
         response = clear_usage(machine)
+        
         if(not response):
             return HttpResponse("Machine was not in use.", status=200)
 
@@ -137,6 +138,8 @@ def machine_status(request):
         machine = Machine.objects.get(id=machine_id)
         if(machine.current_job != None):
             return HttpResponse(machine.current_job.status_message, status=200)
+        elif(machine.current_print_information != None):
+            return HttpResponse(machine.current_print_information.status_message, status=200)
         else:
             return HttpResponse("Idle.", status=200)
     #if post update machine_status    
@@ -267,7 +270,7 @@ def machine_temperature(request):
             temperature.tool_temperature = tool["temperature"]
             temperature.tool_temperature_goal = tool["goal"]
             if(print_information):
-                temperature.print_information = print_information
+                temperature.job = print_information
             temperature.save()
             
         return HttpResponse("Data recorded", status=200)
@@ -320,7 +323,7 @@ def machine_information(request):
         else:
             #create new job
             new_job = JobInformation()
-            new_job.status_message = machine_status
+            new_job.status_message = "Printing."
             new_job.machine = machine
             if(end_time):
                 time_information = end_time.split('.')[0]
@@ -331,6 +334,17 @@ def machine_information(request):
                 
             new_job.save()
             
+            usage = machine.current_job
+            if(usage):
+                if(usage.start_time < timezone.now() - timedelta(minutes = 30)):
+                    clear_machine(machine)
+                else:
+                    usage.current_print_information = new_job
+                    usage.save()
+                    
+                    new_job.usage = usage
+                    new_job.save()
+
             #set machine to in use and set print_job
             machine.current_print_information = new_job
             machine.save()
