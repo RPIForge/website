@@ -81,13 +81,24 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
     )
 
     in_use = models.BooleanField(default=False)
+    
+    current_print_information = models.ForeignKey(
+        "JobInformation",
+        on_delete = models.SET_NULL,
+        null=True,
+        related_name="current_job"
+    )
+    
     current_job = models.OneToOneField(
         "Usage",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="current_machine" # Can we make this None? You can already see a usage's machine from usage.machine.
+        related_name="current_usage" # Can we make this None? You can already see a usage's machine from usage.machine.
     )
+    
+    
+    
     enabled = models.BooleanField(default=True)
     status_message = models.CharField(max_length=255, default="", blank=True)
     deleted = models.BooleanField(default=False)
@@ -111,22 +122,6 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
     
     
     
-class ToolTemperature(models.Model): 
-    tool_name = models.CharField(max_length=255)
-    tool_time = models.DateTimeField(auto_now_add=True)
-    tool_temperature = models.FloatField()
-    tool_temperature_goal = models.FloatField()
-    
-    
-    machine = models.ForeignKey(
-        Machine,
-        on_delete = models.SET_NULL,
-        null=True
-    )
-
-    
-    def __str__(self):
-        return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.tool_name, self.tool_temperature, self.tool_time)  
 
     
             
@@ -149,10 +144,18 @@ class Usage(models.Model):
         on_delete = models.SET_NULL,
         null=True
     )
-
+    
+    current_print_information = models.ForeignKey(
+        "JobInformation",
+        on_delete = models.SET_NULL,
+        null=True,
+        related_name="job"
+    )
+    
     userprofile = models.ForeignKey(
         UserProfile,
-        on_delete = models.CASCADE
+        on_delete = models.SET_NULL,
+        null=True
     )
 
     semester = models.ForeignKey(
@@ -160,6 +163,9 @@ class Usage(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
+    
+    
+    
     
     for_class = models.BooleanField(default=False)
     is_reprint = models.BooleanField(default=False)
@@ -183,9 +189,6 @@ class Usage(models.Model):
     failed = models.BooleanField(default=False)
     
     deleted = models.BooleanField(default=False)
-    
-    file_id = models.CharField(max_length=36, null=True, blank=True, default=None)
-    
     
     def cost(self):
         cost = Decimal(0.00)
@@ -250,3 +253,68 @@ class SlotUsage(models.Model):
 
     def cost(self):
         return self.amount * self.resource.cost_per
+        
+        
+  
+class JobInformation(models.Model): 
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(null=True, blank=True) # null/blank allowed for check-in/check-out machines
+
+    status_message = models.CharField(max_length=255, default="In Progress.", blank=False)
+
+    complete = models.BooleanField(default=False)
+    error = models.BooleanField(default=False)
+    
+    file_id = models.CharField(max_length=36, null=True, blank=True, default=None)
+    
+    
+    usage = models.ForeignKey(
+        Usage,
+        on_delete = models.SET_NULL,
+        null=True
+    )
+    
+    machine = models.ForeignKey(
+        Machine,
+        on_delete = models.CASCADE,
+        null=False,
+    )
+    
+    def percentage(self):
+        if(not self.end_time):
+            return 0
+        duration = self.end_time - self.start_time
+        elapsed = timezone.now() - self.start_time
+        percentage = (elapsed.total_seconds() / duration.total_seconds()) * 100
+        if(percentage > 100):
+            percentage = 100
+        return percentage
+    
+
+    
+
+  
+class ToolTemperature(models.Model): 
+    tool_name = models.CharField(max_length=255)
+    tool_time = models.DateTimeField(auto_now_add=True)
+    tool_temperature = models.FloatField()
+    tool_temperature_goal = models.FloatField()
+    
+    
+    job = models.ForeignKey(
+        JobInformation,
+        on_delete = models.SET_NULL,
+        null=True
+    )
+    
+    machine = models.ForeignKey(
+        Machine,
+        on_delete = models.CASCADE,
+        null=False
+    )
+
+    
+    def __str__(self):
+        return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.tool_name, self.tool_temperature, self.tool_time)  
+
+

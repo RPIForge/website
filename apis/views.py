@@ -20,6 +20,7 @@ from machine_management.models import *
 from django.contrib.auth.models import User, Group
 from user_management.models import *
 from apis.models import *
+from machine_management.utils import *
 
 # Importing Other Libraries
 import json
@@ -42,19 +43,10 @@ def clear_machine(request):
 
         machine = Machine.objects.get(id=int(data["machine_id"]))
 
-        if not machine.in_use:
+        response = clear_usage(machine)
+        if(not response):
             return HttpResponse("Machine was not in use.", status=200)
 
-        usage = machine.current_job
-        usage.clear_time = timezone.now()
-        usage.complete = True
-        if (not usage.error) and (not usage.failed):
-            usage.status_message = "Cleared."
-        usage.save()
-
-        machine.current_job = None
-        machine.in_use = False
-        machine.save()
         return HttpResponse("Machine cleared.", status=200)
     else:
         return HttpResponse("", status=405) # Method not allowed
@@ -71,17 +63,11 @@ def fail_machine(request):
 
         machine = Machine.objects.get(id=int(data["machine_id"]))
 
-        if not machine.in_use:
+        response = fail_usage(machine)
+        if(not response):
             return HttpResponse("Machine was not in use.", status=200)
 
-        usage = machine.current_job
-        usage.clear_time = timezone.now()
-        usage.failed = True
-        usage.status_message = "Failed."
-        usage.save()
-
-        utils.send_failure_email(usage)
-        return HttpResponse("Machine marked as failed.", status=200)
+        return HttpResponse("Machine cleared.", status=200)
     else:
         return HttpResponse("", status=405) # Method not allowed
 
@@ -136,11 +122,11 @@ def verify_key(request):
 #get or set machine status. machine id must be in data
 #available statuses:
 ##completed: print ended
-##printing: printing 
+##start: print is starting and create machine_usage 
 ##error: printer errored out
 @csrf_exempt
 def machine_status(request):
-    
+    #if get return machine status
     if(request.method == 'GET'):
         machine_id = request.GET.get("machine_id",None)
         
@@ -153,39 +139,109 @@ def machine_status(request):
             return HttpResponse(machine.current_job.status_message, status=200)
         else:
             return HttpResponse("Idle.", status=200)
-        
+    #if post update machine_status    
     else:
-        
+        #verify key
         if(not verify_key(request)):
             return HttpResponse("Invalid or missing API Key", status=403)
         
+        #get machine id
         machine_id = request.GET.get("machine_id",None)
         if(not machine_id):
             return HttpResponse("No machine_id provided.", status=400)
         machine_id = int(machine_id)
         
+        #get machine status
         machine_status = request.GET.get("status",None)
         if(not machine_status):
             return HttpResponse("No status provided.", status=400)
+        
+        #get machine status message
+        machine_status_message = request.GET.get("status_text",None)
+        if(not machine_status_message):
+            return HttpResponse("No status_text provided.", status=400)
+            
+        #get machine
         machine = Machine.objects.get(id=machine_id)
 
-        
+        #get usage and print information
         usage = machine.current_job
-        if(machine_status=="completed"):
+        print_information = machine.current_print_information
+        
+        #if starting print
+        if(machine_status=="printing"):
+            #set machine to in use
+            machine.in_use = True
+            #if paost print and usage is still running clear
+            if(print_information):
+                if(print_information.start_time < timezone.now() - timedelta(minutes = 0)):
+                    clear_print(machine)
+                    print_information = None
+            
+            
+            #if usage was more than a half an hour ago assume it wsa different
             if(usage):
-                usage.status_message = "Completed."
+                if(usage.start_time < timezone.now() - timedelta(minutes = 0)):
+                    clear_usage(machine)
+                    usage=None
+                    
+            
+            #if just usage then set print information to usage    
+            if(usage):
+                #create new job and set usage
+                new_job = JobInformation()
+                new_job.status_message = machine_status
+                new_job.machine = machine
+                new_job.usage = usage
+                new_job.status_message = machine_status_message
+                new_job.save()
+                
+                #set usage print_job
+                usage.current_print_information = new_job
+                usage.save()
+                
+                #set machine print_job
+                machine.current_print_information = new_job
+                machine.save()
+            else:
+                #create new job
+                new_job = JobInformation()
+                new_job.status_message = machine_status
+                new_job.machine = machine
+                new_job.status_message = machine_status_message
+                new_job.save()
+                
+                #set machine to in use and set print_job
+                machine.in_use = True
+                machine.current_print_information = new_job
+                machine.save()
+            
+        elif(machine_status=="completed"):
+            if(print_information):
+                print_information.end_time = timezone.now()
+                print_information.status_message = "Completed."
+                print_information.save()
+                
+                
+                machine.current_print_information = None
+                machine.save()
+                
+            if(usage):
                 usage.complete = True
                 usage.end_time = timezone.now()
-        elif(machine_status=="printing"):
-            machine.in_use = True
-            if(usage):
-                usage.status_message = "In Progress."
+                usage.status_message = "Completed."
+                usage.save()
+                
+            clear_print(machine)
+            
         elif(machine_status=="error"):
-            usage.error = True
-        
-        machine.save()
-        if(usage):
-            usage.save()
+            if(usage):
+                usage.error = True
+                usage.save()
+            if(print_information):
+                print_information.status_message = machine_status_message
+                print_information.error = True
+                print_information.save()
             
         return HttpResponse("Status set", status=200)
         
@@ -203,13 +259,15 @@ def machine_temperature(request):
             return HttpResponse("No machine_id provided.", status=400)
         machine_id = int(machine_id)          
         machine = Machine.objects.get(id=machine_id)
-        
+        print_information = machine.current_print_information
         for tool in temperature_data:
             temperature = ToolTemperature()
             temperature.machine = machine
             temperature.tool_name = tool["tool_name"]
             temperature.tool_temperature = tool["temperature"]
             temperature.tool_temperature_goal = tool["goal"]
+            if(print_information):
+                temperature.print_information = print_information
             temperature.save()
             
         return HttpResponse("Data recorded", status=200)
@@ -239,7 +297,6 @@ def machine_information(request):
         if(not verify_key(request)):
             return HttpResponse("Invalid or missing API Key", status=403)
             
-        print_information = json.loads(request.body)
         
         machine_id = request.GET.get("machine_id",None)
         if(not machine_id):
@@ -247,16 +304,38 @@ def machine_information(request):
         machine_id = int(machine_id)          
         machine = Machine.objects.get(id=machine_id)
         
-        usage = machine.current_job
-        if(usage):
-            if("completion" in print_information):
-                time_information = print_information["completion"].split('.')[0]
-                usage.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+        end_time = request.GET.get("end_time",None)
+        file_id =  request.GET.get("file_id",None)
+        
+        print_information = machine.current_print_information
+        if(print_information):
+            if(end_time):
+                time_information = end_time.split('.')[0]
+                print_information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+                print_information.save()
             
-            if("file" in print_information):
-                usage.file_id = print_information["file"]
+            if(file_id):
+                print_information.file_id = file_id
+                print_information.save()
+        else:
+            #create new job
+            new_job = JobInformation()
+            new_job.status_message = machine_status
+            new_job.machine = machine
+            if(end_time):
+                time_information = end_time.split('.')[0]
+                new_job.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
             
-            usage.save()
+            if(file_id):
+                new_job.file_id = file_id
+                
+            new_job.save()
+            
+            #set machine to in use and set print_job
+            machine.in_use = True
+            machine.current_print_information = new_job
+            machine.save()
+            
             
         return HttpResponse("Data recorded", status=200)
 

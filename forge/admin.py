@@ -8,11 +8,13 @@ admin.site.register(Resource)
 admin.site.register(MachineType)
 admin.site.register(MachineSlot)
 admin.site.register(Machine)
-admin.site.register(ToolTemperature)
 admin.site.register(Semester)
 admin.site.register(Usage)
 admin.site.register(SlotUsage)
 admin.site.register(UserProfile)
+
+admin.site.register(ToolTemperature)
+admin.site.register(JobInformation)
 
 admin.site.register(Key)
 
