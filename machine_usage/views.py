@@ -16,7 +16,7 @@ import json
 from datetime import datetime
 from decimal import Decimal
 from datetime import datetime, timedelta
-
+from machine_management import utils
 
 
 
@@ -130,13 +130,26 @@ def create_machine_usage(request):
         u.is_reprint = is_reprint
 
         u.save()
-
+        
         for su in slot_usages:
             su.usage = u
             su.save()
 
         machine.in_use = True
         machine.current_job = u
+
+        print_information = machine.current_print_information
+        if(print_information):
+            if(print_information.start_time < timezone.now() - timedelta(minutes = 30)):
+                clear_print(machine)
+                print_information=None
+            else:
+                print_information.usage = u
+                print_information.save()
+                
+                u.current_print_information = print_information
+                u.save()
+                
         machine.save()
 
         return HttpResponse("Usage successfully recorded.", status=200)

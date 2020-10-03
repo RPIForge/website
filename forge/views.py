@@ -33,7 +33,7 @@ def render_status(request):
     output = []
 
     for m in machines:
-        if m.in_use:
+        if m.in_use or m.current_print_information:
             p = m.current_print_information
             u = m.current_job
             
@@ -117,7 +117,6 @@ def render_status(request):
                 user_name = "[hidden]"
             else:
                 user_name = f"{u.userprofile.user.first_name} {u.userprofile.user.last_name[:1].capitalize()}."
-            
             
             status_message = u.status_message
             if (p and p.status_message):

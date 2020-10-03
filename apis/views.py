@@ -171,17 +171,16 @@ def machine_status(request):
         #if starting print
         if(machine_status=="printing"):
             #set machine to in use
-            machine.in_use = True
             #if paost print and usage is still running clear
             if(print_information):
-                if(print_information.start_time < timezone.now() - timedelta(minutes = 0)):
+                if(print_information.start_time < timezone.now() - timedelta(minutes = 30)):
                     clear_print(machine)
                     print_information = None
             
             
             #if usage was more than a half an hour ago assume it wsa different
             if(usage):
-                if(usage.start_time < timezone.now() - timedelta(minutes = 0)):
+                if(usage.start_time < timezone.now() - timedelta(minutes = 30)):
                     clear_usage(machine)
                     usage=None
                     
@@ -211,8 +210,7 @@ def machine_status(request):
                 new_job.status_message = machine_status_message
                 new_job.save()
                 
-                #set machine to in use and set print_job
-                machine.in_use = True
+                #set print_job
                 machine.current_print_information = new_job
                 machine.save()
             
@@ -231,9 +229,11 @@ def machine_status(request):
                 usage.end_time = timezone.now()
                 usage.status_message = "Completed."
                 usage.save()
-                
-            clear_print(machine)
             
+            if(not machine.current_print_information and not machine.current_job):
+                machine.in_use = False
+                machine.save()
+                        
         elif(machine_status=="error"):
             if(usage):
                 usage.error = True
@@ -332,7 +332,6 @@ def machine_information(request):
             new_job.save()
             
             #set machine to in use and set print_job
-            machine.in_use = True
             machine.current_print_information = new_job
             machine.save()
             

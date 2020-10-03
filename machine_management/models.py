@@ -86,6 +86,7 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
         "JobInformation",
         on_delete = models.SET_NULL,
         null=True,
+        blank=True,
         related_name="current_job"
     )
     
@@ -280,6 +281,9 @@ class JobInformation(models.Model):
         null=False,
     )
     
+    def __str__(self):
+        return "Job on {} starting at {}".format(self.machine.machine_name, self.start_time)
+    
     def percentage(self):
         if(not self.end_time):
             return 0
@@ -304,7 +308,8 @@ class ToolTemperature(models.Model):
     job = models.ForeignKey(
         JobInformation,
         on_delete = models.SET_NULL,
-        null=True
+        null=True,
+        blank = True
     )
     
     machine = models.ForeignKey(
