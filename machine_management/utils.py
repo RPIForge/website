@@ -29,6 +29,19 @@ def clear_usage(machine):
     machine.save()
     
     return True
+def fail_usage(machine):
+    if not machine.in_use:
+            return False
+
+    usage = machine.current_job
+    usage.clear_time = timezone.now()
+    usage.failed = True
+    usage.status_message = "Failed."
+    usage.save()
+
+    utils.send_failure_email(usage)
+    return True
+    
     
 def clear_print(machine):
     print_information = machine.current_print_information
@@ -45,19 +58,10 @@ def clear_print(machine):
     machine.save()
     
     return True
+def create_print(machine, usage):
+    
 
 
-def fail_usage(machine):
-    if not machine.in_use:
-            return False
 
-    usage = machine.current_job
-    usage.clear_time = timezone.now()
-    usage.failed = True
-    usage.status_message = "Failed."
-    usage.save()
-
-    utils.send_failure_email(usage)
-    return True
      
 

@@ -183,6 +183,7 @@ def machine_status(request):
             
             #if usage was more than a half an hour ago assume it wsa different
             if(usage):
+                
                 if(usage.start_time < timezone.now() - timedelta(minutes = 30)):
                     clear_usage(machine)
                     usage=None
