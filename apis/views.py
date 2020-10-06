@@ -175,48 +175,10 @@ def machine_status(request):
         if(machine_status=="printing"):
             #set machine to in use
             #if paost print and usage is still running clear
-            if(print_information):
-                if(print_information.start_time < timezone.now() - timedelta(minutes = 30)):
-                    clear_print(machine)
-                    print_information = None
-            
-            
-            #if usage was more than a half an hour ago assume it wsa different
-            if(usage):
-                
-                if(usage.start_time < timezone.now() - timedelta(minutes = 30)):
-                    clear_usage(machine)
-                    usage=None
-                    
-            
-            #if just usage then set print information to usage    
-            if(usage):
-                #create new job and set usage
-                new_job = JobInformation()
-                new_job.status_message = machine_status
-                new_job.machine = machine
-                new_job.usage = usage
-                new_job.status_message = machine_status_message
-                new_job.save()
-                
-                #set usage print_job
-                usage.current_print_information = new_job
-                usage.save()
-                
-                #set machine print_job
-                machine.current_print_information = new_job
-                machine.save()
-            else:
-                #create new job
-                new_job = JobInformation()
-                new_job.status_message = machine_status
-                new_job.machine = machine
-                new_job.status_message = machine_status_message
-                new_job.save()
-                
-                #set print_job
-                machine.current_print_information = new_job
-                machine.save()
+            information = create_print(machine)
+            information.status = machine_status
+            information.status_message = machine_status_message
+            information.save()
             
         elif(machine_status=="completed"):
             if(print_information):
@@ -322,33 +284,17 @@ def machine_information(request):
                 print_information.file_id = file_id
                 print_information.save()
         else:
-            #create new job
-            new_job = JobInformation()
-            new_job.status_message = "Printing."
-            new_job.machine = machine
+            information = create_print(machine)
+            
             if(end_time):
                 time_information = end_time.split('.')[0]
-                new_job.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+                information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
             
             if(file_id):
-                new_job.file_id = file_id
+                information.file_id = file_id
                 
-            new_job.save()
-            
-            usage = machine.current_job
-            if(usage):
-                if(usage.start_time < timezone.now() - timedelta(minutes = 30)):
-                    clear_machine(machine)
-                else:
-                    usage.current_print_information = new_job
-                    usage.save()
-                    
-                    new_job.usage = usage
-                    new_job.save()
+            information.save()
 
-            #set machine to in use and set print_job
-            machine.current_print_information = new_job
-            machine.save()
             
             
         return HttpResponse("Data recorded", status=200)
