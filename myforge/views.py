@@ -214,10 +214,11 @@ def list_usages(request):
 
     usages = Usage.objects.all()
     for u in usages:
-        context["table_rows"].append({
-            "row":[u.semester, u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.clear_time, u.complete, u.failed, u.cost_override, u.cost_override_reason],
-            "id":u.id
-        })
+        if(u.semester.current):
+            context["table_rows"].append({
+                "row":[u.semester, u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.clear_time, u.complete, u.failed, u.cost_override, u.cost_override_reason],
+                "id":u.id
+            })
 
     return render(request, 'myforge/forms/list_items.html', context)
 

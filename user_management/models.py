@@ -32,7 +32,9 @@ class UserProfile(models.Model):
     def calculate_balance(self):
         balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
         for usage in self.usage_set.all():
-            balance += usage.cost()
+            if(usage.semester.current):
+                balance += usage.cost()
+                
         return balance
 
     def __str__(self):
