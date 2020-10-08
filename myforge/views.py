@@ -178,10 +178,12 @@ def list_users(request):
 
     users = UserProfile.objects.all()
     for u in users:
-        context["table_rows"].append({
-            "row":[u.user.username, u.rin, format_usd(u.calculate_balance())],
-            "id":u.id
-        })
+        if(u.user.groups.filter(name = "member").exists()):
+        
+            context["table_rows"].append({
+                "row":[u.user.username, u.rin, format_usd(u.calculate_balance())],
+                "id":u.id
+            })
 
     return render(request, 'myforge/forms/list_items.html', context)
 
