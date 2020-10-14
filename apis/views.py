@@ -213,7 +213,38 @@ def machine_status(request):
         
 @csrf_exempt  
 def machine_temperature(request):
-    if(request.method == 'POST'):
+    if(request.method == 'GET'):
+        machine_id = request.GET.get("machine_id",None)
+        job_id = request.GET.get("job_id",None)
+        if(not machine_id and not job_id):
+            return HttpResponse("No machine_id or job_id provided.", status=400)
+        
+        print_information = None
+        if(machine_id):
+            machine = Machine.objects.get(id=machine_id)
+            print_information = machine.current_print_information
+        else:
+            print_information = JobInformation.objects.get(id=job_id)
+            
+        if(print_information):
+            output_response=[]
+            print(dir(print_information))
+            temperatures = print_information.tooltemperature_set.all()
+            
+            for tools in temperatures:
+                tool_information = {
+                    "tool_time":str(tools.tool_time),
+                    "tool_name":tools.tool_name,
+                    "tool_temperature":tools.tool_temperature,
+                    "tool_temperature_goal":tools.tool_temperature_goal
+                }
+                output_response.append(tool_information)
+            return HttpResponse(json.dumps(output_response), status=200)
+        return HttpResponse("No PrintInformation", status=400)
+           
+        
+        
+    elif(request.method == 'POST'):
         if(not verify_key(request)):
             return HttpResponse("Invalid or missing API Key", status=403)
             
@@ -262,8 +293,9 @@ def machine_information(request):
     if(request.method == 'POST'):
         if(not verify_key(request)):
             return HttpResponse("Invalid or missing API Key", status=403)
-            
         
+        
+
         machine_id = request.GET.get("machine_id",None)
         if(not machine_id):
             return HttpResponse("No machine_id provided.", status=400)
@@ -272,7 +304,7 @@ def machine_information(request):
         
         end_time = request.GET.get("end_time",None)
         file_id =  request.GET.get("file_id",None)
-        
+
         print_information = machine.current_print_information
         if(print_information):
             if(end_time):
@@ -294,8 +326,6 @@ def machine_information(request):
                 information.file_id = file_id
                 
             information.save()
-
-            
             
         return HttpResponse("Data recorded", status=200)
 
