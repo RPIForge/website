@@ -65,7 +65,7 @@ def create_print(machine):
     usage = machine.current_job
 
     if(print_information):
-        if(print_information.start_time < timezone.now() - timedelta(minutes = 30)):
+        if(print_information.start_time < timezone.now() - timedelta(minutes = 30)): ##change to end time somehow
             clear_print(machine)
             print_information = None
         else:
@@ -74,6 +74,9 @@ def create_print(machine):
     
     #if usage was more than a half an hour ago assume it wsa different
     if(usage):
+        if(usage.complete):
+            clear_usage(machine)
+            
         if(usage.start_time < timezone.now() - timedelta(minutes = 30)):
             usage=None
             

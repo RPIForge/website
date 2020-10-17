@@ -179,8 +179,9 @@ def machine_status(request):
             information.status = machine_status
             information.status_message = machine_status_message
             information.save()
-            
+        #if completed 
         elif(machine_status=="completed"):
+            #if there is a print_information then complete it
             if(print_information):
                 print_information.end_time = timezone.now()
                 print_information.status_message = "Completed."
@@ -190,16 +191,19 @@ def machine_status(request):
                 machine.current_print_information = None
                 machine.save()
                 
+            #if there is a usage complete it
             if(usage):
                 usage.complete = True
                 usage.end_time = timezone.now()
                 usage.status_message = "Completed."
                 usage.save()
             
+            #if nothing attached to machine then set it not in use
             if(not machine.current_print_information and not machine.current_job):
                 machine.in_use = False
                 machine.save()
-                        
+        
+        #if error then set error messages
         elif(machine_status=="error"):
             if(usage):
                 usage.error = True
@@ -213,12 +217,15 @@ def machine_status(request):
         
 @csrf_exempt  
 def machine_temperature(request):
+    #if get
     if(request.method == 'GET'):
+        #get either machine or job
         machine_id = request.GET.get("machine_id",None)
         job_id = request.GET.get("job_id",None)
         if(not machine_id and not job_id):
             return HttpResponse("No machine_id or job_id provided.", status=400)
         
+        #get the current print_information or get previous print information
         print_information = None
         if(machine_id):
             machine = Machine.objects.get(id=machine_id)
@@ -226,43 +233,75 @@ def machine_temperature(request):
         else:
             print_information = JobInformation.objects.get(id=job_id)
             
+        #if there is such information
         if(print_information):
-            output_response=[]
-            print(dir(print_information))
+            #get all temperatures for the print
             temperatures = print_information.tooltemperature_set.all()
             
-            for tools in temperatures:
-                tool_information = {
-                    "tool_time":str(tools.tool_time),
-                    "tool_name":tools.tool_name,
-                    "tool_temperature":tools.tool_temperature,
-                    "tool_temperature_goal":tools.tool_temperature_goal
-                }
-                output_response.append(tool_information)
-            return HttpResponse(json.dumps(output_response), status=200)
+            #get display type if being pretty
+            display_type = request.GET.get("display_graph",None)
+            
+            #if raw data requested
+            if(not display_type):
+                #get raw data in json
+                output_response=[]
+                for tools in temperatures:
+                    tool_information = {
+                        "tool_time":str(tools.tool_time),
+                        "tool_name":tools.tool_name,
+                        "tool_temperature":tools.tool_temperature,
+                        "tool_temperature_goal":tools.tool_temperature_goal
+                    }
+                    output_response.append(tool_information)
+                
+                return HttpResponse(json.dumps(output_response), status=200)
+            else:
+                #format temperature to be displayed
+                temperature_information={}
+                for tools in temperatures:
+                    if tools.tool_name in temperature_information:
+                        information = temperature_information[tools.tool_name]
+                        information["time"].append(tools.tool_time.strftime('%H:%M:%S'))
+                        information["goal"].append(tools.tool_temperature_goal)
+                        information["temperature"].append(tools.tool_temperature)
+                    else:
+                        temperature_information[tools.tool_name] = {
+                            "time":[tools.tool_time.strftime('%H:%M:%S')],
+                            "goal":[tools.tool_temperature_goal],
+                            "temperature":[tools.tool_temperature]
+                        }
+                        
+                return render(request, 'apis/temperature.html', {"temperature_information":json.dumps(temperature_information)})
+                
         return HttpResponse("No PrintInformation", status=400)
            
         
-        
+    #if post then adding temperature information 
     elif(request.method == 'POST'):
         if(not verify_key(request)):
             return HttpResponse("Invalid or missing API Key", status=403)
             
+        #get information from body
         temperature_data = json.loads(request.body)
         
-        
+        #get machine
         machine_id = request.GET.get("machine_id",None)
         if(not machine_id):
             return HttpResponse("No machine_id provided.", status=400)
         machine_id = int(machine_id)          
         machine = Machine.objects.get(id=machine_id)
+       
+        #get print information if there is one
         print_information = machine.current_print_information
         for tool in temperature_data:
+            #create new temperature and attach it to machine
             temperature = ToolTemperature()
             temperature.machine = machine
             temperature.tool_name = tool["tool_name"]
             temperature.tool_temperature = tool["temperature"]
             temperature.tool_temperature_goal = tool["goal"]
+            
+            #if print information then attach it to
             if(print_information):
                 temperature.job = print_information
             temperature.save()

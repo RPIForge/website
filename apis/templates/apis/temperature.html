@@ -1,0 +1,91 @@
+{% load static %}
+
+{% block page_title %}
+<title>Machine Temperature</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+<style>
+canvas{
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+</style>
+{% endblock custom_styles %}
+	
+{% block main %}
+	<main>
+		<div>
+			<canvas id="canvas"></canvas>
+		</div>
+	</main>
+{% endblock main %}
+
+{% block scripts %}
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	<script>
+	var temperature_history = {{temperature_information|safe }}
+	var temperature_time = Object.entries(temperature_history)[0][1]["time"]
+	
+	var config = {
+			type: 'line',
+			data: {
+				labels: temperature_time,
+			},
+			options: {
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
+					}]
+				},
+				
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Chart with Multiline Labels'
+				},
+			}
+		};
+	var ctx = document.getElementById('canvas').getContext('2d');
+	chart = new Chart(ctx, config);
+	
+	var color_array = [
+		'rgba(255, 0, 0, 1)',
+		'rgba(0, 255, 0, 1)',
+		'rgba(0, 0, 255, 1)',
+		'rgba(255, 255, 0, 1)',
+		'rgba(255, 0, 255, 1)',
+		'rgba(0, 255, 255, 1)',
+		'rgba(255, 255, 255, 1)',
+	]
+	var color_index = 0;
+	for (const [key, value] of Object.entries(temperature_history)) {
+		color = color_array[color_index]
+		color_index++;
+		
+		chart.data.datasets.push({
+			label: key,
+			fill: false,
+			backgroundColor: color,
+			borderColor: color,
+			data: temperature_history[key]["temperature"]
+		});
+		chart.data.datasets.push({
+			label: key+" goal",
+			fill: false,
+			backgroundColor: color.replace(/[^,]+(?=\))/, '0.5'),
+			borderColor: color.replace(/[^,]+(?=\))/, '0.5'),
+			data: temperature_history[key]["goal"]
+		});
+	} 
+	
+	window.onload = function() {
+		window.myLine = chart;
+	};
+	
+
+	</script>
+{% endblock scripts %}
