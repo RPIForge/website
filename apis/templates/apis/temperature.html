@@ -45,7 +45,9 @@ canvas{
         
         var temperature_time = Object.entries(temperature_history)[0][1]["time"]
         
-        var config = {
+        
+        var ctx = document.getElementById('canvas').getContext('2d');
+        chart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: temperature_time,
@@ -74,11 +76,11 @@ canvas{
                         text: 'Chart with Multiline Labels'
                     },
                 }
-            };
-        var ctx = document.getElementById('canvas').getContext('2d');
+            });
+        
     
         
-        chart = new Chart(ctx, config);
+        
         
         var color_array = [
             'rgba(255, 0, 0, 1)',
