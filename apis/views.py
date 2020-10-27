@@ -219,9 +219,12 @@ def machine_status(request):
 def machine_temperature(request):
     #if get
     if(request.method == 'GET'):
-        #get either machine or job
+        #get varlables from url
         machine_id = request.GET.get("machine_id",None)
         job_id = request.GET.get("job_id",None)
+        display_type = request.GET.get("display_graph",None)
+        
+        
         if(not machine_id and not job_id):
             return HttpResponse("No machine_id or job_id provided.", status=400)
         
@@ -238,8 +241,7 @@ def machine_temperature(request):
             #get all temperatures for the print
             temperatures = print_information.tooltemperature_set.all()
             
-            #get display type if being pretty
-            display_type = request.GET.get("display_graph",None)
+            
             
             #if raw data requested
             if(not display_type):
@@ -272,7 +274,9 @@ def machine_temperature(request):
                         }
                         
                 return render(request, 'apis/temperature.html', {"temperature_information":json.dumps(temperature_information)})
-                
+            
+        if(display_type):
+                return render(request, 'apis/temperature.html', {"temperature_information":json.dumps({})})
         return HttpResponse("No PrintInformation", status=400)
            
         

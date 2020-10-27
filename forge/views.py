@@ -46,6 +46,7 @@ def render_status(request):
                     end_time = p.end_time
                 
                 output.append({
+                    "id": m.id,
                     "name": m.machine_name,
                     "bar_type": "bar_in_progress",
                     "text_type": "text_in_progress",
@@ -123,6 +124,7 @@ def render_status(request):
                 status_message = p.status_message
                 
             output.append({
+                "id": m.id,
                 "name": m.machine_name,
                 "bar_type": bar_type,
                 "text_type": text_type,
@@ -136,6 +138,7 @@ def render_status(request):
             })
         else:
             output.append({
+                "id": m.id,
                 "name": m.machine_name,
                 "bar_type": "bar_in_progress",
                 "text_type": "text_in_progress",

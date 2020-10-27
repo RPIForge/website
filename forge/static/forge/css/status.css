@@ -7,6 +7,13 @@
 	color: black;
 }
 
+.temperature {
+    position: relative;
+    top: 10%;
+    height: 80%;
+    width: 100%
+}
+
 .loading_bar {
 	position: relative;
 	/*top: -85px;*/

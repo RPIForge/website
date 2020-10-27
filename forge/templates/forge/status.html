@@ -14,14 +14,20 @@
 	<main class="bg_shade">
 		<div id="card_container" class="center_children">
 			{% for machine in machines %}
-			<div class="card">
-				<div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
-				<div class="card_text {{machine.text_type}}">
-					<div class="machine_name">{{ machine.name }}</div>
-					<div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
-					<div class="status_message">{{ machine.status_message }}</div>
-					<div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
-				</div>
+			<div class="card" id="{{machine.id}}_container"  onclick="myFunction({{machine.id}})">
+                <div id="{{machine.id}}_contents">
+                    <div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
+                    <div class="card_text {{machine.text_type}}">
+                        <div class="machine_name">{{ machine.name }}</div>
+                        <div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
+                        <div class="status_message">{{ machine.status_message }}</div>
+                        <div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
+                    </div>
+                </div>
+                <div id="{{machine.id}}_temperature">
+                    <div class="machine_name">{{ machine.name }}</div>
+                    <iframe class="temperature" id="{{machine.id}}_iframe"  scrolling="no"></iframe>
+                </div>
 			</div>
 			{% endfor %}
 		</div>
@@ -70,5 +76,36 @@
 		}
 
 		refresh_bars();
-</script>
+    </script>
+    
+    <script>
+        function myFunction(id){
+            var machine_container =  document.getElementById(id+"_container");
+            var machine_contents =  document.getElementById(id+"_contents");
+            var machine_temperature =  document.getElementById(id+"_temperature");
+            var machine_iframe =  document.getElementById(id+"_temperature");
+            
+            
+            if(machine_contents.style.display=="block") {
+                console.log(1);
+                machine_container.style.display.width = "500px"
+                machine_container.style.display.height = "350px"
+            
+                machine_temperature.style.display = "block"
+                machine_contents.style.display = "none"
+            } else {
+                console.log(2);
+                machine_container.style.display.width = "200px"
+                machine_container.style.display.height = "200px"
+                
+                machine_temperature.style.display = "none"
+                machine_contents.style.display = "block"
+                
+            }
+            
+            if(machine_iframe.src == ''){
+                machine_iframe.src = "/api/machines/print/temperature?machine_id="+id+"&display_graph=1";
+            }
+        }
+    </script>
 {% endblock scripts %}
