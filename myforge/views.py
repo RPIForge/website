@@ -182,7 +182,7 @@ def list_users(request):
         
             context["table_rows"].append({
                 "row":[u.user.username, u.rin, format_usd(u.calculate_balance())],
-                "id":u.id
+                "id":u.user.id
             })
 
     return render(request, 'myforge/forms/list_items.html', context)
