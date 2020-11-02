@@ -233,6 +233,9 @@ def machine_temperature(request):
         if(machine_id):
             machine = Machine.objects.get(id=machine_id)
             print_information = machine.current_print_information
+            if(not print_information and machine.current_job):
+                usage = machine.current_job
+                print_information = usage.current_print_information
         else:
             print_information = JobInformation.objects.get(id=job_id)
             
