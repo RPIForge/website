@@ -77,11 +77,15 @@
         if(link.includes("login")){
             window.location.replace("/login");
         }
+         $("#myforge_frame").css("display", "block");
+        
     }
     
 	function setFrame(src) {
         
 		$("#myforge_frame").attr("src", src);
+        $("#myforge_frame").css("display", "none");
+        
         if(src == 'dyn/volunteer_chat_join'){
 			console.log('disabling_logout');
             disable_logout = true;
