@@ -9,7 +9,6 @@ from decimal import Decimal
 from user_management.models import UserProfile
 
 import uuid
-from math import floor
 
 from datetime import datetime, timedelta
 
@@ -106,9 +105,9 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
 
         #print(elapsed_time)
         if (elapsed_time.days > 0):
-            return f"{elapsed_time.days}d {elapsed_time.seconds // 3600}h {floor(elapsed_time.seconds // 60 % 60.0)}m"
+            return f"{elapsed_time.days}d {elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
         else:
-            return f"{elapsed_time.seconds // 3600}h {floor(elapsed_time.seconds // 60 % 60.0)}m"
+            return f"{elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
 
 
 class Semester(models.Model):

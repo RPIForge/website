@@ -228,6 +228,11 @@
                     return false;
                 }
 				
+				if(parseInt($("#usage_hours")[0].value).toString()!=$("#usage_hours")[0].value.toString() || parseInt($("#usage_hours")[0].value).toString()!=$("#usage_hours")[0].value.toString() ) {
+					alert("Both numbers must be whole numbers.");
+					return false;
+				}
+				
                 output["hours"] = $("#usage_hours")[0].value;
                 output["minutes"] = $("#usage_minutes")[0].value;
 
