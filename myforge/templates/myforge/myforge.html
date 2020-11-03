@@ -73,10 +73,12 @@
     var disable_logout = false;
     
     function iframe_load() {
-        link = document.getElementById("myforge_frame").contentWindow.location.href
-        if(link.includes("login")){
-            window.location.replace("/login");
-        }
+        try {
+            link = document.getElementById("myforge_frame").contentWindow.location.href
+            if(link.includes("login")){
+                window.location.replace("/login");
+            }
+        }catch (e) {}
          $("#myforge_frame").css("display", "block");
         
     }
