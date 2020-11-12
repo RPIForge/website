@@ -67,7 +67,7 @@ def render_status(request):
             else:
                 duration = u.end_time - u.start_time
                 elapsed = timezone.now() - u.start_time
-                if(duration==0):
+                if(duration.total_seconds()==0):
                     percent_complete = 0
                 else:
                     percent_complete = elapsed.total_seconds() / duration.total_seconds()
