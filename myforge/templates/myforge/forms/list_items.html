@@ -30,9 +30,9 @@
 			<tbody>
 			{% for row in table_rows %}
 			<tr>
-			{% for item in row.row %}
-				<td>{{ item }}</td>
-			{% endfor %}
+                {% for item in row.row %}
+                    <td>{{ item }}</td>
+                {% endfor %}
 				<td>
 					<a class="edit_link" href="/admin/{{ edit_root }}/{{ row.id }}/change"><i class="fas fa-edit" title="Edit"></i></a>
 					<a class="edit_link" href="/admin/{{ edit_root }}/{{ row.id }}/delete"><i class="fas fa-trash-alt" title="Remove"></i></a>
