@@ -67,7 +67,11 @@ def render_status(request):
             else:
                 duration = u.end_time - u.start_time
                 elapsed = timezone.now() - u.start_time
-                percent_complete = elapsed.total_seconds() / duration.total_seconds()
+                if(duration==0):
+                    percent_complete = 0
+                else:
+                    percent_complete = elapsed.total_seconds() / duration.total_seconds()
+                    
                 bar_progress = int(100 * percent_complete)
 
                 time_remaining_text = "Estimated Completion:"
