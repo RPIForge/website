@@ -19,6 +19,9 @@
         <div id="available_machines">
             <p class="title"><strong>Download Charge Sheets</strong></p>
             <div>
+                <div id='download_id' style="display:none;">
+                    Downloading Sheet. It may take a while. Please don't click again
+                </div>
                 <select name="semester" id="semester_select">
                     {% for semester in semester_list %}
                         <option value="{{semester.id}}">{{semester.name}}</option>
@@ -36,13 +39,17 @@
     <script>
     function download_sheet(url){
         var select_id = document.getElementById("semester_select");
-        $.get(
-            url,
-            {'semester_id' : select_id.value},
-            function(data) {
-               console.log(data)
-            }
-        );
+        var link = document.createElement("a");
+        link.download = name;
+        link.href = url+"?semester_id="+select_id.value;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+        
+        var download_text = document.getElementById("download_id");
+        download_text.style.display = "block";
+        
     }
     </script>
 {% endblock main %}

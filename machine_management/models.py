@@ -115,9 +115,6 @@ class Semester(models.Model):
     season = models.CharField(max_length=255,blank=False)
     current = models.BooleanField(default=True)
     
-    usage_summary = models.TextField(null=True)
-    usage_update = models.DateField(null=True)
-    
     def __str__(self):
         if(self.current):
             return f"{self.season} {self.year} (current semester)"
