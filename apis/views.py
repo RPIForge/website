@@ -23,9 +23,9 @@ from user_management.models import *
 
 # Importing Other Libraries
 import json
-from datetime import datetime
 from decimal import Decimal
 from datetime import datetime, timedelta
+import csv
 
 #
 #   API
@@ -125,7 +125,10 @@ def machine_endpoint(request):
     else:
         return HttpResponse("", status=405) # Method not allowed
         
-        
+#
+#Users
+#
+  
 def verify_user(request):
     if request.method == 'GET':
         uuid = request.GET.get('uuid', '')
@@ -149,7 +152,10 @@ def verify_user(request):
         else:
             return HttpResponse("user")
             
-    
+
+#
+#Volunteers
+#    
     
 def current_volunteers(request):
     if request.method == 'GET':
@@ -163,18 +169,75 @@ def current_volunteers(request):
                 
             
             return HttpResponse(json.dumps(output))
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+            
+#
+# Billing
+#
+#get charge sheet for the userss
+
+def handle_users(user_list, user_dict):
+    output = {}
+    for user in user_dict:
+        if user_list.filter(id=user_dict[user]['id']).exists():
+            output[user] = user_dict[user]
+    return output
         
+def charge_sheet(request):
+    if request.method == 'GET':
+        graduating = request.GET.get('graduating', False)
+        semester_id = request.GET.get('semester_id', None)
+        
+        if(not semester_id):
+            return HttpResponse("No Semester Provided.", status=400) 
+        
+        semester = Semester.objects.get(id=semester_id)
+        
+        
+        #get the list of users depneidng on if they are graduating
+        #We charge memebrs differently if they are graduating or not.
+        if(graduating):
+            user_id_list = User.objects.filter(userprofile__is_graduating=True).values('id')
+            graduating_string = 'graduating'
+        else:
+            user_id_list = User.objects.filter(userprofile__is_graduating=False).values('id')
+            graduating_string = 'nongraduating'
+          
+        
+        usages = semester.usage_set.all()
+        #if data reading has already been done update
+        
+        
+        print(0)
+        total_revenue = 0
+        user_dict = {}
+        count=0
+        for usage in usages:
+            print(count, usages.count())
+            count = count + 1
+            
+            name = usage.userprofile.user.get_full_name()
+            cost = usage.cost()
+            
+            if(name in user_dict):
+                user_dict[name]['balance'] = float(user_dict[name]['balance']) + float(cost)
+            else:
+                user_dict[name] = {'id':usage.userprofile.user.id, 'rin':usage.userprofile.rin, 'balance':float(cost+15)}
+                
+            total_revenue = float(total_revenue) + float(cost) + float(15)
+            
+        user_dict = handle_users(user_id_list,user_dict)
+        
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}_{}_{}.csv"'.format(semester.season, semester.year, graduating_string)
+        
+        writer = csv.writer(response)
+        
+        csv_data = [['Full Name','Rin', 'Balance']]
+        for user in user_dict:
+            user_info = user_dict[user]
+            csv_data.append([user, user_info['rin'], user_info['balance']])
+            
+        print(csv_data)
+        writer.writerows(csv_data)
+        
+        return response

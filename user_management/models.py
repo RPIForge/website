@@ -28,7 +28,7 @@ class UserProfile(models.Model):
     entertainment_mode = models.BooleanField(default=False)
     
     uuid = models.UUIDField(default = uuid.uuid4, editable = False) 
-
+    
     def calculate_balance(self):
         if(not self.user.groups.filter(name = "member").exists()):
             return Decimal(0.00)

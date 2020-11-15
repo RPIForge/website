@@ -1,0 +1,42 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+
+{% block page_title %}
+<title>Use A Machine</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/machine_usage.css' %}">
+{% endblock custom_styles %}
+    
+{% block header %}
+{% endblock header%}
+
+{% block main %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+
+    <main class="bg_shade">
+        <div id="available_machines">
+        {% if submit %}
+            <p class="title"><strong>Success!!</strong></p>
+        {% else %}
+            <p class="title"><strong>Create Semester</strong> (Ends Current Semester)</p>
+            <form action="/dyn/billing/change_semesters" method="post">
+                {% csrf_token %}
+                <div>
+                    Year: {{ semester_form.year }}
+                </div>
+                <div>
+                    Season: {{ semester_form.season }}
+                </div>
+                <input type="submit" value="Submit">
+            </form>
+        {% endif %}
+        </div>
+    </main>
+{% endblock main %}
+
+
+{% block footer %}
+{% endblock footer %}
+
