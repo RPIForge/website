@@ -29,19 +29,19 @@
                 </select>
             </div>
             <div>
-                <input type="button" onclick="download_sheet('/api/billing/charge_sheet')" value="Download NonGraduating CSV"></input>
+                <input type="button" onclick="download_sheet('/api/billing/charge_sheet',false)" value="Download NonGraduating CSV"></input>
             </div>
             <div>
-                <input type="button" onclick="download_sheet('/api/billing/charge_sheet?graduating=True')" value="Download Graduating CSV"></input>
+                <input type="button" onclick="download_sheet('/api/billing/charge_sheet', true)" value="Download Graduating CSV"></input>
             </div>
         </div>
     </main>
     <script>
-    function download_sheet(url){
+    function download_sheet(url,graduating){
         var select_id = document.getElementById("semester_select");
         var link = document.createElement("a");
         link.download = name;
-        link.href = url+"?semester_id="+select_id.value;
+        link.href = url+"?semester_id="+select_id.value+"&graduating="+graduating;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
