@@ -23,9 +23,9 @@ from user_management.models import *
 
 # Importing Other Libraries
 import json
-from datetime import datetime
 from decimal import Decimal
 from datetime import datetime, timedelta
+import csv
 
 #
 #   API
@@ -125,7 +125,10 @@ def machine_endpoint(request):
     else:
         return HttpResponse("", status=405) # Method not allowed
         
-        
+#
+#Users
+#
+  
 def verify_user(request):
     if request.method == 'GET':
         uuid = request.GET.get('uuid', '')
@@ -149,7 +152,10 @@ def verify_user(request):
         else:
             return HttpResponse("user")
             
-    
+
+#
+#Volunteers
+#    
     
 def current_volunteers(request):
     if request.method == 'GET':
@@ -163,6 +169,75 @@ def current_volunteers(request):
                 
             
             return HttpResponse(json.dumps(output))
+            
+#
+# Billing
+#
+#get charge sheet for the userss
+def charge_sheet(request):
+    if request.method == 'GET':
+        graduating = request.GET.get('graduating', False)
+        semester_id = request.GET.get('semester_id', None)
+        
+        if(not semester_id):
+            return HttpResponse("No Semester Provided.", status=400) 
+        
+        semester = Semester.objects.get(id=semester_id)
+        
+        
+        #get the list of users depneidng on if they are graduating
+        #We charge memebrs differently if they are graduating or not.
+        if(graduating):
+            usages = semester.usage_set.filter(userprofile__is_graduating=True)
+        else:
+            usages = semester.usage_set.filter(userprofile__is_graduating=False)
+        
+        
+        #if data reading has already been done update
+        user_dict = {}
+        if(semester.usage_summary):
+            usages = usages.filter(start_time__lte=semester.usage_update)
+
+            if(usages):
+                output_dict = json.loads(semester.usage_summary)
+                user_dict = output_dict['user_dict']
+            else:
+                print("return 1")
+                return HttpResponse(semester.usage_summary)
+              
+            
+        
+        total_revenue = 0
+        for usage in usages:
+            name = usage.userprofile.user.get_full_name()
+            cost = usage.cost()
+            
+            if(name in user_dict):
+                user_dict[name]['balance'] = float(user_dict[name]['balance']) + float(cost)
+            else:
+                user_dict[name] = {'rin':usage.userprofile.rin, 'balance':float(cost+15)}
+                
+            total_revenue = float(total_revenue) + float(cost) + float(15)
+            
+        output = {'user_dict': user_dict, 'total_revenue': float(total_revenue)}
+        
+        output_string = json.dumps(output)
+        
+        semester.usage_summary = output_string
+        semester.usage_update = datetime.now() 
+        semester.save()
+        
+        print("return 2")
+        return HttpResponse(output_string)
+            
+        
+        
+        
+
+        
+    
+
+
     
     
     
