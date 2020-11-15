@@ -173,20 +173,16 @@ def current_volunteers(request):
 #
 # Billing
 #
-#get charge sheet for the userss
 
-def handle_users(user_list, user_dict):
-    output = {}
-    for user in user_dict:
-        if user_list.filter(id=user_dict[user]['id']).exists():
-            output[user] = user_dict[user]
-    return output
-        
+       
+#get charge sheet for the userss       
 def charge_sheet(request):
     if request.method == 'GET':
+        #get get paramters
         graduating = request.GET.get('graduating', False)
         semester_id = request.GET.get('semester_id', None)
         
+        #semester id is required
         if(not semester_id):
             return HttpResponse("No Semester Provided.", status=400) 
         
@@ -196,48 +192,45 @@ def charge_sheet(request):
         #get the list of users depneidng on if they are graduating
         #We charge memebrs differently if they are graduating or not.
         if(graduating):
-            user_id_list = User.objects.filter(userprofile__is_graduating=True).values('id')
+            usages = semester.usage_set.filter(userprofile__is_graduating=True)
             graduating_string = 'graduating'
         else:
-            user_id_list = User.objects.filter(userprofile__is_graduating=False).values('id')
+            usages = semester.usage_set.filter(userprofile__is_graduating=False)
             graduating_string = 'nongraduating'
           
         
-        usages = semester.usage_set.all()
+        
         #if data reading has already been done update
         
-        
-        print(0)
+        #set up variables
         total_revenue = 0
         user_dict = {}
-        count=0
+        
+        #for all usages in the semester
         for usage in usages:
-            print(count, usages.count())
-            count = count + 1
-            
             name = usage.userprofile.user.get_full_name()
             cost = usage.cost()
             
             if(name in user_dict):
                 user_dict[name]['balance'] = float(user_dict[name]['balance']) + float(cost)
             else:
-                user_dict[name] = {'id':usage.userprofile.user.id, 'rin':usage.userprofile.rin, 'balance':float(cost+15)}
+                user_dict[name] = {'rin':usage.userprofile.rin, 'balance':float(cost+15)}
                 
             total_revenue = float(total_revenue) + float(cost) + float(15)
-            
-        user_dict = handle_users(user_id_list,user_dict)
         
+        #set up csv response
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}_{}_{}.csv"'.format(semester.season, semester.year, graduating_string)
         
         writer = csv.writer(response)
         
+        #generate csv data from user_dictionary
         csv_data = [['Full Name','Rin', 'Balance']]
         for user in user_dict:
             user_info = user_dict[user]
             csv_data.append([user, user_info['rin'], user_info['balance']])
             
-        print(csv_data)
+        #write rows to csv
         writer.writerows(csv_data)
         
         return response
