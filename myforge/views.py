@@ -79,7 +79,7 @@ def manager_chat_requests(request):
 
 @login_required
 def render_charge_sheet(request):
-    semester = Semester.objects.all()
+    semester = Semester.objects.all().order_by("-current")
     semester_list = []
     for item in semester:
         semester_list.append({'id': item.id, 'name': str(item)})
@@ -96,7 +96,6 @@ def render_change_semesters(request):
             # process the data in form.cleaned_data as required
             semester = semester_form.save()
             
-            verified_email = Group.objects.get(name='verified_email') 
             members = Group.objects.get(name='member') 
             volunteers = Group.objects.get(name='volunteers') 
             managers = Group.objects.get(name='managers') 
