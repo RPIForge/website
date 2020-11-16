@@ -11,6 +11,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
 		<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
 		<script src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
+		<script src="//cdn.datatables.net/plug-ins/1.10.21/sorting/datetime-moment.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
 		<title>{{ page_title }}</title>
 		{% include "forge/components/fonts.html" %} <!-- May not be necessary if this is only being loaded in frames. -->
@@ -49,6 +50,9 @@
 						"aLengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
 						"iDisplayLength": 20,
 						"dom": 'Bfrtip',
+                        "columnDefs": [
+                            { "type": "datetime-moment", targets: 1 }
+                        ],
 						"buttons": [
 							'copy', 'csv', 'excel', 'pdf', 'print'
 						]
