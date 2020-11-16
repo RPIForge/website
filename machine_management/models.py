@@ -209,7 +209,7 @@ class Usage(models.Model):
             return (timezone.now() - self.start_time)
 
     def __str__(self):
-        return f"Usage of {self.machine} by {self.userprofile.user.username} at {self.start_time}"
+        return f"Usage of {self.machine} by {self.userprofile.user.username} at {self.start_time} during {self.semester}"
 
 
 class SlotUsage(models.Model):
