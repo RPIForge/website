@@ -21,15 +21,19 @@ class ForgeUserAdmin(UserAdmin):
     
     fieldsets = UserAdmin.fieldsets + (
         ('User Properties', {
-            'fields': ('get_rin','get_usages')
+            'fields': ('get_rin','get_userprofille','get_usages')
         }),
     )
     
-    readonly_fields=('get_rin','get_usages',)
+    readonly_fields=('get_rin','get_userprofille','get_usages')
     
     
     def get_rin(self, object):
         return object.userprofile.rin
+        
+    def get_userprofille(self, object):
+        link=reverse("admin:user_management_userprofile_change", args=[object.userprofile.id])
+        return SafeText('<li><a href="{}">{}</a></li>'.format(link,object.userprofile))
         
     def get_usages(self, object):
         userprofile = object.userprofile
@@ -46,6 +50,9 @@ class ForgeUserAdmin(UserAdmin):
         return usage_text
     
     get_usages.allow_tags = True 
+    get_rin.short_description = "Rin"
+    get_userprofille.short_description = "User Profile"
+    get_usages.short_description = "List of Usages"
         
     
 # Re-register UserAdmin
