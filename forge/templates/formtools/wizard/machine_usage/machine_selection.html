@@ -1,0 +1,36 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block header %}
+{{ wizard.form.media }}
+{% endblock header%}
+
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/machine_usage.css' %}">
+{% endblock custom_styles %}
+
+{% block main %}
+    <main class="bg_shade">
+        <div id="available_machines">
+            <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+            <p class="title" id="machine_selection_title"><strong>Machine Selection</strong></p>
+            
+        
+            <form action="" method="post">
+                {% csrf_token %}
+                <table>
+                    {{ wizard.management_form }}
+                    {{ wizard.form }}
+                </table>
+                
+                <button type="submit" id="available_next" value="{% trans 'submit' %}">Next</button>
+            </form>
+        </div>
+    </main>
+{% endblock %}
+
+
+{% block footer %}
+{% endblock footer %}

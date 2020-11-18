@@ -1,9 +1,15 @@
 {% extends "forge/generic.html" %}
 {% load i18n %}
+{% load static %}
 
 {% block header %}
 {{ wizard.form.media }}
 {% endblock header%}
+
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/machine_usage.css' %}">
+{% endblock custom_styles %}
 
 {% block main %}
     <main class="bg_shade">
