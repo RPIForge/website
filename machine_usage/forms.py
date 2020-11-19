@@ -11,7 +11,21 @@ import datetime
 
 #Machine Selection form
 class MachineSelectionForm(forms.Form):
-    machine = forms.ModelChoiceField(queryset=Machine.objects.filter(in_use=False)) 
+    machine = None
+    def __init__(self, *args, **kwargs):
+        super(MachineSelectionForm, self).__init__(*args, **kwargs)
+        
+        choice_list = []
+        for type in MachineType.objects.all():
+            typed_choice = []
+            for machine in type.machine_set.filter(in_use=False):
+                typed_choice.append((machine, machine.machine_name))
+                
+            if(not typed_choice):
+                continue
+            choice_list.append([type.machine_type_name,typed_choice])
+        
+        self.fields['machine'] = forms.ChoiceField(choices=choice_list)
 
 #Machine Slot usage
 class MachineSlotUsageForm(forms.Form):
