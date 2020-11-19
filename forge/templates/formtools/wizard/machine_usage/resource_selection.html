@@ -40,10 +40,8 @@
                     {% endfor %}
                 </table>
                 
-                {% if wizard.steps.prev %}
-                <button name="wizard_goto_step" type="submit" id="available_next" value="{{ wizard.steps.prev }}">{% trans "Previous" %}</button>
-                {% endif %}
-                <button type="submit" id="available_next" value="{% trans 'submit' %}">Next</button>
+                <button style="width:49%;" name="wizard_goto_step" type="submit" id="available_next" value="{{ wizard.steps.prev }}">{% trans "Previous" %}</button>
+                <button style="width:49%;" type="submit" id="available_next" value="{% trans 'submit' %}">Next</button>
             </form>
         </div>
     </main>

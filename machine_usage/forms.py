@@ -15,20 +15,21 @@ class MachineSelectionForm(forms.Form):
     
     def __init__(self, *args, **kwargs):
         super(MachineSelectionForm, self).__init__(*args, **kwargs)
+        
         ##incase for grouping
-        #
-        #choice_list = []
-        #for type in MachineType.objects.all():
-        #    typed_choice = []
-        #    for machine in type.machine_set.filter(in_use=False):
-        #        typed_choice.append((machine, machine.machine_name))
-        #        
-        #    if(not typed_choice):
-        #        continue
-        #    choice_list.append([type.machine_type_name,typed_choice])
-        #
-        #
-        #self.fields['machine'] = forms.ChoiceField(choices=choice_list)
+        
+        choice_list = []
+        for type in MachineType.objects.all():
+            typed_choice = []
+            for machine in type.machine_set.filter(in_use=False):
+                typed_choice.append((machine.id, machine.machine_name))
+                
+            if(not typed_choice):
+                continue
+            choice_list.append([type.machine_type_name,typed_choice])
+        
+        
+        self.fields['machine']._set_choices(choice_list)
 
 #Machine Slot usage
 class MachineSlotUsageForm(forms.Form):
@@ -93,7 +94,6 @@ def machine_has_slots(wizard):
     cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
     if(cleaned_data!={}):
         machine = cleaned_data['machine']
-        print(machine)
         if(machine.machine_type.machineslot_set.all()):
             return True
         else:
