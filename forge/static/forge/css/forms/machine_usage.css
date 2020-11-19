@@ -182,5 +182,5 @@ button {
   background-color: #AF0909;
   border: none;
   margin-top: 5px;
-  min-width: 100%;
+  width: 100%;
 }
