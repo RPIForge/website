@@ -52,7 +52,6 @@ class MachineSlotUsageForm(forms.Form):
             self.fields['resource_{}'.format(slot.id)] = forms.ChoiceField(choices=choice_list)
             
             self.fields['ammount_{}'.format(slot.id)] = forms.FloatField(required = True,  min_value=0,widget=forms.NumberInput(attrs={'placeholder': unit_text+' of '+resource_name}))
-        print(self.slot_name_list)
 
 #Usage Length usage
 class MachineUsageLength(forms.Form):
@@ -73,9 +72,21 @@ class MachineOptions(forms.Form):
 machine_usage_templates = ["formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
 
 
+def machine_has_slots(wizard):
+    cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
+    if(cleaned_data!={}):
+        machine = cleaned_data['machine']
+        if(machine.machine_type.machineslot_set.all()):
+            return True
+        else:
+            return False
+    return True
+    
 class MachineUsageWizard(SessionWizardView):
     #list form
     form_list = [MachineSelectionForm, MachineSlotUsageForm, MachineUsageLength, MachinePolicy, MachineOptions]
+        
+        
         
     def done(self, form_list, **kwargs):
         #get data
