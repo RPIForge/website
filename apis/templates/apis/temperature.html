@@ -17,7 +17,7 @@ canvas{
 {% block main %}
 	<main>
         <div id="information">
-            <div id="chart">
+            <div id="chart" style="position: relative;">
                 <canvas id="canvas"></canvas>
             </div>
             <div id="nodata">
@@ -45,8 +45,8 @@ canvas{
         
         var temperature_time = Object.entries(temperature_history)[0][1]["time"]
         
-        
-        var ctx = document.getElementById('canvas').getContext('2d');
+        var canvas = document.getElementById('canvas')
+        var ctx = canvas.getContext('2d');
         chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -67,10 +67,17 @@ canvas{
                             ticks: {
                                 beginAtZero: true
                             }
+                        }],
+                        xAxes: [{
+                            ticks: {
+                                reverse: true,
+                                maxTicksLimit: 20
+                            }
                         }]
                     },
                     
                     responsive: true,
+                    maintainAspectRatio: false,
                     title: {
                         display: true,
                         text: 'Chart with Multiline Labels'
@@ -91,7 +98,10 @@ canvas{
             'rgba(0, 255, 255, 1)',
             'rgba(255, 255, 255, 1)',
         ]
+        
         var color_index = 0;
+        
+        var temperature_length = 0;
         for (const [key, value] of Object.entries(temperature_history)) {
             if(key=="information"){
                 continue;
@@ -99,6 +109,8 @@ canvas{
                 
             color = color_array[color_index]
             color_index++;
+            
+            temperature_length = temperature_history[key]['time'].length
             
             chart.data.datasets.push({
                 label: key,
@@ -116,6 +128,11 @@ canvas{
             });
             chart.update()
         } 
+        
+        var pixel_height = chart.canvas.parentNode.style.clientHeight;
+        chart.canvas.parentNode.style.width = (temperature_length*5)+'px';
+        chart.canvas.parentNode.style.height = "100%";
+        
 	}
 
 	</script>

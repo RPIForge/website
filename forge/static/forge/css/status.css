@@ -95,6 +95,13 @@ main {
 	color: #000;
 }
 
+.temperature {
+    width: 100%;
+    height: 80%;
+    border: none;
+    margin-top:10px;
+}
+
 .user_name {
 	position: relative;
 	font-size: 10px;
