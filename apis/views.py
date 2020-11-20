@@ -181,6 +181,7 @@ def charge_sheet(request):
         #get get paramters
         graduating = request.GET.get('graduating', False)
         semester_id = request.GET.get('semester_id', None)
+
         
         #semester id is required
         if(not semester_id):
@@ -191,7 +192,7 @@ def charge_sheet(request):
         
         #get the list of users depneidng on if they are graduating
         #We charge memebrs differently if they are graduating or not.
-        if(graduating):
+        if(graduating=='true'):
             usages = semester.usage_set.filter(userprofile__is_graduating=True)
             graduating_string = 'graduating'
         else:
