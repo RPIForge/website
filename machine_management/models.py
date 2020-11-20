@@ -295,8 +295,6 @@ class JobInformation(models.Model):
         return percentage
     
 
-    
-
   
 class ToolTemperature(models.Model): 
     tool_name = models.CharField(max_length=255)
