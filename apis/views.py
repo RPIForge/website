@@ -181,6 +181,7 @@ def charge_sheet(request):
         #get get paramters
         graduating = request.GET.get('graduating', False)
         semester_id = request.GET.get('semester_id', None)
+
         
         #semester id is required
         if(not semester_id):
@@ -191,11 +192,17 @@ def charge_sheet(request):
         
         #get the list of users depneidng on if they are graduating
         #We charge memebrs differently if they are graduating or not.
-        if(graduating):
+        if(graduating=='true'):
             usages = semester.usage_set.filter(userprofile__is_graduating=True)
+            
+            remaining_users = list(User.objects.filter(userprofile__is_graduating=True, groups__name='member'))
+            
             graduating_string = 'graduating'
         else:
             usages = semester.usage_set.filter(userprofile__is_graduating=False)
+            
+            remaining_users = list(User.objects.filter(userprofile__is_graduating=False, groups__name='member'))
+            
             graduating_string = 'nongraduating'
           
         
@@ -206,10 +213,14 @@ def charge_sheet(request):
         total_revenue = 0
         user_dict = {}
         
+        
         #for all usages in the semester
         for usage in usages:
             name = usage.userprofile.user.get_full_name()
             cost = usage.cost()
+            
+            if(usage.userprofile.user in remaining_users):
+                remaining_users.remove(usage.userprofile.user)
             
             if(name in user_dict):
                 user_dict[name]['balance'] = float(user_dict[name]['balance']) + float(cost)
@@ -217,6 +228,11 @@ def charge_sheet(request):
                 user_dict[name] = {'rin':usage.userprofile.rin, 'balance':float(cost+15)}
                 
             total_revenue = float(total_revenue) + float(cost) + float(15)
+        
+        for user in remaining_users:
+            user_dict[user.get_full_name()] = {'rin':user.userprofile.rin, 'balance':float(15)}
+            
+        
         
         #set up csv response
         response = HttpResponse(content_type='text/csv')
