@@ -7,7 +7,7 @@ from django.utils import timezone
 from decimal import Decimal
 
 from user_management.models import UserProfile
-
+from business.models import *
 import uuid
 
 from datetime import datetime, timedelta
@@ -108,28 +108,6 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
             return f"{elapsed_time.days}d {elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
         else:
             return f"{elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
-
-
-class Semester(models.Model):
-    year = models.IntegerField(blank=False)
-    season = models.CharField(max_length=255,blank=False)
-    current = models.BooleanField(default=True)
-    
-    def __str__(self):
-        if(self.current):
-            return f"{self.season} {self.year} (current semester)"
-        else:
-            return f"{self.season} {self.year}"
-    
-    
-    def save(self, *args, **kwargs):
-        if self.current:
-            semesters = Semester.objects.all().filter(current=True)
-            for years in semesters:
-                years.current = False
-                years.save()
-            
-        super(Semester, self).save(*args, **kwargs)
 
 
 class Usage(models.Model):

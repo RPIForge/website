@@ -19,3 +19,6 @@ class UserManagementConfig(AppConfig):
 
 class APIConfig(AppConfig):
     name = 'apis'
+    
+class BusinessConfig(AppConfig):
+    name = 'business'
