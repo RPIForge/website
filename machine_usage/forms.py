@@ -66,6 +66,9 @@ class MachineSlotUsageForm(forms.Form):
                     unit_text=resource.unit
                     resource_name = resource.resource_name
             
+            if(choice_list):
+                choice_list.sort(key = lambda x: x[1])
+            
             #add choice field and decimal field
             self.fields['resource_{}'.format(slot.id)] = forms.ChoiceField(choices=choice_list)
             
