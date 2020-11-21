@@ -79,3 +79,16 @@ class ForgeProfileCreationForm(forms.ModelForm):
     class Meta:                                 
         model = UserProfile 
         fields = ('rin','gender','major')
+        
+
+
+class ForgeUserForm(forms.ModelForm):
+    comment = forms.CharField(widget=forms.Textarea)
+    
+    class Meta:                                 
+        model = User 
+        exclude = ()
+        
+
+
+        

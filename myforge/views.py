@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 
 from machine_management.models import *
+from machine_management.forms import *
 
 
 # Importing Other Libraries
@@ -76,6 +77,48 @@ def manager_chat_requests(request):
     url = get_chat_url(request, "/manager/request/select")
     return redirect(url)
 
+@login_required
+def render_charge_sheet(request):
+    semester = Semester.objects.all().order_by("-current")
+    semester_list = []
+    for item in semester:
+        semester_list.append({'id': item.id, 'name': str(item)})
+    
+    return render(request, 'myforge/forms/charge_sheet.html', {'semester_list':semester_list})
+    
+@login_required
+def render_change_semesters(request):
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        semester_form = SemesterCreationForm(request.POST)
+        # check whether it's valid:
+        if semester_form.is_valid():
+            # process the data in form.cleaned_data as required
+            semester = semester_form.save()
+            
+            members = Group.objects.get(name='member') 
+            volunteers = Group.objects.get(name='volunteers') 
+            managers = Group.objects.get(name='managers') 
+            admins = Group.objects.get(name='admins') 
+            
+            #clear members, volunteers, managers
+            members.user_set.clear()
+            volunteers.user_set.clear()
+            managers.user_set.clear()
+            
+            for user in admins.user_set.all():
+               user.groups.add(members, managers, volunteers)
+                
+                
+            # redirect to a new URL:
+            return render(request, 'myforge/forms/change_semester.html', {'submit': True}) 
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        semester_form = SemesterCreationForm()
+        
+    
+    return render(request, 'myforge/forms/change_semester.html', {'semester_form': semester_form}) 
     
     
 def format_usd(fp):
@@ -178,10 +221,12 @@ def list_users(request):
 
     users = UserProfile.objects.all()
     for u in users:
-        context["table_rows"].append({
-            "row":[u.user.username, u.rin, format_usd(u.calculate_balance())],
-            "id":u.id
-        })
+        if(u.user.groups.filter(name = "member").exists()):
+        
+            context["table_rows"].append({
+                "row":[u.user.username, u.rin, format_usd(u.calculate_balance())],
+                "id":u.user.id
+            })
 
     return render(request, 'myforge/forms/list_items.html', context)
 
@@ -214,10 +259,11 @@ def list_usages(request):
 
     usages = Usage.objects.all()
     for u in usages:
-        context["table_rows"].append({
-            "row":[u.semester, u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.clear_time, u.complete, u.failed, u.cost_override, u.cost_override_reason],
-            "id":u.id
-        })
+        if(u.semester.current):
+            context["table_rows"].append({
+                "row":[u.semester, u.userprofile.user.username, u.machine.machine_type.machine_type_name, u.machine.machine_name, format_usd(u.cost()), u.start_time, u.end_time, u.clear_time, u.complete, u.failed, u.cost_override, u.cost_override_reason],
+                "id":u.id
+            })
 
     return render(request, 'myforge/forms/list_items.html', context)
 

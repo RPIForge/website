@@ -38,7 +38,7 @@ def render_begin_semester(request):
             profile.is_graduating = True
         else:
             profile.is_graduating = False
-
+        
         profile.save()
         
         

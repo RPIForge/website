@@ -130,13 +130,23 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
 class Semester(models.Model):
     year = models.IntegerField(blank=False)
     season = models.CharField(max_length=255,blank=False)
-    current = models.BooleanField(default=False)
+    current = models.BooleanField(default=True)
     
     def __str__(self):
         if(self.current):
             return f"{self.season} {self.year} (current semester)"
         else:
             return f"{self.season} {self.year}"
+    
+    
+    def save(self, *args, **kwargs):
+        if self.current:
+            semesters = Semester.objects.all().filter(current=True)
+            for years in semesters:
+                years.current = False
+                years.save()
+            
+        super(Semester, self).save(*args, **kwargs)
 
 
 class Usage(models.Model):
@@ -227,7 +237,7 @@ class Usage(models.Model):
             return (timezone.now() - self.start_time)
 
     def __str__(self):
-        return f"Usage of {self.machine} by {self.userprofile.user.username} at {self.start_time}"
+        return f"Usage of {self.machine} by {self.userprofile.user.username} at {self.start_time} during {self.semester}"
 
 
 class SlotUsage(models.Model):

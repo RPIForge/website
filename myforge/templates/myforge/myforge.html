@@ -44,6 +44,8 @@
 				<!--<li><a href="#">View Statistics</a></li>-->
 				<!--<li><a href="#">Generate Reports</a></li>-->
 				<li><a href="javascript:setFrame('forms/force_email_verification')">Force Email Verification</a></li>
+				
+				
 				<!--<li><a href="">Repair Logs</a></li>-->
 			{% endif %}
 
@@ -51,6 +53,8 @@
 			<li class="block_list_header">Administrator Functions</li>
 				<!--<li><a href="#">Third-Party Machine Usage</a></li>-->
 				<!--<li><a href="#">View Manager Logs</a></li>-->
+                <li><a href="javascript:setFrame('dyn/billing/change_semesters')">Create Semester</a></li>
+                <li><a href="javascript:setFrame('dyn/billing/charge_sheets')">Charge Sheets</a></li>
 				<li><a href="javascript:setFrame('/admin')">Edit Configuration</a></li>
 				<!--<li><a href="">End Semester</a></li>
 				<li><a href="">Disable Senior Charges</a></li>-->
@@ -69,18 +73,33 @@
 
 {% block scripts %}
 <script>
+
     var disable_logout = false;
     
+    function iframe_load() {
+        try {
+            link = document.getElementById("myforge_frame").contentWindow.location.href
+            if(link.includes("login")){
+                window.location.replace("/login");
+            }
+        }catch (e) {
+         $("#myforge_frame").css("display", "block");
+        }
+    }
+    
 	function setFrame(src) {
+        
 		$("#myforge_frame").attr("src", src);
+        //$("#myforge_frame").css("display", "none");
+        
         if(src == 'dyn/volunteer_chat_join'){
 			console.log('disabling_logout');
             disable_logout = true;
         } else {
             disable_logout = false;
         }
+        
 	}
-
 	setFrame('dyn/project_list');
 </script>
 {% endblock scripts %}

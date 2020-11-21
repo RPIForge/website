@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'forge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'forge_devel_refactor',
+        'NAME': 'forge_devel_refactor_banking_v2',
         'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': 'forgedevchannels.eastus.cloudapp.azure.com',

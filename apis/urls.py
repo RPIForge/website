@@ -15,6 +15,9 @@ urlpatterns = [
     
     #user management
     path('api/users/verify', views.verify_user, name='verify_user'),
-    path('api/volunteers/current', views.current_volunteers, name='current_volunteers'),
+
+    #Billing management
+    path('api/billing/charge_sheet', views.charge_sheet, name='current_volunteers'),
     
 ]
+    

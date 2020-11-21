@@ -5,6 +5,10 @@ main {
 	background: #ffffff;
 }
 
+body {
+    overflow: hidden;
+}
+
 #myforge_sidebar {
 	position: absolute;
 	top: 5.55vh;
@@ -47,7 +51,7 @@ main {
 	padding-top: 20px;
 
 	height: calc(100% - 20px);
-	overflow-y: hidden;
+	overflow-y: auto;
 	overflow-x: hidden;
 	margin-top: 0px;
 	margin-bottom: 0px;

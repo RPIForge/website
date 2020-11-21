@@ -5,6 +5,10 @@ from user_management.models import *
 from user_management.admin import *
 from apis.models import *
 
+from django.contrib.auth.models import User, Group
+
+admin.site.register(UserProfile, UserProfileAdmin)
+
 admin.site.register(Resource)
 admin.site.register(MachineType)
 admin.site.register(MachineSlot)
