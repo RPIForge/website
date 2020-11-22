@@ -1,6 +1,6 @@
 #django imports
 from django import forms
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 #class import
 from user_management.models import *
@@ -88,7 +88,6 @@ class MachineOptions(forms.Form):
     class_usage = forms.BooleanField(required = False)
     own_material = forms.BooleanField(required = False)
     reprint = forms.BooleanField(required = False)
-    
 
 machine_usage_templates = ["formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
 
@@ -147,7 +146,8 @@ class MachineUsageWizard(SessionWizardView):
             new_slot_usage.usage = new_usage
             new_slot_usage.save()
         
-        return redirect('/forms/machine_usage')
+        return render(self.request, "formtools/wizard/machine_usage/form_submission.html", {'success':True})
+        
     
     def get_template_names(self):
         #select display template via current step
