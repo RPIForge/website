@@ -212,7 +212,15 @@ def machine_status(request):
                 print_information.status_message = machine_status_message
                 print_information.error = True
                 print_information.save()
-            
+        
+        else:
+            if(print_information):
+                print_information.status_message = machine_status_message
+                print_information.save()
+            else:
+                machine.status_message = machine_status_message
+                machine.save()
+
         return HttpResponse("Status set", status=200)
         
 @csrf_exempt  

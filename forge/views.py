@@ -145,7 +145,7 @@ def render_status(request):
                 "bar_progress": 0,
                 "type":m.machine_type.machine_type_name,
                 "user":f"No User",
-                "status_message":"Not In Use",
+                "status_message":"Not In Use, {}".format(m.status_message),
                 "time_remaining_text": "",
                 "estimated_completion": "",
                 "time_remaining": ""

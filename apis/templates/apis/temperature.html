@@ -130,7 +130,7 @@ canvas{
         } 
         
         var pixel_height = chart.canvas.parentNode.style.clientHeight;
-        chart.canvas.parentNode.style.width = (temperature_length*5)+'px';
+        chart.canvas.parentNode.style.width = max((temperature_length*5),500)+'px';
         chart.canvas.parentNode.style.height = "100%";
         
 	}
