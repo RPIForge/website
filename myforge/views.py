@@ -1,4 +1,4 @@
-# Importing Django Utils
+ # Importing Django Utils
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -20,9 +20,16 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 
 
+
 #
-#   TODO: This checks for login, but not for admin! Make sure only admins have access to these views.
+#   General MyForge Functions
 #
+
+# ! type: GET
+# ! function: Generate the my forge frame
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO:
 @login_required
 def render_myforge(request):
     if(not request.user.groups.filter(name = "member").exists()):
@@ -33,50 +40,89 @@ def render_myforge(request):
 
     return render(request, 'myforge/myforge.html', {})
 
+# ! type: Helper function
+# ! function: Get the current chat url
+# ? required: path of chat
+# ? returns: url as a String
+# TODO:
 def get_chat_url(request, path):
     if request.is_secure():
         url="https://"+settings.CHAT_SITE_URL+":443"+path
-        if request.user.is_authenticated:
-            url=url+"?uuid={}".format(request.user.userprofile.uuid)
-            url=url+"&name={}".format(request.user.get_full_name())
-            url=url+"&email={}".format(request.user.email)
     else:
         url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+path
-        if request.user.is_authenticated:
-            url=url+"?uuid={}".format(request.user.userprofile.uuid)
-            url=url+"&name={}".format(request.user.get_full_name())
-            url=url+"&email={}".format(request.user.email)
+
+    if request.user.is_authenticated:
+        url=url+"?uuid={}".format(request.user.userprofile.uuid)
+        url=url+"&name={}".format(request.user.get_full_name())
+        url=url+"&email={}".format(request.user.email)
     return url
 
+
+
+
+#
+#   Chat Functions
+#
+
+# ! type: GET
+# ! function: Generate link to iframe 
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: Move to main
 def user_chat(request):
-    #return HttpResponseRedirect("http://10.0.0.24:8000/user/chat?uuid={}".format(request.user.userprofile.uuid))
-    url = get_chat_url(request, '/user/info')
-    
-        
+    url = get_chat_url(request, '/user/info') 
     return render(request, 'myforge/forms/user_chat_template.html', {'channels_link':url})
 
-    
-
+# ! type: GET
+# ! function: Generate link to iframe 
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: Move to main
 @login_required
 def volunteer_chat_join(request):
     url = get_chat_url(request, '/volunteer/select')
     return redirect(url)
 
+# ! type: GET
+# ! function: Generate link to iframe 
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: Move to main
 @login_required
 def user_chat_history(request):
     url = get_chat_url(request, '/user/history/select')
     return redirect(url)
     
+# ! type: GET
+# ! function: Generate link to iframe 
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: Move to main
 @login_required
 def manager_chat_history(request):
     url = get_chat_url(request, "/manager/history/select")
     return redirect(url)
-    
+
+# ! type: GET
+# ! function: Generate link to iframe 
+# ? required: None
+# ? returns: HTTP Rendered Template  
+# TODO: Move to main
 @login_required
 def manager_chat_requests(request):
     url = get_chat_url(request, "/manager/request/select")
     return redirect(url)
 
+
+#
+#   Buisness
+#
+
+# ! type: GET
+# ! function: Generate form to download charge sheets
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def render_charge_sheet(request):
     semester = Semester.objects.all().order_by("-current")
@@ -86,6 +132,12 @@ def render_charge_sheet(request):
     
     return render(request, 'myforge/forms/charge_sheet.html', {'semester_list':semester_list})
     
+
+# ! type: GET
+# ! function: Generate form to create semesters
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def render_change_semesters(request):
     if request.method == 'POST':
@@ -120,14 +172,23 @@ def render_change_semesters(request):
     
     return render(request, 'myforge/forms/change_semester.html', {'semester_form': semester_form}) 
     
-    
+# ! type: Helper Function
+# ! function: Format cost
+# ? required: Cost as float
+# ? returns: Formated cost as string
+# TODO: 
 def format_usd(fp):
     return f"${fp:.2f}"
 
+# ! type: GET
+# ! function: Generate table for projects
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: Display this on a template that doesn't show actions - e.g. is read-only.
 @login_required
 def list_projects(request):
     #
-    # TODO: Display this on a template that doesn't show actions - e.g. is read-only.
+    
     
     user_profile = request.user.userprofile
 
@@ -143,6 +204,11 @@ def list_projects(request):
 
     return render(request, 'myforge/forms/list_items_readonly.html', context)
 
+# ! type: GET
+# ! function: Generate table of machines
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def list_machines(request):
     context = {
@@ -161,6 +227,11 @@ def list_machines(request):
 
     return render(request, 'myforge/forms/list_items.html', context)
 
+# ! type: GET
+# ! function: Generate table of machine types
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def list_machine_types(request):
     context = {
@@ -192,6 +263,11 @@ def list_machine_types(request):
 
     return render(request, 'myforge/forms/list_items.html', context)
 
+# ! type: GET
+# ! function: Generate table of resources
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def list_resources(request):
     context = {
@@ -210,6 +286,11 @@ def list_resources(request):
 
     return render(request, 'myforge/forms/list_items.html', context)
 
+# ! type: GET
+# ! function: Generate table of users
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def list_users(request):
     context = {
@@ -230,6 +311,11 @@ def list_users(request):
 
     return render(request, 'myforge/forms/list_items.html', context)
 
+# ! type: GET
+# ! function: Generate table of active usages
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required     
 def list_active_usages(request):
     context = {
@@ -248,6 +334,11 @@ def list_active_usages(request):
 
     return render(request, 'myforge/forms/list_items.html', context)
 
+# ! type: GET
+# ! function: Generate table of all usages this semester
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required     
 def list_usages(request):
     context = {
@@ -267,6 +358,11 @@ def list_usages(request):
 
     return render(request, 'myforge/forms/list_items.html', context)
 
+# ! type: Helper Function
+# ! function: Generate table of machines
+# ? required: None
+# ? returns: Tuple of success boolean and error message
+# TODO: 
 def validate_slot_usage_list(slot_usage_list): # slot_usage_list has already been validated as a list.
     field_types = [("name", str), ("resource", str), ("quantity", str)]
     for slot_usage in slot_usage_list:
@@ -286,7 +382,11 @@ def validate_slot_usage_list(slot_usage_list): # slot_usage_list has already bee
     
     
     
-
+# ! type: GET
+# ! function: Generate volunteer dashboad
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def volunteer_dashboard(request):
 

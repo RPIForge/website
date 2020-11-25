@@ -17,7 +17,11 @@ import forge.utils as utils
 
 
 
-
+# ! type: GET/POST
+# ! function: Render begin semester form to update user profile
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def render_begin_semester(request):
     if request.method == "GET":
@@ -46,7 +50,11 @@ def render_begin_semester(request):
 
 
 
-
+# ! type: GET/POST
+# ! function: Force user email verification
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required # TODO restrict permissions
 def render_force_email_verification(request):
     if request.method == "GET":
@@ -65,7 +73,11 @@ def render_force_email_verification(request):
         return render(request, "user_management/forms/force_email_verification.html", {'outcome':'success'})
 
 
-
+# ! type: GET
+# ! function: Render unverified email page
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def render_unverified_email(request):
     if request.user.groups.filter(name="verified_email").exists():
@@ -74,7 +86,11 @@ def render_unverified_email(request):
 
 
 
-#render login 
+# ! type: GET/POST
+# ! function: Render user login page
+# ? required: None/Login information
+# ? returns:  HTTP Rendered Template/Redirect
+# TODO: 
 def render_login(request):
     if request.method == 'GET':
 
@@ -97,13 +113,23 @@ def render_login(request):
         else:
             return render(request, 'user_management/login.html', {"error":"Login failed."})
 
+# ! type: GET
+# ! function: Log out the selected user
+# ? required: None
+# ? returns: redirect
+# TODO: 
 #log user out
 def log_out(request):
     logout(request)
     return redirect('/')
     
     
-# Login intentionally not required for create_user - new users should be able to create their own accounts.
+
+# ! type: GET/POST
+# ! function: Render user creation form/Create user 
+# ? required: None/Form data
+# ? returns: HTTP Rendered Template/rediect
+# TODO: 
 def create_user(request):
     if request.method == 'POST':
         user_form = ForgeUserCreationForm(request.POST)
@@ -152,7 +178,11 @@ def create_user(request):
 
         return render(request, 'user_management/forms/create_user.html', {'user_form': user_form, 'profile_form': profile_form})
 
-#verify email
+# ! type: GET
+# ! function: Verify users email
+# ? required: email token
+# ? returns: HTTP Rendered Template
+# TODO: 
 def render_verify_email(request):
     # Make sure we only support GET requests, so we can make POST do something later if needed
     if request.method == 'GET':
@@ -173,14 +203,18 @@ def render_verify_email(request):
         if(user.groups.filter(name="verified_email")):
             return render(request, 'user_management/verify_email.html', {"has_message":True, "message_type":"info", "message":"Email already verified."})
         else:
-            group = Group.objects.get(name="verified_email") # TODO Create this group if it doesn't exist - current solution is to add the group manually from the admin panel.
+            group = Group.objects.get_or_create(name="verified_email") 
             user.groups.add(group)
             user.save()
             return render(request, 'user_management/verify_email.html', {"has_message":True, "message_type":"success", "message":"Successfully verified email!"})
 
 
 
-
+# ! type: GET
+# ! function: Resend verification email
+# ? required: None
+# ? returns: redirect
+# TODO: 
 @login_required
 def resend_email_verification(request):
     if not request.user.groups.filter(name="verified_email").exists():

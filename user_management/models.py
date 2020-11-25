@@ -12,8 +12,9 @@ import uuid
 from datetime import datetime, timedelta
 
 class UserProfile(models.Model):
-    #class Meta:
-    #    db_table = ''
+    # ? Use: Keeps track of extra user profile information
+    # ! Data: Rin,gender,major, graduating, uuid
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rin = models.PositiveIntegerField(default=None, null=True, blank=True, unique=True)
     gender = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.gender)
@@ -46,6 +47,7 @@ class UserProfile(models.Model):
     class Meta:
         db_table = 'user_management_userprofile'
 
+# ! Function: Create userprofile from User creation
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created and not kwargs.get('raw', False): # `and not ...` included to allow fixture imports.
@@ -53,6 +55,7 @@ def create_user_profile(sender, instance, created, **kwargs):
         new_uuid = str(uuid.uuid4())
         UserProfile.objects.create(user=instance, email_verification_token=email_verification_token, uuid=new_uuid)
 
+# ! Function: Save the user profile
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.userprofile.save()

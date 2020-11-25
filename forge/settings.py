@@ -25,7 +25,6 @@ ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'forge.apps.MachineUsageConfig',
     'forge.apps.MachineManagementConfig',
@@ -43,7 +42,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-                                    ]
+]
 
 ROOT_URLCONF = 'forge.urls'
 
@@ -138,6 +136,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 LOGIN_URL = '/login'
 
+# Chat settings
 CHAT_SITE_URL="127.0.0.1"
 CHAT_SITE_PORT=8001
 
