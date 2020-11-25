@@ -23,7 +23,11 @@ from datetime import datetime, timedelta
 
 
 
-
+# ! type: Helper Function
+# ! function: Validates a machine usage's json  
+# ? required: dictionary
+# ? returns: tuple of success and error message
+# TODO: Remove after buisness update sepeartes usage
 def validate_machine_usage_json(json_dict):
     if not (type(json_dict) == dict):
         return (False, "Root JSON object was not a dictionary.")
@@ -39,6 +43,11 @@ def validate_machine_usage_json(json_dict):
 
     return (True, "")
 
+# ! type: Helper function
+# ! function: Validates if a machine is in use and its slots
+# ? required: machine object and list of slost
+# ? returns: Boolean
+# TODO: Remove after buisness removes usage from the frontend
 def validate_machine(machine, slot_usages):
     input_set = set()
     model_set = set()
@@ -53,6 +62,11 @@ def validate_machine(machine, slot_usages):
 
     return (input_set == model_set) and not machine.in_use
 
+# ! type: Helper function
+# ! function: Validates if a slot usage is a valid usage
+# ? required: slot, material used, amount of resource
+# ? returns: Boolean
+# TODO: Remove in buisness update
 def validate_slot(slot, material, quantity):
     try:
         qty = Decimal(quantity)
@@ -69,6 +83,11 @@ def validate_slot(slot, material, quantity):
         print("Resource not allowed in slot")
         return False
 
+# ! type: POST
+# ! function: create machine usage from a request 
+# ? required: Usage POST Data
+# ? returns: HTTP Response
+# TODO: Remove in buisness update
 @login_required
 def create_machine_usage(request):
     
@@ -149,17 +168,11 @@ def create_machine_usage(request):
         return HttpResponse("", status=405) # Method not allowed'''
 
 
-# <div class="card">
-#     <div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
-#     <div class="card_text {{machine.text_type}}">
-#         <div class="machine_name">{{ machine.name }}</div>
-#         <div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
-#         <div class="status_message">{{ machine.status_message }}</div>
-#         <div class="time_remaining">{{machine.time_remaining_text}} <br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
-#     </div>
-# </div>
-
-
+# ! type: GET
+# ! function:  Generates machine usage form
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO:
 @login_required
 def machine_usage(request):
     return MachineUsageWizard.as_view([MachineSelectionForm, MachineSlotUsageForm])
@@ -178,6 +191,11 @@ def machine_usage(request):
     return render(request, 'machine_usage/forms/machine_usage.html', {"available_machines":available_machines})
     '''
 
+# ! type:  GET
+# ! function: Generate resource usage form
+# ? required: Machine name
+# ? returns: HTTP Rendered Template
+# TODO: Remove in buisness Update
 @login_required
 def generate_machine_form(request):
     machine_name = request.GET.get("machine", None)
@@ -205,6 +223,12 @@ def generate_machine_form(request):
 
     return render(request, 'machine_usage/forms/machine_form.html', {"slots":sorted(slots, key=lambda k: k["name"]), "machine_name":machine_name})
 
+
+# ! type: GET/POST
+# ! function: Generate or Execute clearing machine
+# ? required: /Machine name
+# ? returns: HTTP Rendered Template/redirect
+# TODO: Verify user is volunteer or above
 @login_required #TODO This should only be available to volunteers and up.
 def generate_clear_machine_form(request):
     if request.method == 'GET':
@@ -234,6 +258,11 @@ def generate_clear_machine_form(request):
         machine.save()
         return redirect('/forms/clear_machine')
 
+# ! type: GET/POST
+# ! function: Generate or Execute failing a machine
+# ? required: None/machine_name
+# ? returns: HTTP Rendered Template/redirect
+# TODO: Verify user is volunteer
 @login_required #TODO This should only be available to volunteers and up.
 def generate_failed_usage_form(request):
     if request.method == 'GET':

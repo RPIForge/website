@@ -7,8 +7,8 @@ from user_management.admin import *
 
 from django.contrib.auth.models import User, Group
 
+#register models to Admin
 admin.site.register(UserProfile, UserProfileAdmin)
-
 admin.site.register(Resource)
 admin.site.register(MachineType)
 admin.site.register(MachineSlot)

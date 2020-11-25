@@ -3,8 +3,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    #initial myforge path
     path('myforge', views.render_myforge, name='myforge'),
     
+    #myforge table lists
     path('dyn/project_list', views.list_projects, name='project_list'),
     path('dyn/machine_list', views.list_machines, name='machine_list'),
     path('dyn/machine_type_list', views.list_machine_types, name='machine_type_list'),
@@ -18,9 +20,8 @@ urlpatterns = [
     path('dyn/chat_history', views.user_chat_history, name='chat_history'),
     path('dyn/manager_chat_history', views.manager_chat_history, name='chat_history'),
     path('dyn/manager_chat_requests', views.manager_chat_requests, name='chat_history'),
-
-    #move to main some day
-    path('chat', views.user_chat, name='chat'),
+    path('chat', views.user_chat, name='chat'), # TODO Move to main urls
     
+    #Volunteer dashboard
     path('dyn/volunteer_dashboard', views.volunteer_dashboard, name='volunteer_dashboard')
 ]

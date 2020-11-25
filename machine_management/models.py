@@ -1,19 +1,24 @@
+#django imports
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-from decimal import Decimal
-
+#model imports
 from user_management.models import UserProfile
 from business.models import *
-import uuid
 
+#general imports
+from decimal import Decimal
+import uuid
 from datetime import datetime, timedelta
 
-
+#resource model
 class Resource(models.Model):
+    # ? Use: Keeps data on the resources that the forge uses
+    # ! Data: Tracks name, unit type, and cost per unit
+
     resource_name = models.CharField(max_length=255, unique=True)
     unit = models.CharField(max_length=255)
     cost_per = models.DecimalField(max_digits=5, decimal_places=2)
@@ -33,6 +38,10 @@ class Resource(models.Model):
         return used
 
 class MachineType(models.Model):
+    # ? Use: Keeps track of the different types of machines
+    # ! Data: Tracks name, categroy, usage policy, usage cost
+
+
     machine_type_name = models.CharField(max_length=255, unique=True)
     machine_category = models.CharField(max_length=255, null=True)
 
@@ -57,6 +66,9 @@ class MachineType(models.Model):
         return out
 
 class MachineSlot(models.Model):
+    # ? Use: Keeps track of the individual machine slot
+    # ! Data: Tracks the machine type its on, allowed resources
+
     slot_name = models.CharField(max_length=255)
 
     machine_type = models.ForeignKey(
@@ -73,7 +85,11 @@ class MachineSlot(models.Model):
     def resource_allowed(self, name):
         return True
 
-class Machine(models.Model): # TODO make sure names of all slots added to machine are unique in scope
+class Machine(models.Model): 
+    # ? Use: Keeps track of the indivual machines
+    # ! Data: Tracks name, current usage and job informatiom, and current pritner status
+
+
     machine_name = models.CharField(max_length=255, unique=True)
     machine_type = models.ForeignKey(
         MachineType,
@@ -110,7 +126,35 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
             return f"{elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
 
 
+class Semester(models.Model):
+    # ? Use: Keeps track of the semester objects
+    # ! Data: Tracks year, season, and if its the most recent
+
+    year = models.IntegerField(blank=False)
+    season = models.CharField(max_length=255,blank=False)
+    current = models.BooleanField(default=True)
+    
+    def __str__(self):
+        if(self.current):
+            return f"{self.season} {self.year} (current semester)"
+        else:
+            return f"{self.season} {self.year}"
+    
+    
+    def save(self, *args, **kwargs):
+        if self.current:
+            semesters = Semester.objects.all().filter(current=True)
+            for years in semesters:
+                years.current = False
+                years.save()
+            
+        super(Semester, self).save(*args, **kwargs)
+
+
 class Usage(models.Model):
+    # ? Use: Keeps track of each usage in the forge
+    # ! Data: Tracks usage cost, machien used, usage status
+
     machine = models.ForeignKey(
         Machine,
         on_delete = models.SET_NULL,
@@ -191,6 +235,9 @@ class Usage(models.Model):
 
 
 class SlotUsage(models.Model):
+    # ? Use:Keeps track how much each slot was used
+    # ! Data: Tracks slot, resource, ammount
+
     usage = models.ForeignKey(
         Usage,
         on_delete = models.CASCADE

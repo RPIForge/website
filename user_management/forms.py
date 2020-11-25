@@ -10,6 +10,8 @@ from user_management.models import UserProfile
 
 
 class ForgeUserCreationForm(UserCreationForm):
+    # ? Use: Form to create user
+     
     def __init__(self, *args, **kwargs):
         super(ForgeUserCreationForm, self).__init__(*args, **kwargs)
 
@@ -44,6 +46,9 @@ class ForgeUserCreationForm(UserCreationForm):
 
 
 class ForgeProfileCreationForm(forms.ModelForm):
+    # ? Use: Form to create user profile information,
+    # ! Data: Rin, gender, major
+    
     rin = forms.IntegerField()
     gender = forms.Select(choices=user_management.lists.gender)
     major = forms.Select(choices=user_management.lists.major)
