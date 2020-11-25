@@ -13,6 +13,9 @@ import uuid
 from datetime import datetime, timedelta
 
 class Semester(models.Model):
+    # ? Use: Keeps track of the semester objects
+    # ! Data: Tracks year, season, and if its the most recent
+    
     year = models.IntegerField(blank=False)
     season = models.CharField(max_length=255,blank=False)
     current = models.BooleanField(default=True)

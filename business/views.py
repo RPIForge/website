@@ -19,7 +19,11 @@ from datetime import datetime
 from decimal import Decimal
 from datetime import datetime, timedelta
 
-
+# ! type: GET/POST 
+# ! function: Render page to create/end semester 
+# ? required: None/Filled Form
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def render_change_semesters(request):
     if request.method == 'POST':
@@ -55,7 +59,11 @@ def render_change_semesters(request):
     return render(request, 'myforge/forms/change_semester.html', {'semester_form': semester_form}) 
     
     
-
+# ! type:GET
+# ! function: Render page to download charge sheets 
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 @login_required
 def render_charge_sheet(request):
     semester = Semester.objects.all().order_by("-current")
