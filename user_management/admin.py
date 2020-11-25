@@ -11,14 +11,14 @@ from django import forms
 from django.utils.safestring import SafeText
 
 class UserProfileAdmin(admin.ModelAdmin):
+    # ? Use: Add search fields to user profile admin
     search_fields = ('user__username', 'user__first_name', 'user__last_name', )
 
 
-BIRTH_YEAR_CHOICES = ['1980', '1981', '1982']
+class ForgeUserAdmin(UserAdmin):   
+    # ? Use: Add rin, userprofile link, and list of usages to User admin
 
-class ForgeUserAdmin(UserAdmin):
-    birth_year = forms.DateField(widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
-    
+    #Add fields
     fieldsets = UserAdmin.fieldsets + (
         ('User Properties', {
             'fields': ('get_rin','get_userprofille','get_usages')
@@ -27,14 +27,17 @@ class ForgeUserAdmin(UserAdmin):
     
     readonly_fields=('get_rin','get_userprofille','get_usages')
     
-    
+    #get rin
     def get_rin(self, object):
         return object.userprofile.rin
         
+    #get link to user profile
     def get_userprofille(self, object):
         link=reverse("admin:user_management_userprofile_change", args=[object.userprofile.id])
         return SafeText('<li><a href="{}">{}</a></li>'.format(link,object.userprofile))
         
+    #get list of usages
+    #TODO: Order usages by time
     def get_usages(self, object):
         userprofile = object.userprofile
         usage_list = userprofile.usage_set.all()
@@ -49,6 +52,7 @@ class ForgeUserAdmin(UserAdmin):
         usage_text = SafeText(output_string)
         return usage_text
     
+    #allow tags and add descriptions
     get_usages.allow_tags = True 
     get_rin.short_description = "Rin"
     get_userprofille.short_description = "User Profile"

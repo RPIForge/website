@@ -14,23 +14,14 @@ import os
 from pytz import timezone
 from django.conf import settings
 
-
-#
-# FORM JSON FUNCTIONS
-#
-
-def validate_json(fields, json):
-    for f in fields:
-        if f not in json:
-            return False
-    return True
-
-def validate_slot_usage(slot_name, resource_name):
-    ...
-
 #
 # EMAIL FUNCTIONS
 #
+# ! type: Helper function
+# ! function: Send email 
+# ? required: destination, subject, message
+# ? returns: response
+# TODO: 
 def send_email(to_email, subject, html_string):
     message = Mail(
         from_email = 'no_reply@rpiforge.dev',
@@ -45,6 +36,11 @@ def send_email(to_email, subject, html_string):
     except Exception as e:
         print(f"Error while sending email: {str(e)}")
 
+# ! type: Helper function
+# ! function: Send user email validation
+# ? required: 
+# ? returns: 
+# TODO: 
 def send_verification_email(user):
     subject = "Forge Email Verification"
 
@@ -59,6 +55,11 @@ def send_verification_email(user):
     body = f"Thanks for signing up for the Forge! Click <a clicktracking=off href='{verification_url}'>this link</a> to verify your email."
     send_email(user.email, subject, body)
 
+# ! type: Helper function
+# ! function: Send Usage failure email 
+# ? required: 
+# ? returns: 
+# TODO: 
 def send_failure_email(usage):
     user = usage.userprofile.user
 
@@ -75,6 +76,9 @@ def send_failure_email(usage):
 # CALENDAR FUNCTIONS
 #
 class google_calendar():
+    # ! function: Connect with google calendar and get when volunteers are on duty.
+    # !           This code should be synced with the front door bot.
+    
     calendar_service = None
     calendar_id = None
 
