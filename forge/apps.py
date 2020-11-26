@@ -30,3 +30,6 @@ class UserManagementConfig(AppConfig):
 class APIConfig(AppConfig):
     # ! function: App that handles all interactions with non user requests
     name = 'apis'
+    
+class BusinessConfig(AppConfig):
+    name = 'business'

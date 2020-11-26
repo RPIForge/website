@@ -14,8 +14,6 @@ urlpatterns = [
     path('dyn/user_list', views.list_users, name='user_list'),
     path('dyn/active_usage_list', views.list_active_usages, name='active_usage_list'),
     path('dyn/usage_list', views.list_usages, name='usage_list'),
-    path('dyn/billing/change_semesters', views.render_change_semesters, name='change_semesters'),
-    path('dyn/billing/charge_sheets', views.render_charge_sheet, name='charge_sheet'),
     
     #chat functionality
     path('dyn/volunteer_chat_join', views.volunteer_chat_join, name='volunteer_chat'),

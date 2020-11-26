@@ -165,12 +165,7 @@ def render_change_semesters(request):
             # redirect to a new URL:
             return render(request, 'myforge/forms/change_semester.html', {'submit': True}) 
 
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        semester_form = SemesterCreationForm()
-        
     
-    return render(request, 'myforge/forms/change_semester.html', {'semester_form': semester_form}) 
     
 # ! type: Helper Function
 # ! function: Format cost

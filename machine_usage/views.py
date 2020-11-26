@@ -11,6 +11,9 @@ from django.utils import timezone
 from machine_management.models import *
 from django.contrib.auth.models import User, Group
 
+# Import Forms
+from machine_usage.forms import *
+
 # Importing Other Libraries
 import json
 from datetime import datetime
@@ -87,7 +90,9 @@ def validate_slot(slot, material, quantity):
 # TODO: Remove in buisness update
 @login_required
 def create_machine_usage(request):
-    if request.method == 'POST':
+    
+    
+    '''if request.method == 'POST':
         data = json.loads(request.body)
         machine_name = data["machine_name"]
         machine = Machine.objects.get(machine_name=machine_name)
@@ -160,7 +165,7 @@ def create_machine_usage(request):
 
         return HttpResponse("Usage successfully recorded.", status=200)
     else:
-        return HttpResponse("", status=405) # Method not allowed
+        return HttpResponse("", status=405) # Method not allowed'''
 
 
 # ! type: GET
@@ -170,6 +175,9 @@ def create_machine_usage(request):
 # TODO:
 @login_required
 def machine_usage(request):
+    return MachineUsageWizard.as_view([MachineSelectionForm, MachineSlotUsageForm])
+    
+    '''
     machines = Machine.objects.all().filter(deleted=False, in_use=False, enabled=True).order_by("machine_name")
     available_machines = {}
 
@@ -181,6 +189,7 @@ def machine_usage(request):
             available_machines[type_name].append(m.machine_name)
 
     return render(request, 'machine_usage/forms/machine_usage.html', {"available_machines":available_machines})
+    '''
 
 # ! type:  GET
 # ! function: Generate resource usage form

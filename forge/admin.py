@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from machine_management.models import *
+from business.models import *
 from user_management.models import *
 from user_management.admin import *
 

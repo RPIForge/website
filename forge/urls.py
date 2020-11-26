@@ -33,7 +33,8 @@ urlpatterns = [
     path('', include("myforge.urls")),
     path('', include("machine_usage.urls")),
     path('', include("user_management.urls")),
-    path('', include("apis.urls"))
+    path('', include("apis.urls")),
+    path('', include("business.urls"))
 ]
 
 urlpatterns += staticfiles_urlpatterns()

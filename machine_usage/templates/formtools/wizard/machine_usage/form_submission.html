@@ -1,0 +1,28 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block header %}
+{{ wizard.form.media }}
+{% endblock header%}
+
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/machine_usage.css' %}">
+{% endblock custom_styles %}
+
+{% block main %}
+    <main class="bg_shade">
+        <div id="available_machines">
+            {% if success %}
+                <strong>Usage submission succeeded</strong>
+            {% else %}
+                <strong>Usage failed to submitt</strong>
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}
+
+
+{% block footer %}
+{% endblock footer %}

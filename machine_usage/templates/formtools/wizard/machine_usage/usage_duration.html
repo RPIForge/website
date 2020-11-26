@@ -1,0 +1,11 @@
+{% extends "formtools/wizard/machine_usage/generic_usage.html" %}
+{% block title%}Usage Duration{% endblock title %}
+{% block help_text %}<p style="text-align: center;"> How long will this usage last?</p>{% endblock help_text%}
+{% block field %}
+    <table>
+        <tr>
+            <th>{{ wizard.form.usage_hours }}</th>
+            <th>{{ wizard.form.usage_minutes }}</th>
+        </tr>
+    </table>
+{% endblock field %}
