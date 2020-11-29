@@ -9,7 +9,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('user_management', '0001_initial'),
+        ('user_management', '__first__'),
+        ('business', '0001_initial'),
     ]
 
     operations = [
@@ -56,15 +57,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Semester',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('year', models.IntegerField()),
-                ('season', models.CharField(max_length=255)),
-                ('current', models.BooleanField(default=False)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Usage',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -84,7 +76,7 @@ class Migration(migrations.Migration):
                 ('failed', models.BooleanField(default=False)),
                 ('deleted', models.BooleanField(default=False)),
                 ('machine', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='machine_management.Machine')),
-                ('semester', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='machine_management.Semester')),
+                ('semester', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='business.Semester')),
                 ('userprofile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='user_management.UserProfile')),
             ],
         ),

@@ -29,18 +29,27 @@ from datetime import datetime, timedelta
 import csv
 
 #
-#   API
+#   Machine API
 #
 
+# ! type: POST
+# ! function: clears usage running on machine
+# ? required: machine_id
+# ? returns: HTTP response
+# TODO: Fix csrf_exempt requirement and make sure machine with id exists
+# TODO: before getting the object
 @csrf_exempt # TODO FIX THIS
 @login_required
 def clear_machine(request):
     if request.method == "POST":
+        #get post data
         data = json.loads(request.body)
 
         if "machine_id" not in data:
             return HttpResponse("No machine_id provided.", status=400)
 
+        #get machine object id
+        #TODO make sure machine with id exists
         machine = Machine.objects.get(id=int(data["machine_id"]))
 
         response = clear_usage(machine)
@@ -53,6 +62,12 @@ def clear_machine(request):
         return HttpResponse("", status=405) # Method not allowed
 
 
+# ! type: POST
+# ! function:  fail a machine usage and send email
+# ? required: machine id
+# ? returns: HTTP Respose
+# TODO: Fix csrf_exempt requirement and make sure machine with id exists
+# TODO: before getting the object
 @csrf_exempt # TODO FIX THSI
 @login_required
 def fail_machine(request):
@@ -62,6 +77,7 @@ def fail_machine(request):
         if "machine_id" not in data:
             return HttpResponse("No machine_id provided.", status=400)
 
+        #get machine from post data
         machine = Machine.objects.get(id=int(data["machine_id"]))
 
         response = fail_usage(machine)
@@ -72,15 +88,25 @@ def fail_machine(request):
     else:
         return HttpResponse("", status=405) # Method not allowed
 
-@csrf_exempt # TODO REMOVE THIS DECORATOR, ONLY FOR DEBUG
+
+# ! type: GET/POST
+# ! function: Get a list of machines and submit usage information. This was primarily
+# ! used by the old machine_usage form. 
+# ? required: None
+# ? returns: HTTP Response 
+# TODO: Remove this method as it is depreciated in the buisness update
+@csrf_exempt 
 def machine_endpoint(request):
+    #get machine information
     if request.method == 'GET':
         output = []
 
         machines = Machine.objects.all().order_by("machine_name")
 
+        #loop through all active machiens
         for m in machines:
             if not m.deleted:
+                #get information about the machine
                 machine_entry = {
                     "name": m.machine_name,
                     "in_use": m.in_use,
@@ -91,6 +117,7 @@ def machine_endpoint(request):
                     "slots": []
                 }
 
+                #get information about all of the slots in the machines
                 slots = m.machine_type.machineslot_set.all()
                 for s in slots:
                     slot_entry = {
@@ -107,6 +134,8 @@ def machine_endpoint(request):
                 output.append(machine_entry)
 
         return HttpResponse(json.dumps(output))
+
+    #create machine usage
     elif request.method == 'POST':
         return create_machine_usage(request) # Make sure this still checks for login!
     else:
@@ -388,11 +417,18 @@ def machine_information(request):
 
 
 #
-## USER MANAGEMENT
-#     
-        
+#   Users API
+#
+
+# ! type: GET
+# ! function: verify if a user with uuid exists and gives their role. This helps other sites authenticate
+# ! against us 
+# ? required: user uuid
+# ? returns: HTTP Response
+# TODO Return list of groups not highest group
 def verify_user(request):
     if request.method == 'GET':
+        # get user asociated with uuid
         uuid = request.GET.get('uuid', '')
         try:
             userprofile = UserProfile.objects.get(uuid=uuid)
@@ -401,8 +437,10 @@ def verify_user(request):
         except ValidationError:
             return HttpResponse(status=404)
         
+        #get user from userprofile
         user = userprofile.user
         
+        #return most senior group. Change this to list of groups
         if(user.groups.filter(name="admins").exists()):
             return HttpResponse("admins")
         elif(user.groups.filter(name="managers").exists()):
@@ -416,9 +454,14 @@ def verify_user(request):
             
 
 #
-#Volunteers
+#   Volunteers
 #    
-    
+
+# ! type: GET
+# ! function: Get the list of current volunteers on duty
+# ? required: None
+# ? returns: HTTP Response 
+# TODO: None
 def current_volunteers(request):
     if request.method == 'GET':
         if(settings.CALENDAR == None):
@@ -433,11 +476,15 @@ def current_volunteers(request):
             return HttpResponse(json.dumps(output))
             
 #
-# Billing
+#    Billing
 #
 
        
-#get charge sheet for the userss       
+# ! type: GET
+# ! function: Get list of charges for the semester for either graduating or nongraduating students
+# ? required: semester_id
+# ? returns: csv of charges
+# TODO: Improve speed as this strains the server. Change how membership cost is applied.
 def charge_sheet(request):
     if request.method == 'GET':
         #get get paramters
@@ -478,12 +525,15 @@ def charge_sheet(request):
         
         #for all usages in the semester
         for usage in usages:
+            #get user name and cost
             name = usage.userprofile.user.get_full_name()
             cost = usage.cost()
             
+            #remove them from the list of users left
             if(usage.userprofile.user in remaining_users):
                 remaining_users.remove(usage.userprofile.user)
             
+            #either create dict or update balance
             if(name in user_dict):
                 user_dict[name]['balance'] = float(user_dict[name]['balance']) + float(cost)
             else:

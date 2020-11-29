@@ -1,0 +1,99 @@
+{% extends "formtools/wizard/machine_usage/generic_usage.html" %}
+
+
+{% block title %}Resource Selection{% endblock title %}
+            
+{% block form %}
+<form name="resouce_form" action="" method="post">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+    <table id="slot_usage_table">
+        <tr>
+            <th>Material</th>
+            <th>Quantity</th>
+        </tr>
+        
+        {% for field in wizard.form %}
+            {% if 'resource' in field.id_for_label %}
+            <tr>
+                <td class="resource_select" id="{{forloop.counter}}" onchange="update_cost({{forloop.counter}});"> {{field}} </td>
+            {% else %}
+                <td class="resource_input" id="{{forloop.counter0}}_input" onchange="update_cost({{forloop.counter0}});"> {{field}} </td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+    {% block buttons %}
+        {{block.super}}
+    {% endblock buttons %}
+</form>
+{% endblock form %}
+
+
+{% block scripts %}
+<script>
+    var slot_name_list = {{ slot_name_list|safe }};
+    var slot_cost_dict = {{ slot_cost_dict|safe }};
+    var slot_unit_dict = {{ slot_unit_dict|safe }};
+    console.log(slot_name_list);
+    
+    
+    var cost_list = []
+    var table_element = document.getElementById("slot_usage_table");
+    var count = 0;
+    for (var i = 0, row; row = table_element.rows[i]; i++) {
+       //iterate through rows
+       //rows would be accessed using the "row" variable assigned in the for loop
+       var slot_cell = row.insertCell(0);
+       var cost_cell = row.insertCell(-1);
+       if(i==0){
+            slot_cell.outerHTML  = "<th>Slot Name</th>";
+            cost_cell.outerHTML = "<th>Cost</th>";
+        } else {
+            slot_cell.innerHTML = slot_name_list[count];
+            
+            
+            cost_cell.innerHTML = "<div id='cost_"+(i-1)+"'>$0.00</div>";
+            var cost_element = document.getElementById("cost_"+(i-1));
+            cost_list.push(cost_element);
+            
+            count++;
+        }
+    }
+    
+        
+    
+    function update_cost(row_id){
+        var cost_item = Math.floor(row_id/2);
+        var cost_element = cost_list[cost_item];
+        var select_element = document.getElementById(row_id);
+        
+        console.log(row_id);
+        var input_dev = document.getElementById((row_id)+"_input");
+        var input_element = input_dev.childNodes[1];
+        var input_float = parseFloat(input_element.value);
+        
+
+        //get selected  resources cost and help option
+        var field_select = select_element.firstElementChild;
+        var selected_option = field_select.options[field_select.selectedIndex].text;
+        var help_option = slot_unit_dict[selected_option];
+        var resource_cost = slot_cost_dict[selected_option];
+        
+        input_element.placeholder = help_option+" of "+selected_option;
+        
+        if(!isNaN(input_float)){
+            var total_cost = input_float * resource_cost;
+            total_cost = total_cost.toFixed(2);
+        } else {
+            var total_cost = "0.00";
+        }
+        cost_element.innerHTML = "$"+total_cost;
+    }
+        
+    var resource_selects = document.getElementsByClassName("resource_select");
+</script>
+{% endblock scripts %}
+
+{% block footer %}
+{% endblock footer %}

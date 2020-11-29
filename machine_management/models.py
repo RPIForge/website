@@ -1,19 +1,24 @@
+#django imports
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
-from decimal import Decimal
-
+#model imports
 from user_management.models import UserProfile
+from business.models import *
 
+#general imports
+from decimal import Decimal
 import uuid
-
 from datetime import datetime, timedelta
 
-
+#resource model
 class Resource(models.Model):
+    # ? Use: Keeps data on the resources that the forge uses
+    # ! Data: Tracks name, unit type, and cost per unit
+
     resource_name = models.CharField(max_length=255, unique=True)
     unit = models.CharField(max_length=255)
     cost_per = models.DecimalField(max_digits=5, decimal_places=2)
@@ -33,6 +38,10 @@ class Resource(models.Model):
         return used
 
 class MachineType(models.Model):
+    # ? Use: Keeps track of the different types of machines
+    # ! Data: Tracks name, categroy, usage policy, usage cost
+
+
     machine_type_name = models.CharField(max_length=255, unique=True)
     machine_category = models.CharField(max_length=255, null=True)
 
@@ -57,6 +66,9 @@ class MachineType(models.Model):
         return out
 
 class MachineSlot(models.Model):
+    # ? Use: Keeps track of the individual machine slot
+    # ! Data: Tracks the machine type its on, allowed resources
+
     slot_name = models.CharField(max_length=255)
 
     machine_type = models.ForeignKey(
@@ -73,7 +85,11 @@ class MachineSlot(models.Model):
     def resource_allowed(self, name):
         return True
 
-class Machine(models.Model): # TODO make sure names of all slots added to machine are unique in scope
+class Machine(models.Model): 
+    # ? Use: Keeps track of the indivual machines
+    # ! Data: Tracks name, current usage and job informatiom, and current pritner status
+
+
     machine_name = models.CharField(max_length=255, unique=True)
     machine_type = models.ForeignKey(
         MachineType,
@@ -124,32 +140,10 @@ class Machine(models.Model): # TODO make sure names of all slots added to machin
     
     
 
-    
-            
-
-class Semester(models.Model):
-    year = models.IntegerField(blank=False)
-    season = models.CharField(max_length=255,blank=False)
-    current = models.BooleanField(default=True)
-    
-    def __str__(self):
-        if(self.current):
-            return f"{self.season} {self.year} (current semester)"
-        else:
-            return f"{self.season} {self.year}"
-    
-    
-    def save(self, *args, **kwargs):
-        if self.current:
-            semesters = Semester.objects.all().filter(current=True)
-            for years in semesters:
-                years.current = False
-                years.save()
-            
-        super(Semester, self).save(*args, **kwargs)
-
-
 class Usage(models.Model):
+    # ? Use: Keeps track of each usage in the forge
+    # ! Data: Tracks usage cost, machien used, usage status
+
     machine = models.ForeignKey(
         Machine,
         on_delete = models.SET_NULL,
@@ -241,6 +235,9 @@ class Usage(models.Model):
 
 
 class SlotUsage(models.Model):
+    # ? Use:Keeps track how much each slot was used
+    # ! Data: Tracks slot, resource, ammount
+
     usage = models.ForeignKey(
         Usage,
         on_delete = models.CASCADE
@@ -264,70 +261,3 @@ class SlotUsage(models.Model):
 
     def cost(self):
         return self.amount * self.resource.cost_per
-        
-        
-  
-class JobInformation(models.Model): 
-    start_time = models.DateTimeField(auto_now_add=True)
-    end_time = models.DateTimeField(null=True, blank=True) # null/blank allowed for check-in/check-out machines
-
-    status_message = models.CharField(max_length=255, default="In Progress.", blank=False)
-
-    complete = models.BooleanField(default=False)
-    error = models.BooleanField(default=False)
-    
-    file_id = models.CharField(max_length=36, null=True, blank=True, default=None)
-    
-    
-    usage = models.ForeignKey(
-        Usage,
-        on_delete = models.SET_NULL,
-        null=True
-    )
-    
-    machine = models.ForeignKey(
-        Machine,
-        on_delete = models.CASCADE,
-        null=False,
-    )
-    
-    def __str__(self):
-        return "Job on {} starting at {}".format(self.machine.machine_name, self.start_time)
-    
-    def percentage(self):
-        if(not self.end_time):
-            return 0
-        duration = self.end_time - self.start_time
-        elapsed = timezone.now() - self.start_time
-        percentage = (elapsed.total_seconds() / duration.total_seconds()) * 100
-        if(percentage > 100):
-            percentage = 100
-        return percentage
-    
-
-  
-class ToolTemperature(models.Model): 
-    tool_name = models.CharField(max_length=255)
-    tool_time = models.DateTimeField(auto_now_add=True)
-    tool_temperature = models.FloatField()
-    tool_temperature_goal = models.FloatField()
-    
-    
-    job = models.ForeignKey(
-        JobInformation,
-        on_delete = models.SET_NULL,
-        null=True,
-        blank = True
-    )
-    
-    machine = models.ForeignKey(
-        Machine,
-        on_delete = models.CASCADE,
-        null=False
-    )
-
-    
-    def __str__(self):
-        return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.tool_name, self.tool_temperature, self.tool_time)  
-
-

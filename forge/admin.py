@@ -1,14 +1,16 @@
 from django.contrib import admin
 
 from machine_management.models import *
+from business.models import *
 from user_management.models import *
+
 from user_management.admin import *
 from apis.models import *
 
 from django.contrib.auth.models import User, Group
 
+#register models to Admin
 admin.site.register(UserProfile, UserProfileAdmin)
-
 admin.site.register(Resource)
 admin.site.register(MachineType)
 admin.site.register(MachineSlot)

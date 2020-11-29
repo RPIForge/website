@@ -1,0 +1,61 @@
+{% extends "forge/generic.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block header %}
+{{ wizard.form.media }}
+{% endblock header%}
+
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/machine_usage.css' %}">
+{% endblock custom_styles %}
+
+{% block main %}
+    <main class="bg_shade">
+        <div id="available_machines">
+            <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+            <p class="title" id="machine_selection_title"><strong>{% block title %}{% endblock title %}</strong></p>
+            {% block help_text %}{% endblock help_text%}
+            
+            {% block form %}
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ wizard.management_form }}
+                {% block table %}
+                <table>
+                    {% block field %}
+                    {% endblock field %}
+                </table>
+                {% endblock table %}
+                
+                {% block buttons %}
+                    <table style="width:100%;">
+                        <tr>
+                            {% if wizard.steps.prev %}
+                            <th style="width:50%;">
+                            <button name="wizard_goto_step" type="submit" id="available_next" value="{{ wizard.steps.prev }}">{% trans "Previous" %}</button>
+                            </th>
+                            {% endif %}
+                            
+                            <th style="width:50%;">
+                            {% if wizard.steps.next %}
+                            <button type="submit" id="available_next" value="{% trans 'submit' %}">Next</button>
+                            {% else %}
+                            <button type="submit" id="available_next" value="{% trans 'submit' %}">Submit</button>
+                            {% endif %}
+                            </th>
+                        </tr>
+                    </table>
+                {% endblock buttons %}
+                
+                
+            </form>
+            {% endblock form %}
+        </div>
+    </main>
+{% endblock %}
+
+
+{% block footer %}
+{% endblock footer %}

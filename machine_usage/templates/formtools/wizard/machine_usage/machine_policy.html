@@ -1,0 +1,7 @@
+{% extends "formtools/wizard/machine_usage/generic_usage.html" %}
+
+{% block title %}Machine Options {% endblock title %}
+{% block field %} 
+        <p class="no_margin" id="reprint_policy_text">{{ wizard.form.text }}</p>
+        <div>{{ wizard.form.policy_acceptance }} I agree to the Machine Usage Policy</div>
+{% endblock field %}

@@ -1,0 +1,8 @@
+{% extends "formtools/wizard/machine_usage/generic_usage.html" %}
+
+{% block title %}Machine Options {% endblock title %}
+{% block field %} 
+    <div>{{ wizard.form.class_usage }} Is this machine usage for a class?</div>
+    <div>{{ wizard.form.own_material }} Are you using your own material?</div>
+    <div>{{ wizard.form.reprint }} Is this a reprint?</div>
+{% endblock field %}

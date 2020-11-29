@@ -10,24 +10,38 @@ from django.contrib.auth.models import User, Group
 from datetime import datetime, timedelta  
 
 #
-#   Pages/Login
+#   Home Pages
 #
 
-def render_equipment(request):
-    return render(request, 'forge/equipment.html', {})
-
+# ! type: GET
+# ! function: Generate hours page
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 def render_hours(request):
     return render(request, 'forge/hours.html', {})
 
+# ! type: GET
+# ! function: Generate index page
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 def render_index(request):
     return render(request, 'forge/index.html', {})
 
+# ! type: GET
+# ! function: Generate news page
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 def render_news(request):
-    return render(request, 'forge/news.html', {}) # TO-DO: Implement the "News" page.
+    return render(request, 'forge/news.html', {})
 
-def render_our_space(request):
-    return render(request, 'forge/index.html', {}) # TO-DO: Implement the "Our Space" page.
-
+# ! type: GET
+# ! function: Generate status page
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
 def render_status(request):
     machines = Machine.objects.filter(enabled=True).order_by('machine_name')
     output = []

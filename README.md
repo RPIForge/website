@@ -1,6 +1,9 @@
 # RPIForge/website 
 The Forge's website - tracks machine usage and calculates charges for members.
 
+## Requirements
+
+### Python
 To install the app, you must have a working Python 3.7.x installation and PostgreSQL.
 
 Required Python libraries:
@@ -9,6 +12,7 @@ Required Python libraries:
 - argon2-cffi
 - django
 - sendgrid
+- google-api
 
 Recommended:
 
@@ -18,9 +22,10 @@ To automatically install requirements run the following command:
 
 	- pip install -r requirements.txt
 
+### Postgres
+The app currently expects a database user `postgres@localhost:5432` with password `password`. This behavior will be changed shortly to use environment variables to store database credentials. The program also currently expects a `forge_devel` database to have already been created. These settings can be found in `forge/settings.py`. Contact the web mainters if you are having trouble connecting.
 
-The app currently expects a database user `postgres@localhost:5432` with password `password`. This behavior will be changed shortly to use environment variables to store database credentials. The program also currently expects a `forge_devel` database to have already been created. These settings can be found in `forge/settings.py`.
-
+## Installation
 Before running the app for the first time, you should set up the database through Django. You can do this by running:
 
 	- python manage.py makemigrations
@@ -34,3 +39,6 @@ Afterwards, you can run the app by simply typing:
 	- python manage.py runserver
 
 The site will be accessible at localhost:8000 (unless you specify another port as an argument to runserver). To access the Django admin panel, point your browser to localhost:8000/admin. To access the site, go to localhost:8000/machine_usage/. This behavior will soon change to hosting the site at the site root.
+
+## Contributing
+Take a look at the current issues and the current project to see priorities.
