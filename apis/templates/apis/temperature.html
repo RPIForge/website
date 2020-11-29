@@ -106,34 +106,37 @@ canvas{
             if(key=="information"){
                 continue;
             }
-                
-            color = color_array[color_index]
-            color_index++;
+            
+            if(color_index>((color_array)+1)){
+                color_index=0
+            }
+            color_main = color_array[color_index]
+            color_goal = color_array[color_index+1]
+            color_index = color_index+2;
             
             temperature_length = temperature_history[key]['time'].length
             
             chart.data.datasets.push({
                 label: key,
                 fill: false,
-                backgroundColor: color,
-                borderColor: color,
+                backgroundColor: color_main,
+                borderColor: color_main,
                 data: temperature_history[key]["temperature"]
             });
             chart.data.datasets.push({
                 label: key+" goal",
                 fill: false,
-                backgroundColor: color.replace(/[^,]+(?=\))/, '0.5'),
-                borderColor: color.replace(/[^,]+(?=\))/, '0.5'),
+                backgroundColor: color_goal,
+                borderColor: color_goal,
                 data: temperature_history[key]["goal"]
             });
             chart.update()
         } 
         
         var pixel_height = chart.canvas.parentNode.style.clientHeight;
-        chart.canvas.parentNode.style.width = max((temperature_length*5),500)+'px';
+        chart.canvas.parentNode.style.width = "100%";
         chart.canvas.parentNode.style.height = "100%";
         
 	}
-
 	</script>
 {% endblock scripts %}

@@ -261,3 +261,70 @@ class SlotUsage(models.Model):
 
     def cost(self):
         return self.amount * self.resource.cost_per
+
+class JobInformation(models.Model): 
+    # ? Use: Keeps track of all general information received from a printer. 
+    # ! Data: Tacks job start and end, current status message, and file id
+
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(null=True, blank=True) # null/blank allowed for check-in/check-out machines
+
+    status_message = models.CharField(max_length=255, default="In Progress.", blank=False)
+
+    complete = models.BooleanField(default=False)
+    error = models.BooleanField(default=False)
+
+    file_id = models.CharField(max_length=36, null=True, blank=True, default=None)
+
+    usage = models.ForeignKey(
+        Usage,
+        on_delete = models.SET_NULL,
+        null=True
+    )
+
+    machine = models.ForeignKey(
+        Machine,
+        on_delete = models.CASCADE,
+        null=False,
+    )
+
+    def __str__(self):
+        return "Job on {} starting at {}".format(self.machine.machine_name, self.start_time)
+
+    def percentage(self):
+        if(not self.end_time):
+            return 0
+        duration = self.end_time - self.start_time
+        elapsed = timezone.now() - self.start_time
+        percentage = (elapsed.total_seconds() / duration.total_seconds()) * 100
+        if(percentage > 100):
+            percentage = 100
+        return percentage
+
+
+
+class ToolTemperature(models.Model): 
+    # ? Use: Keeps track of temperature at a point in time
+    # ! Data: Tracks the temperature at a point in time in celcious 
+    tool_name = models.CharField(max_length=255)
+    tool_time = models.DateTimeField(auto_now_add=True)
+    tool_temperature = models.FloatField()
+    tool_temperature_goal = models.FloatField()
+
+
+    job = models.ForeignKey(
+        JobInformation,
+        on_delete = models.SET_NULL,
+        null=True,
+        blank = True
+    )
+
+    machine = models.ForeignKey(
+        Machine,
+        on_delete = models.CASCADE,
+        null=False
+    )
+
+
+    def __str__(self):
+        return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.tool_name, self.tool_temperature, self.tool_time)  
