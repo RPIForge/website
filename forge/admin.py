@@ -3,9 +3,11 @@ from django.contrib import admin
 from machine_management.models import *
 from business.models import *
 from user_management.models import *
-
-from user_management.admin import *
 from apis.models import *
+
+
+from machine_management.admin import *
+from user_management.admin import *
 
 from django.contrib.auth.models import User, Group
 
@@ -21,7 +23,7 @@ admin.site.register(SlotUsage)
 
 
 admin.site.register(ToolTemperature)
-admin.site.register(JobInformation)
+admin.site.register(JobInformation, JobInformationAdmin)
 
 admin.site.register(Key)
 

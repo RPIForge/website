@@ -149,11 +149,16 @@ def verify_key(request):
     return False
 
 
-#get or set machine status. machine id must be in data
-#available statuses:
-##completed: print ended
-##start: print is starting and create machine_usage 
-##error: printer errored out
+
+#
+# Octoprint Functions
+#
+
+# ! type: GET/POST
+# ! function: Either get or set machine status
+# ? required: API Key, machine_id/API, machine_id,status
+# ? returns: HTTP Response
+# TODO:
 @csrf_exempt
 def machine_status(request):
     #if get return machine status
@@ -251,7 +256,12 @@ def machine_status(request):
                 machine.save()
 
         return HttpResponse("Status set", status=200)
-        
+
+# ! type: GET/POST
+# ! function: View temperature infromation/Push more temperature informaiton
+# ? required: Machine or Job/Temperature information
+# ? returns: HTTP Rendered Template/HTTP Response
+# TODO: Make function generic        
 @csrf_exempt  
 def machine_temperature(request):
     #if get
@@ -352,7 +362,12 @@ def machine_temperature(request):
             
         return HttpResponse("Data recorded", status=200)
     return HttpResponse("Invalid request", status=405)
-    
+
+# ! type: GET/POST
+# ! function: View general infromation/Update general informaiton
+# ? required: Machine or Job/Temperature information
+# ? returns: HTTP Response
+# TODO:  
 @csrf_exempt  
 def machine_information(request):
     if(request.method == 'GET'):
