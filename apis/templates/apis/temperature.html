@@ -18,7 +18,7 @@ canvas{
 	<main>
         <div id="information">
             <div id="chart" style="position: relative;">
-                <canvas id="canvas"></canvas>
+                <div id='chart_div'></div>
             </div>
             <div id="nodata">
                 No Data Available
@@ -28,7 +28,7 @@ canvas{
 {% endblock main %}
 
 {% block scripts %}
-	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 	<script>
 	var temperature_history = {{temperature_information|safe }}
     
@@ -42,100 +42,57 @@ canvas{
         var chart = document.getElementById('chart');
         nodata.style.display = "none"; 
         chart.style.display = "block"; 
-        
-        var temperature_time = Object.entries(temperature_history)[0][1]["time"]
-        
-        var canvas = document.getElementById('canvas')
-        var ctx = canvas.getContext('2d');
-        chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: temperature_time,
-                },
-                options: {
-                    tooltips: {
-                        intersect: false,
-                    },
-                    hover: {
-                        mode: 'nearest',
-                        intersect: true
-                    },
-                    
-                    
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }],
-                        xAxes: [{
-                            ticks: {
-                                reverse: true,
-                                maxTicksLimit: 20
-                            }
-                        }]
-                    },
-                    
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    title: {
-                        display: true,
-                        text: 'Chart with Multiline Labels'
-                    },
-                }
-            });
-        
-    
-        
-        
-        
-        var color_array = [
-            'rgba(255, 0, 0, 1)',
-            'rgba(0, 255, 0, 1)',
-            'rgba(0, 0, 255, 1)',
-            'rgba(255, 0, 255, 1)',
-            'rgba(0, 255, 255, 1)',
-            'rgba(255, 255, 255, 1)',
-        ]
-        
-        var color_index = 0;
-        
-        var temperature_length = 0;
-        for (const [key, value] of Object.entries(temperature_history)) {
-            if(key=="information"){
-                continue;
-            }
-            
-            if(color_index>((color_array)+1)){
-                color_index=0
-            }
-            color_main = color_array[color_index]
-            color_goal = color_array[color_index+1]
-            color_index = color_index+2;
-            
-            temperature_length = temperature_history[key]['time'].length
-            
-            chart.data.datasets.push({
-                label: key,
-                fill: false,
-                backgroundColor: color_main,
-                borderColor: color_main,
-                data: temperature_history[key]["temperature"]
-            });
-            chart.data.datasets.push({
-                label: key+" goal",
-                fill: false,
-                backgroundColor: color_goal,
-                borderColor: color_goal,
-                data: temperature_history[key]["goal"]
-            });
-            chart.update()
-        } 
-        
-        var pixel_height = chart.canvas.parentNode.style.clientHeight;
-        chart.canvas.parentNode.style.width = "100%";
-        chart.canvas.parentNode.style.height = "100%";
-        
 	}
+
+    //get list of time points.
+    var time_list = Object.entries(temperature_history)[0][1]["time"]
+
+    //put data into traces
+    trace_data = []
+    for (const [key, value] of Object.entries(temperature_history)) {
+        if(key=="information"){
+            continue;
+        }
+
+        var data_trace = {
+            x: time_list,
+            y: temperature_history[key]["temperature"],
+            name: key,
+            type: 'scatter'
+        };
+        trace_data.push(data_trace)
+
+        var goal_trace = {
+            x: time_list,
+            y: temperature_history[key]["goal"],
+            name: key+" goal",
+            type: 'scatter'
+        };
+        trace_data.push(goal_trace)
+    }
+
+    //setup layouut
+    var layout = {
+        title: {
+            text:'Machine Temperature',
+            xref: 'paper',
+            x: 0.05,
+        },
+        xaxis: {
+            title: {
+                text: 'Time',
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Temperature (C)',
+            }
+        },
+
+        hovermode: 'x unified'
+    };
+
+    Plotly.newPlot('chart_div', trace_data, layout);
+
 	</script>
 {% endblock scripts %}
