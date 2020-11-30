@@ -275,6 +275,7 @@ class JobInformation(models.Model):
     error = models.BooleanField(default=False)
 
     file_id = models.CharField(max_length=36, null=True, blank=True, default=None)
+    layer_count = models.IntegerField(null=True, blank=True)
 
     usage = models.ForeignKey(
         Usage,
@@ -301,17 +302,10 @@ class JobInformation(models.Model):
             percentage = 100
         return percentage
 
-
-
-class ToolTemperature(models.Model): 
-    # ? Use: Keeps track of temperature at a point in time
-    # ! Data: Tracks the temperature at a point in time in celcious 
-    tool_name = models.CharField(max_length=255)
-    tool_time = models.DateTimeField(auto_now_add=True)
-    tool_temperature = models.FloatField()
-    tool_temperature_goal = models.FloatField()
-
-
+class RecurringData(models.Model):
+    name = models.CharField(max_length=255)
+    time = models.DateTimeField(auto_now_add=True)
+    
     job = models.ForeignKey(
         JobInformation,
         on_delete = models.SET_NULL,
@@ -325,6 +319,25 @@ class ToolTemperature(models.Model):
         null=False
     )
 
+    class Meta:
+        abstract = True
+
+class ToolTemperature(RecurringData): 
+    # ? Use: Keeps track of temperature at a point in time
+    # ! Data: Temperature in Celcius
+    temperature = models.FloatField()
+    temperature_goal = models.FloatField()
 
     def __str__(self):
-        return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.tool_name, self.tool_temperature, self.tool_time)  
+        return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.name, self.temperature, self.time)  
+
+class LayerInformation(RecurringData): 
+    # ? Use: Keeps track of temperature at a point in time
+    # ! Data: Temperature in Celcius
+    layer = models.IntegerField()
+
+    def __str__(self):
+        return "{} is at layer {} at {}".format(self.machine.machine_name, self.layer,  self.time)  
+
+        
+        

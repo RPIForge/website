@@ -290,8 +290,7 @@ def machine_temperature(request):
         if(print_information):
             #get all temperatures for the print
             temperatures = print_information.tooltemperature_set.all()
-            
-            
+
             
             #if raw data requested
             if(not display_type):
@@ -299,10 +298,10 @@ def machine_temperature(request):
                 output_response=[]
                 for tools in temperatures:
                     tool_information = {
-                        "tool_time":str(tools.tool_time),
-                        "tool_name":tools.tool_name,
-                        "tool_temperature":tools.tool_temperature,
-                        "tool_temperature_goal":tools.tool_temperature_goal
+                        "tool_time":str(tools.time),
+                        "tool_name":tools.name,
+                        "tool_temperature":tools.temperature,
+                        "tool_temperature_goal":tools.temperature_goal
                     }
                     output_response.append(tool_information)
                 
@@ -311,16 +310,16 @@ def machine_temperature(request):
                 #format temperature to be displayed
                 temperature_information={}
                 for tools in temperatures:
-                    if tools.tool_name in temperature_information:
-                        information = temperature_information[tools.tool_name]
-                        information["time"].append(tools.tool_time.strftime('%H:%M:%S'))
-                        information["goal"].append(tools.tool_temperature_goal)
-                        information["temperature"].append(tools.tool_temperature)
+                    if tools.name in temperature_information:
+                        information = temperature_information[tools.name]
+                        information["time"].append(tools.time.strftime('%H:%M:%S'))
+                        information["goal"].append(tools.temperature_goal)
+                        information["temperature"].append(tools.temperature)
                     else:
-                        temperature_information[tools.tool_name] = {
-                            "time":[tools.tool_time.strftime('%H:%M:%S')],
-                            "goal":[tools.tool_temperature_goal],
-                            "temperature":[tools.tool_temperature]
+                        temperature_information[tools.name] = {
+                            "time":[tools.time.strftime('%H:%M:%S')],
+                            "goal":[tools.temperature_goal],
+                            "temperature":[tools.temperature]
                         }
                         
                 return render(request, 'apis/temperature.html', {"temperature_information":json.dumps(temperature_information)})
@@ -351,9 +350,9 @@ def machine_temperature(request):
             #create new temperature and attach it to machine
             temperature = ToolTemperature()
             temperature.machine = machine
-            temperature.tool_name = tool["tool_name"]
-            temperature.tool_temperature = tool["temperature"]
-            temperature.tool_temperature_goal = tool["goal"]
+            temperature.name = tool["tool_name"]
+            temperature.temperature = tool["temperature"]
+            temperature.temperature_goal = tool["goal"]
             
             #if print information then attach it to
             if(print_information):

@@ -22,7 +22,6 @@ admin.site.register(Usage)
 admin.site.register(SlotUsage)
 
 
-admin.site.register(ToolTemperature)
 admin.site.register(JobInformation, JobInformationAdmin)
 
 admin.site.register(Key)
