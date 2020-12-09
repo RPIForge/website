@@ -289,7 +289,7 @@ def machine_temperature(request):
         #if there is such information
         if(print_information):
             #get all temperatures for the print
-            temperatures = print_information.tooltemperature_set.all()
+            temperatures = print_information.tooltemperature_set.all().order_by('time')
 
             
             #if raw data requested
@@ -308,24 +308,28 @@ def machine_temperature(request):
                 return HttpResponse(json.dumps(output_response), status=200)
             else:
                 #format temperature to be displayed
-                temperature_information={}
+                temperature_information={
+                    "time":[],
+                    "data":{}
+                }
                 for tools in temperatures:
-                    if tools.name in temperature_information:
-                        information = temperature_information[tools.name]
-                        information["time"].append(tools.time.strftime('%H:%M:%S'))
-                        information["goal"].append(tools.temperature_goal)
-                        information["temperature"].append(tools.temperature)
-                    else:
-                        temperature_information[tools.name] = {
-                            "time":[tools.time.strftime('%H:%M:%S')],
-                            "goal":[tools.temperature_goal],
-                            "temperature":[tools.temperature]
-                        }
+                    if tools.name in temperature_information["data"]:
+                        if(tools.time.strftime('%H:%M:%S') not in temperature_information["time"]):
+                            temperature_information["time"].append(tools.time.strftime('%H:%M:%S'))
                         
-                return render(request, 'apis/temperature.html', {"temperature_information":json.dumps(temperature_information)})
+                        temperature_information["data"]["{} goal".format(tools.name)].append(tools.temperature_goal)
+                        temperature_information["data"]["{}".format(tools.name)].append(tools.temperature)
+
+                    else:
+                        temperature_information["data"]["{} goal".format(tools.name)] = [tools.temperature_goal]
+                        temperature_information["data"]["{}".format(tools.name)] = [tools.temperature]
+
+
+                        
+                return render(request, 'apis/data_graph.html', {"title": "Machine Temperature", "units":"Degrees (C)", "data_history":json.dumps(temperature_information)})
             
         if(display_type):
-                return render(request, 'apis/temperature.html', {"temperature_information":json.dumps({})})
+                return render(request, 'apis/data_graph.html', {"data_history":json.dumps({})})
         return HttpResponse("No PrintInformation", status=400)
            
         
@@ -359,6 +363,128 @@ def machine_temperature(request):
                 temperature.job = print_information
             temperature.save()
             
+        return HttpResponse("Data recorded", status=200)
+    return HttpResponse("Invalid request", status=405)
+
+# ! type: GET/POST
+# ! function: View Height/Layer infromation/Push more Height/Layer informaiton
+# ? required: Machine or Job/Height-Layer information
+# ? returns: HTTP Rendered Template/HTTP Response
+# TODO: Make function generic        
+@csrf_exempt  
+def machine_location(request):
+    #if get
+    if(request.method == 'GET'):
+        #get varlables from url
+        machine_id = request.GET.get("machine_id",None)
+        job_id = request.GET.get("job_id",None)
+        display_type = request.GET.get("display_graph",None)
+        
+        
+        if(not machine_id and not job_id):
+            return HttpResponse("No machine_id or job_id provided.", status=400)
+        
+        #get the current print_information or get previous print information
+        print_information = None
+        if(machine_id):
+            machine = Machine.objects.get(id=machine_id)
+            print_information = machine.current_print_information
+            if(not print_information and machine.current_job):
+                usage = machine.current_job
+                print_information = usage.current_print_information
+        else:
+            print_information = JobInformation.objects.get(id=job_id)
+            
+        #if there is such information
+        if(print_information):
+            #get all temperatures for the print
+            locations = print_information.locationinformation_set.all()
+
+            
+            #if raw data requested
+            if(not display_type):
+                #get raw data in json
+                output_response=[]
+                for location in locations:
+                    location_information = {
+                        "time":str(tools.time),
+                        "layer":location.layer,
+                        "max_layer":location.max_layer,
+                        "z-location":location.z_location,
+                        "tool_temperature_goal":tools.temperature_goal
+                    }
+                    output_response.append(location_information)
+                
+                return HttpResponse(json.dumps(output_response), status=200)
+            else:
+                #format temperature to be displayed
+                location_information={
+                    "time":[],
+                    'data':{
+                        'layer': [],
+                        'max-layer': [],
+                        'z': []
+                    }
+                }
+                for location in locations:
+                    if(location.time.strftime('%H:%M:%S') not in location_information["time"]):
+                        location_information["time"].append(location.time.strftime('%H:%M:%S'))
+                    
+                    location_information["data"]["layer"].append(location.layer)
+                    location_information["data"]["max-layer"].append(location.max_layer)
+                    location_information["data"]["z"].append(location.z_location)
+
+                        
+                return render(request, 'apis/data_graph.html', {"title": "Machine Location", "units":"Distance (mm)", "data_history":json.dumps(location_information)})
+            
+        if(display_type):
+                return render(request, 'apis/data_graph.html', {"data_history":json.dumps({})})
+        return HttpResponse("No PrintInformation", status=400)
+           
+        
+    #if post then adding temperature information 
+    elif(request.method == 'POST'):
+        if(not verify_key(request)):
+            return HttpResponse("Invalid or missing API Key", status=403)
+            
+        #get information from body
+        data = json.loads(request.body)
+        
+        #get machine
+        machine_id = request.GET.get("machine_id",None)
+        if(not machine_id):
+            return HttpResponse("No machine_id provided.", status=400)
+
+        machine_id = int(machine_id)          
+        machine = Machine.objects.get(id=machine_id)
+       
+        #get print information if there is one
+        print_information = machine.current_print_information
+
+        current_height = data["height"]["current"]
+
+        current_layer = data["layer"]["current"]
+        max_layer = data["layer"]["total"]
+
+        if(current_height is '-'):
+            current_height = 0
+
+        if(current_layer is '-'):
+            current_layer = 0
+
+        if(max_layer is '-'):
+            max_layer = 0
+
+        location_data = LocationInformation()
+        location_data.layer = current_layer
+        location_data.max_layer = max_layer
+        location_data.z_location = current_height
+
+        location_data.machine = machine
+        if(print_information):
+            location_data.job = print_information
+        location_data.save()
+        
         return HttpResponse("Data recorded", status=200)
     return HttpResponse("Invalid request", status=405)
 

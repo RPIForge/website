@@ -1,7 +1,7 @@
 {% load static %}
 
 {% block page_title %}
-<title>Machine Temperature</title>
+<title>Machine Information</title>
 {% endblock page_title %}
 
 {% block custom_styles %}
@@ -30,9 +30,9 @@ canvas{
 {% block scripts %}
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 	<script>
-	var temperature_history = {{temperature_information|safe }}
+	var data_history = {{data_history|safe }}
     
-    if(Object.keys(temperature_history).length === 0){
+    if(Object.keys(data_history).length === 0){
         var nodata = document.getElementById('nodata');
         var chart = document.getElementById('chart');
         nodata.style.display = "block"; 
@@ -45,36 +45,25 @@ canvas{
 	}
 
     //get list of time points.
-    var time_list = Object.entries(temperature_history)[0][1]["time"]
+    var time_list = data_history["time"]
 
     //put data into traces
+    console.log(data_history)
     trace_data = []
-    for (const [key, value] of Object.entries(temperature_history)) {
-        if(key=="information"){
-            continue;
-        }
-
+    for (const [name, data] of Object.entries(data_history["data"])) {
         var data_trace = {
             x: time_list,
-            y: temperature_history[key]["temperature"],
-            name: key,
+            y: data,
+            name: name,
             type: 'scatter'
         };
         trace_data.push(data_trace)
-
-        var goal_trace = {
-            x: time_list,
-            y: temperature_history[key]["goal"],
-            name: key+" goal",
-            type: 'scatter'
-        };
-        trace_data.push(goal_trace)
     }
 
     //setup layouut
     var layout = {
         title: {
-            text:'Machine Temperature',
+            text:'{{title}}',
             xref: 'paper',
             x: 0.05,
         },
@@ -85,11 +74,11 @@ canvas{
         },
         yaxis: {
             title: {
-                text: 'Temperature (C)',
+                text: '{{units}}',
             }
         },
 
-        hovermode: 'x unified'
+        hovermode: 'x close'
     };
 
     Plotly.newPlot('chart_div', trace_data, layout);

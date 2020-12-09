@@ -303,7 +303,6 @@ class JobInformation(models.Model):
         return percentage
 
 class RecurringData(models.Model):
-    name = models.CharField(max_length=255)
     time = models.DateTimeField(auto_now_add=True)
     
     job = models.ForeignKey(
@@ -325,16 +324,20 @@ class RecurringData(models.Model):
 class ToolTemperature(RecurringData): 
     # ? Use: Keeps track of temperature at a point in time
     # ! Data: Temperature in Celcius
+    name = models.CharField(max_length=255)
     temperature = models.FloatField()
     temperature_goal = models.FloatField()
 
     def __str__(self):
         return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.name, self.temperature, self.time)  
 
-class LayerInformation(RecurringData): 
+class LocationInformation(RecurringData): 
     # ? Use: Keeps track of temperature at a point in time
     # ! Data: Temperature in Celcius
     layer = models.IntegerField()
+    max_layer = models.IntegerField()
+
+    z_location = models.FloatField()
 
     def __str__(self):
         return "{} is at layer {} at {}".format(self.machine.machine_name, self.layer,  self.time)  
