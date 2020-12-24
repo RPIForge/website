@@ -154,6 +154,230 @@ def verify_key(request):
 # Octoprint Functions
 #
 
+# ! type: HELPER
+# ! function: Handle status updates
+# ? required: Machine, machine status, status message
+# ? returns: nothing
+# TODO:
+@csrf_exempt
+def handle_status(machine, machine_status, machine_status_message):
+    usage = machine.current_job
+    print_information = machine.current_print_information
+
+    #if starting print
+    if(machine_status=="printing"):
+        #set machine to in use
+        #if paost print and usage is still running clear
+        information = create_print(machine)
+        information.status = machine_status
+        information.status_message = machine_status_message
+        information.save()
+    #if completed 
+    elif(machine_status=="completed"):
+        #if there is a print_information then complete it
+        if(print_information):
+            print_information.end_time = timezone.now()
+            print_information.status_message = "Completed."
+            print_information.save()
+            
+            
+            machine.current_print_information = None
+            machine.save()
+            
+        #if there is a usage complete it
+        if(usage):
+            usage.complete = True
+            usage.end_time = timezone.now()
+            usage.status_message = "Completed."
+            usage.save()
+        
+        #if nothing attached to machine then set it not in use
+        if(not machine.current_print_information and not machine.current_job):
+            machine.in_use = False
+            machine.save()
+    
+    #if error then set error messages
+    elif(machine_status=="error"):
+        if(usage):
+            usage.error = True
+            usage.save()
+        if(print_information):
+            print_information.status_message = machine_status_message
+            print_information.error = True
+            print_information.save()
+    
+    else:
+        if(print_information):
+            print_information.status_message = machine_status_message
+            print_information.save()
+        else:
+            machine.status_message = machine_status_message
+            machine.save()
+    
+# ! type: HELPER
+# ! function: Handle informatino updates
+# ? required: Machine, [end_time, file_id]
+# ? returns: nothing
+# TODO:
+def handle_information(machine, end_time,file_id):
+    print_information = machine.current_print_information
+    if(print_information):
+        if(end_time):
+            time_information = end_time.split('.')[0]
+            print_information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+            print_information.save()
+        
+        if(file_id):
+            print_information.file_id = file_id
+            print_information.save()
+    else:
+        information = create_print(machine)
+        
+        if(end_time):
+            time_information = end_time.split('.')[0]
+            information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+        
+        if(file_id):
+            information.file_id = file_id
+            
+        information.save()
+
+# ! type: HELPER
+# ! function: Handle new etmperature informatino
+# ? required: Machine, temperature data
+# ? returns: nothing
+# TODO:
+def handle_temperature(machine, temperature_data):
+    #get print information if there is one
+    print_information = machine.current_print_information
+    for tool in temperature_data:
+        #create new temperature and attach it to machine
+        temperature = ToolTemperature()
+        temperature.machine = machine
+        temperature.name = tool["tool_name"]
+        temperature.temperature = tool["temperature"]
+        temperature.temperature_goal = tool["goal"]
+        
+        #if print information then attach it to
+        if(print_information):
+            temperature.job = print_information
+        temperature.save()
+
+# ! type: HELPER
+# ! function: Handle new location informatino
+# ? required: Machine, current_height, current_layer, max_layer
+# ? returns: nothing
+# TODO:
+def handle_location(machine, current_height, current_layer, max_layer):
+    print_information = machine.current_print_information
+
+    if(current_height is '-'):
+        current_height = 0
+
+    if(current_layer is '-'):
+        current_layer = 0
+
+    if(max_layer is '-'):
+        max_layer = 0
+
+    location_data = LocationInformation()
+    location_data.layer = current_layer
+    location_data.max_layer = max_layer
+    location_data.z_location = current_height
+
+    location_data.machine = machine
+    if(print_information):
+        location_data.job = print_information
+    location_data.save()
+
+## This is the format for the data to be recieved
+#{
+#    'time':datetime
+#    'data':{
+#        'machine':{
+#            'status':string
+#            'status_message':string
+#        },
+#        'print':{
+#            'end_time':datetime
+#            'file_id':string
+#        }
+#        'temperature': {
+#            'tool_name':{
+#                'current':float
+#                'goal':float
+#            }
+#            ...
+#        },
+#
+#        'location': {
+#            'current_height':int
+#            'current_layer':int
+#            'max_layer':int
+#            ''
+#        }
+#    }
+#}
+
+# ! type: GET/POST
+# ! function: Update machine Data
+# ? required: API Key, machine_id, Data Dict
+# ? returns: HTTP Response
+# TODO:
+@csrf_exempt
+def machine_data(request):
+    if(request.method == 'GET'):
+        pass
+    elif(request.method == 'POST'):
+        #verify key
+        if(not verify_key(request)):
+            return HttpResponse("Invalid or missing API Key", status=403)
+        
+        #get machine id
+        machine_id = request.GET.get("machine_id",None)
+        if(not machine_id):
+            return HttpResponse("No machine_id provided", status=400)
+        machine_id = int(machine_id)
+
+        #get machine object
+        try:
+            machine = Machine.objects.get(id=machine_id)
+        except ObjectDoesNotExist:
+            return HttpResponse("Machine not found", status=400)
+
+        printer_dict = json.loads(request.body)
+        data_time = printer_dict['time']
+        data = printer_dict['data']
+
+        #handle new machine data
+        if('machine' in data):
+            machine_status = data['machine']['status']
+            machine_status_message = data['machine']['status']
+            handle_status(machine,machine_status,machine_status_message)
+
+        #handle print update information
+        if('print' in data):
+            end_time = data['print'].get('end_time',None)
+            file_id = data['print'].get('file_id',None)
+            handle_information(machine,end_time,file_id)
+        
+        #handle new temperature information
+        if('temperature' in data):
+            temperature_data = data["temperature"]
+            handle_temperature(machine,temperature_data)
+
+        #handle location
+        if('location' in data):
+            height = data["location"]["current_height"]
+            layer = data["location"]["current_layer"]
+            max_layer = data["location"]["max_layer"]
+
+            handle_location(machine,height,layer,max_layer)
+        
+        return HttpResponse("Data Set", status=200)
+    return HttpResponse("Invalid request", status=405)
+
+        
 # ! type: GET/POST
 # ! function: Either get or set machine status
 # ? required: API Key, machine_id/API, machine_id,status
