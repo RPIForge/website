@@ -378,8 +378,8 @@ def machine_data(request):
     return HttpResponse("Invalid request", status=405)
 
         
-# ! type: GET/POST
-# ! function: Either get or set machine status
+# ! type: GET
+# ! function: Either get machine status
 # ? required: API Key, machine_id/API, machine_id,status
 # ? returns: HTTP Response
 # TODO:
@@ -400,92 +400,12 @@ def machine_status(request):
             return HttpResponse(machine.current_print_information.status_message, status=200)
         else:
             return HttpResponse("Idle.", status=200)
-    #if post update machine_status    
-    else:
-        #verify key
-        if(not verify_key(request)):
-            return HttpResponse("Invalid or missing API Key", status=403)
-        
-        #get machine id
-        machine_id = request.GET.get("machine_id",None)
-        if(not machine_id):
-            return HttpResponse("No machine_id provided.", status=400)
-        machine_id = int(machine_id)
-        
-        #get machine status
-        machine_status = request.GET.get("status",None)
-        if(not machine_status):
-            return HttpResponse("No status provided.", status=400)
-        
-        #get machine status message
-        machine_status_message = request.GET.get("status_text",None)
-        if(not machine_status_message):
-            return HttpResponse("No status_text provided.", status=400)
-            
-        #get machine
-        machine = Machine.objects.get(id=machine_id)
-
-        #get usage and print information
-        usage = machine.current_job
-        print_information = machine.current_print_information
-        
-        #if starting print
-        if(machine_status=="printing"):
-            #set machine to in use
-            #if paost print and usage is still running clear
-            information = create_print(machine)
-            information.status = machine_status
-            information.status_message = machine_status_message
-            information.save()
-        #if completed 
-        elif(machine_status=="completed"):
-            #if there is a print_information then complete it
-            if(print_information):
-                print_information.end_time = timezone.now()
-                print_information.status_message = "Completed."
-                print_information.save()
-                
-                
-                machine.current_print_information = None
-                machine.save()
-                
-            #if there is a usage complete it
-            if(usage):
-                usage.complete = True
-                usage.end_time = timezone.now()
-                usage.status_message = "Completed."
-                usage.save()
-            
-            #if nothing attached to machine then set it not in use
-            if(not machine.current_print_information and not machine.current_job):
-                machine.in_use = False
-                machine.save()
-        
-        #if error then set error messages
-        elif(machine_status=="error"):
-            if(usage):
-                usage.error = True
-                usage.save()
-            if(print_information):
-                print_information.status_message = machine_status_message
-                print_information.error = True
-                print_information.save()
-        
-        else:
-            if(print_information):
-                print_information.status_message = machine_status_message
-                print_information.save()
-            else:
-                machine.status_message = machine_status_message
-                machine.save()
-
-        return HttpResponse("Status set", status=200)
-
-# ! type: GET/POST
-# ! function: View temperature infromation/Push more temperature informaiton
+    
+# ! type: GET
+# ! function: View temperature infromation
 # ? required: Machine or Job/Temperature information
 # ? returns: HTTP Rendered Template/HTTP Response
-# TODO: Make function generic        
+# TODO: Make Generic
 @csrf_exempt  
 def machine_temperature(request):
     #if get
@@ -556,45 +476,13 @@ def machine_temperature(request):
                 return render(request, 'apis/data_graph.html', {"data_history":json.dumps({})})
         return HttpResponse("No PrintInformation", status=400)
            
-        
-    #if post then adding temperature information 
-    elif(request.method == 'POST'):
-        if(not verify_key(request)):
-            return HttpResponse("Invalid or missing API Key", status=403)
-            
-        #get information from body
-        temperature_data = json.loads(request.body)
-        
-        #get machine
-        machine_id = request.GET.get("machine_id",None)
-        if(not machine_id):
-            return HttpResponse("No machine_id provided.", status=400)
-        machine_id = int(machine_id)          
-        machine = Machine.objects.get(id=machine_id)
-       
-        #get print information if there is one
-        print_information = machine.current_print_information
-        for tool in temperature_data:
-            #create new temperature and attach it to machine
-            temperature = ToolTemperature()
-            temperature.machine = machine
-            temperature.name = tool["tool_name"]
-            temperature.temperature = tool["temperature"]
-            temperature.temperature_goal = tool["goal"]
-            
-            #if print information then attach it to
-            if(print_information):
-                temperature.job = print_information
-            temperature.save()
-            
-        return HttpResponse("Data recorded", status=200)
     return HttpResponse("Invalid request", status=405)
 
-# ! type: GET/POST
-# ! function: View Height/Layer infromation/Push more Height/Layer informaiton
+# ! type: GET
+# ! function: View Height/Layer infromation
 # ? required: Machine or Job/Height-Layer information
-# ? returns: HTTP Rendered Template/HTTP Response
-# TODO: Make function generic        
+# ? returns: HTTP Rendered Template
+# TODO: Make Generic
 @csrf_exempt  
 def machine_location(request):
     #if get
@@ -665,51 +553,7 @@ def machine_location(request):
                 return render(request, 'apis/data_graph.html', {"data_history":json.dumps({})})
         return HttpResponse("No PrintInformation", status=400)
            
-        
-    #if post then adding temperature information 
-    elif(request.method == 'POST'):
-        if(not verify_key(request)):
-            return HttpResponse("Invalid or missing API Key", status=403)
-            
-        #get information from body
-        data = json.loads(request.body)
-        
-        #get machine
-        machine_id = request.GET.get("machine_id",None)
-        if(not machine_id):
-            return HttpResponse("No machine_id provided.", status=400)
-
-        machine_id = int(machine_id)          
-        machine = Machine.objects.get(id=machine_id)
-       
-        #get print information if there is one
-        print_information = machine.current_print_information
-
-        current_height = data["height"]["current"]
-
-        current_layer = data["layer"]["current"]
-        max_layer = data["layer"]["total"]
-
-        if(current_height is '-'):
-            current_height = 0
-
-        if(current_layer is '-'):
-            current_layer = 0
-
-        if(max_layer is '-'):
-            max_layer = 0
-
-        location_data = LocationInformation()
-        location_data.layer = current_layer
-        location_data.max_layer = max_layer
-        location_data.z_location = current_height
-
-        location_data.machine = machine
-        if(print_information):
-            location_data.job = print_information
-        location_data.save()
-        
-        return HttpResponse("Data recorded", status=200)
+   
     return HttpResponse("Invalid request", status=405)
 
 # ! type: GET/POST
@@ -736,45 +580,6 @@ def machine_information(request):
             
             
         return HttpResponse(json.dumps(response), status=200)
-            
-    if(request.method == 'POST'):
-        if(not verify_key(request)):
-            return HttpResponse("Invalid or missing API Key", status=403)
-        
-        
-
-        machine_id = request.GET.get("machine_id",None)
-        if(not machine_id):
-            return HttpResponse("No machine_id provided.", status=400)
-        machine_id = int(machine_id)          
-        machine = Machine.objects.get(id=machine_id)
-        
-        end_time = request.GET.get("end_time",None)
-        file_id =  request.GET.get("file_id",None)
-
-        print_information = machine.current_print_information
-        if(print_information):
-            if(end_time):
-                time_information = end_time.split('.')[0]
-                print_information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
-                print_information.save()
-            
-            if(file_id):
-                print_information.file_id = file_id
-                print_information.save()
-        else:
-            information = create_print(machine)
-            
-            if(end_time):
-                time_information = end_time.split('.')[0]
-                information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
-            
-            if(file_id):
-                information.file_id = file_id
-                
-            information.save()
-            
-        return HttpResponse("Data recorded", status=200)
 
     return HttpResponse("Invalid request", status=405)
     
