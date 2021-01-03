@@ -10,6 +10,7 @@ urlpatterns = [
     
  
     #octoprint management
+    path('api/machines/data', views.machine_data, name='machine_status'), 
     path('api/machines/status', views.machine_status, name='machine_status'),
     path('api/machines/print/temperature', views.machine_temperature, name='machine_temperature'),
     path('api/machines/print/location', views.machine_location, name='machine_location'),

@@ -178,6 +178,7 @@ def handle_status(machine, machine_status, machine_status_message):
         if(print_information):
             print_information.end_time = timezone.now()
             print_information.status_message = "Completed."
+            print_information.complete=True
             print_information.save()
             
             
@@ -254,9 +255,9 @@ def handle_temperature(machine, temperature_data):
         #create new temperature and attach it to machine
         temperature = ToolTemperature()
         temperature.machine = machine
-        temperature.name = tool["tool_name"]
-        temperature.temperature = tool["temperature"]
-        temperature.temperature_goal = tool["goal"]
+        temperature.name = tool
+        temperature.temperature = temperature_data[tool]["actual"]
+        temperature.temperature_goal = temperature_data[tool]["target"]
         
         #if print information then attach it to
         if(print_information):
@@ -343,6 +344,7 @@ def machine_data(request):
         try:
             machine = Machine.objects.get(id=machine_id)
         except ObjectDoesNotExist:
+            print(3)
             return HttpResponse("Machine not found", status=400)
 
         printer_dict = json.loads(request.body)
@@ -510,7 +512,7 @@ def machine_location(request):
         #if there is such information
         if(print_information):
             #get all temperatures for the print
-            locations = print_information.locationinformation_set.all()
+            locations = print_information.locationinformation_set.all().order_by('time')
 
             
             #if raw data requested
