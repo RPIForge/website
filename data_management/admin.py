@@ -26,13 +26,11 @@ class JobInformationAdmin(admin.ModelAdmin):
     readonly_fields=('get_temperature','get_location')
 
     def get_temperature(self, object):
-        iframe_text = "<iframe class='temperature' size='10' src='/api/machines/print/temperature?job_id={}&display_graph=1' style='min-height:450px; width:100%;' scrolling='yes'></iframe>".format(object.id)
-        #iframe_text = "<a href='/api/machines/print/temperature?job_id={}&display_graph=1'>Temperature Information</a>".format(object.id)
+        iframe_text = "<iframe class='temperature' size='10' src='/data/machines/print/temperature?job_id={}&display_graph=1' style='min-height:450px; width:100%;' scrolling='yes'></iframe>".format(object.id)
         return SafeText(iframe_text)
 
     def get_location(self, object):
-        iframe_text = "<iframe class='temperature' size='10' src='/api/machines/print/location?job_id={}&display_graph=1' style='min-height:450px; width:100%;' scrolling='yes'></iframe>".format(object.id)
-        #iframe_text = "<a href='/api/machines/print/temperature?job_id={}&display_graph=1'>Temperature Information</a>".format(object.id)
+        iframe_text = "<iframe class='temperature' size='10' src='/data/machines/print/location?job_id={}&display_graph=1' style='min-height:450px; width:100%;' scrolling='yes'></iframe>".format(object.id)
         return SafeText(iframe_text)
 
     get_temperature.allow_tags = True 

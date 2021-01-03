@@ -14,7 +14,7 @@
 	<main class="bg_shade">
 		<div id="card_container" class="center_children">
 			{% for machine in machines %}
-			<div class="card" id="{{machine.id}}_container"  onclick="myFunction({{machine.id}})">
+			<div class="card" id="{{machine.id}}_container"  onclick="load_id({{machine.id}})">
                 <div id="{{machine.id}}_contents">
                     <div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
                     <div class="card_text {{machine.text_type}}">
@@ -79,8 +79,7 @@
     </script>
     
     <script>
-        var root_url = "http://localhost:8000"
-        function myFunction(id){
+        function load_id(id){
             var machine_container =  document.getElementById(id+"_container");
             var machine_contents =  document.getElementById(id+"_contents");
             var machine_temperature =  document.getElementById(id+"_temperature");
@@ -104,7 +103,7 @@
                 
             }
             
-            machine_iframe.src = "/api/machines/print/temperature?machine_id="+id+"&display_graph=1";
+            machine_iframe.src = "/data/machines/print/temperature?machine_id="+id+"&display_graph=1";
             
         }
     </script>

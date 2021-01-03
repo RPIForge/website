@@ -32,7 +32,8 @@ class JobInformation(models.Model):
     usage = models.ForeignKey(
         "machine_management.Usage",
         on_delete = models.SET_NULL,
-        null=True
+        null=True,
+        blank=True
     )
 
     machine = models.ForeignKey(
