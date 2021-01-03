@@ -13,6 +13,7 @@ from django.conf import settings # import the settings file
 #importing functions
 from machine_usage.views import create_machine_usage
 from forge import utils
+from apis.views import verify_key
 
 # Importing Models
 from machine_management.models import *

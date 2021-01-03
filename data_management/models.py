@@ -28,7 +28,7 @@ class JobInformation(models.Model):
     file_id = models.CharField(max_length=36, null=True, blank=True, default=None)
     layer_count = models.IntegerField(null=True, blank=True)
 
-    '''
+    
     usage = models.ForeignKey(
         "machine_management.Usage",
         on_delete = models.SET_NULL,
@@ -40,8 +40,8 @@ class JobInformation(models.Model):
         on_delete = models.CASCADE,
         null=False,
     )
-    '''
     
+
     def __str__(self):
         return "Job on {} starting at {}".format(self.machine.machine_name, self.start_time)
 
@@ -65,11 +65,11 @@ class RecurringData(models.Model):
         blank = True
     )
 
-    '''machine = models.ForeignKey(
+    machine = models.ForeignKey(
         "machine_management.Machine",
         on_delete = models.CASCADE,
         null=False
-    )'''
+    )
 
     class Meta:
         abstract = True

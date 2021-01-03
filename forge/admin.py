@@ -7,7 +7,7 @@ from user_management.models import *
 from apis.models import *
 
 
-from machine_management.admin import *
+from data_management.admin import *
 from user_management.admin import *
 
 from django.contrib.auth.models import User, Group
@@ -24,6 +24,8 @@ admin.site.register(SlotUsage)
 
 
 admin.site.register(JobInformation, JobInformationAdmin)
+admin.site.register(LocationInformation)
+admin.site.register(ToolTemperature)
 
 admin.site.register(Key)
 
