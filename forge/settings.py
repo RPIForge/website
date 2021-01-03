@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'forge.apps.ForgeConfig',
     'forge.apps.APIConfig',
     'forge.apps.BusinessConfig',
+    'forge.apps.DataManagementConfig',
             
     'django.contrib.admin',
     'django.contrib.auth',
