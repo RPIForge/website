@@ -207,6 +207,8 @@ def handle_status(machine, machine_status, machine_status_message):
             print_information.error = True
             print_information.save()
     
+
+    
     else:
         if(print_information):
             print_information.status_message = machine_status_message
