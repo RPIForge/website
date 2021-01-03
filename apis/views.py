@@ -53,6 +53,7 @@ def clear_machine(request):
         machine = Machine.objects.get(id=int(data["machine_id"]))
 
         response = clear_usage(machine)
+        response = response or clear_print(machine)
         
         if(not response):
             return HttpResponse("Machine was not in use.", status=200)

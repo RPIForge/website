@@ -46,6 +46,9 @@ def handle_status(machine, machine_status, machine_status_message):
     #if starting print
     if(machine_status=="printing"):
         #set machine to in use
+        machine.in_use = True
+        machine.save()
+        
         #if paost print and usage is still running clear
         information = create_print(machine)
         information.status = machine_status

@@ -30,7 +30,7 @@ canvas{
 {% block scripts %}
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 	<script>
-	var data_history = {{data_history|safe }}
+	var data_history = {{data_history|safe}}
     
     if(Object.keys(data_history).length === 0){
         var nodata = document.getElementById('nodata');
