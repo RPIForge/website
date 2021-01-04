@@ -142,7 +142,8 @@ def handle_temperature(machine, temperature_data):
         temperature.name = tool
         temperature.temperature = temperature_data[tool]["actual"]
         temperature.temperature_goal = temperature_data[tool]["target"]
-        
+        temperature.time = temperature_data[tool]["time"]
+
         #if print information then attach it to
         if(print_information):
             temperature.job = print_information
@@ -153,7 +154,12 @@ def handle_temperature(machine, temperature_data):
 # ? required: Machine, current_height, current_layer, max_layer
 # ? returns: nothing
 # TODO:
-def handle_location(machine, current_height, current_layer, max_layer):
+def handle_location(machine, location):
+    height = location["current_height"]
+    layer = location["current_layer"]
+    max_layer = location["max_layer"]
+    time = location["time"]
+
     print_information = machine.current_print_information
 
     if(current_height is '-'):
@@ -169,6 +175,7 @@ def handle_location(machine, current_height, current_layer, max_layer):
     location_data.layer = current_layer
     location_data.max_layer = max_layer
     location_data.z_location = current_height
+    location_data.time = time
 
     location_data.machine = machine
     if(print_information):
@@ -177,7 +184,6 @@ def handle_location(machine, current_height, current_layer, max_layer):
 
 ## This is the format for the data to be recieved
 #{
-#    'time':datetime
 #    'data':{
 #        'machine':{
 #            'status':string
@@ -187,20 +193,22 @@ def handle_location(machine, current_height, current_layer, max_layer):
 #            'end_time':datetime
 #            'file_id':string
 #        }
-#        'temperature': {
+#        'temperature': [{
 #            'tool_name':{
-#                'current':float
-#                'goal':float
+#                'time':datetime
+#                'actual':float
+#                'target':float
 #            }
 #            ...
-#        },
+#        }],
 #
-#        'location': {
+#        'location': [{
+#            'time':datetime
 #            'current_height':int
 #            'current_layer':int
 #            'max_layer':int
 #            ''
-#        }
+#        }]
 #    }
 #}
 
@@ -262,15 +270,15 @@ def machine_data(request):
         #handle new temperature information
         if('temperature' in data):
             temperature_data = data["temperature"]
-            handle_temperature(machine,temperature_data)
+            for temperature in temperature_data:
+                handle_temperature(machine,temperature)
 
         #handle location
         if('location' in data):
-            height = data["location"]["current_height"]
-            layer = data["location"]["current_layer"]
-            max_layer = data["location"]["max_layer"]
+            location_data = data["location"]
 
-            handle_location(machine,height,layer,max_layer)
+            for location in location_data:
+                handle_location(machine,location)
         
         return HttpResponse("Data Set", status=200)
     return HttpResponse("Invalid request", status=405)

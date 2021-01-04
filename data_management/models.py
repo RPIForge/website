@@ -57,7 +57,7 @@ class JobInformation(models.Model):
         return percentage
 
 class RecurringData(models.Model):
-    time = models.DateTimeField(auto_now_add=True)
+    time = models.DateTimeField()
     
     job = models.ForeignKey(
         JobInformation,
@@ -72,6 +72,13 @@ class RecurringData(models.Model):
         null=False
     )
 
+    def save(self, *args, **kwargs):
+        if(self.time is None):
+            self.time = datetime.now()
+        
+        return super(RecurringData, self).save(*args, **kwargs)
+
+        
     class Meta:
         abstract = True
 
