@@ -133,16 +133,20 @@ def handle_information(machine, end_time,file_id):
 # ? returns: nothing
 # TODO:
 def handle_temperature(machine, temperature_data):
+    data = temperature_data["data"]
+    time = temperature_data["time"]
+
     #get print information if there is one
     print_information = machine.current_print_information
-    for tool in temperature_data:
+    for tool in data:
         #create new temperature and attach it to machine
         temperature = ToolTemperature()
         temperature.machine = machine
         temperature.name = tool
-        temperature.temperature = temperature_data[tool]["actual"]
-        temperature.temperature_goal = temperature_data[tool]["target"]
-        temperature.time = temperature_data[tool]["time"]
+        temperature.temperature = data[tool]["actual"]
+        temperature.temperature_goal = data[tool]["target"]
+        temperature.time = time
+        
 
         #if print information then attach it to
         if(print_information):
@@ -155,10 +159,12 @@ def handle_temperature(machine, temperature_data):
 # ? returns: nothing
 # TODO:
 def handle_location(machine, location):
-    height = location["current_height"]
-    layer = location["current_layer"]
-    max_layer = location["max_layer"]
+    data = location["data"]
     time = location["time"]
+    current_height = data["current_height"]
+    current_layer = data["current_layer"]
+    max_layer = data["max_layer"]
+    
 
     print_information = machine.current_print_information
 
