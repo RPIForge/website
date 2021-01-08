@@ -72,12 +72,12 @@ class MachineSlotUsageForm(forms.Form):
             #add choice field and decimal field
             self.fields['resource_{}'.format(slot.id)] = forms.ChoiceField(choices=choice_list)
             
-            self.fields['ammount_{}'.format(slot.id)] = forms.FloatField(required = True,  min_value=0,widget=forms.NumberInput(attrs={'placeholder': unit_text+' of '+resource_name}))
+            self.fields['ammount_{}'.format(slot.id)] = forms.FloatField(required = True,  min_value=0.01,widget=forms.NumberInput(attrs={'placeholder': unit_text+' of '+resource_name}))
 
 #Usage Length usage
 class MachineUsageLength(forms.Form):
-    usage_hours = forms.IntegerField(required=True, min_value=0, widget=forms.NumberInput(attrs={'placeholder': 'Hours'}))
-    usage_minutes = forms.IntegerField(required=True, min_value=0, max_value=60, widget=forms.NumberInput(attrs={'placeholder': 'Minutes'}))
+    usage_hours = forms.IntegerField(required=True, min_value=1, widget=forms.NumberInput(attrs={'placeholder': 'Hours'}))
+    usage_minutes = forms.IntegerField(required=True, min_value=1, max_value=60, widget=forms.NumberInput(attrs={'placeholder': 'Minutes'}))
 
 class MachinePolicy(forms.Form):
     policy_acceptance = forms.BooleanField(required = True)

@@ -45,7 +45,7 @@ class MachineType(models.Model):
     machine_type_name = models.CharField(max_length=255, unique=True)
     machine_category = models.CharField(max_length=255, null=True)
 
-    usage_policy = models.CharField(max_length=4096, default="")
+    usage_policy = models.CharField(max_length=4096, default="", blank=True)
 
     hourly_cost = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
 
