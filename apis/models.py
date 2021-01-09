@@ -4,7 +4,8 @@ import secrets
 
 
 def generate_key():
-    return secrets.token_urlsafe(15)
+    token = secrets.token_urlsafe(15)
+    return token[:15]
     
 class Key(models.Model):
     user_id = models.CharField(max_length=255, unique=True)
