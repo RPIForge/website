@@ -47,8 +47,8 @@ def handle_status(machine, machine_status, machine_status_message):
     #if starting print
     if(machine_status=="printing"):
         #set machine to in use
-        #machine.in_use = True
-        #machine.save()
+        machine.in_use = True
+        machine.save()
         
         #if paost print and usage is still running clear
         information = create_print(machine)
@@ -59,15 +59,7 @@ def handle_status(machine, machine_status, machine_status_message):
     elif(machine_status=="completed"):
 
         #if there is a print_information then complete it
-        if(print_information):
-            print_information.end_time = timezone.now()
-            print_information.status_message = "Completed."
-            print_information.complete=True
-            print_information.save()
-            
-            
-            machine.current_print_information = None
-            machine.save()
+        clear_print(machine)
             
         #if there is a usage complete it
         if(usage):
@@ -86,6 +78,7 @@ def handle_status(machine, machine_status, machine_status_message):
         if(usage):
             usage.error = True
             usage.save()
+            
         if(print_information):
             print_information.status_message = machine_status_message
             print_information.error = True
@@ -93,16 +86,9 @@ def handle_status(machine, machine_status, machine_status_message):
     
     elif(machine_status=="operational" or machine_status=="offline"):
         #if there is a print_information then complete it
-        if(print_information):
-            print_information.end_time = timezone.now()
-            print_information.status_message = "Completed."
-            print_information.complete=True
-            print_information.save()
-            
-            
-            machine.current_print_information = None
-            machine.save()
+        clear_print(machine)
         
+        #update machine status
         machine.status_message = machine_status_message
         machine.save()
     
