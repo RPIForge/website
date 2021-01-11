@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-
+from django.utils.timezone import make_aware
+from django.utils.dateparse import parse_date
 
 from influxdb_client import Point
 from forge.settings import INFLUX_ORG, influx_write
@@ -78,13 +79,19 @@ class RecurringData(models.Model):
         editable = False
     )
 
-
+    #def generic get_bucket
     def get_bucket(self):
-        return ''
+        raise ValueError("RecurringData must implement get_bucket")
 
     def save(self, *args, **kwargs):
         if(self.time is None):
             self.time = datetime.now()
+        
+        if(isinstance(self.time,str)):
+            self.time = datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S")
+
+        self.time = make_aware(self.time)
+            
 
         self.clean()
 
@@ -92,12 +99,14 @@ class RecurringData(models.Model):
 
         data_point = Point(str(self))
         for field in self._meta.get_fields():
-            #get object name
+            #get object name amd skip name field
             name = field.name
-
+            
             #get object value
             field_object = self._meta.get_field(field.name)
             value = field_object.value_from_object(self)
+
+            
 
             #handle custom points
             if(name is "time"):
@@ -116,14 +125,22 @@ class RecurringData(models.Model):
             elif(name is "job" and value is not None):
                 job = JobInformation.objects.get(id=value)
                 data_point.tag("job", str(job))
-            
-            else:
-                data_point.field(name,value)
+                data_point.tag("job_id", job.id)
 
+            elif(name is 'name'):
+                data_point.tag("name",value)
+
+            elif(value is not None):
+                data_point.field(name,float(value))
+                
         influx_write.write(bucket,INFLUX_ORG, data_point)
    
     class Meta:
+        #this is for inheritance
         abstract = True
+
+        #This allows for influxDb
+        managed = False
 
 class ToolTemperature(RecurringData): 
     # ? Use: Keeps track of temperature at a point in time
@@ -132,9 +149,16 @@ class ToolTemperature(RecurringData):
     temperature = models.FloatField(editable = False)
     temperature_goal = models.FloatField(editable = False)
 
+    def get_bucket(self):
+        return 'temperature_data'
 
     def __str__(self):
         return "{}'s {} temperature data at {}".format(self.machine.machine_name, self.name, self.time)  
+
+    class Meta:
+
+        #This allows for influxDb
+        managed = False
 
 class LocationInformation(RecurringData): 
     # ? Use: Keeps track of temperature at a point in time
@@ -144,9 +168,16 @@ class LocationInformation(RecurringData):
 
     z_location = models.FloatField(editable = False)
 
+    def get_bucket(self):
+        return 'location_data'
 
     def __str__(self):
         return "{} location data at {}".format(self.machine.machine_name, self.time)  
+
+    class Meta:
+
+        #This allows for influxDb
+        managed = False
 
         
         

@@ -90,6 +90,7 @@ def handle_status(machine, machine_status, machine_status_message):
         
         #update machine status
         machine.status_message = machine_status_message
+        machine.in_use = False
         machine.save()
     
     else:
