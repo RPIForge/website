@@ -7,7 +7,7 @@ from django.utils import timezone
 
 
 from influxdb_client import Point
-from forge.settings import influx_client
+from forge.settings import INFLUX_ORG, influx_write
 
 #model imports
 from user_management.models import *
@@ -78,7 +78,6 @@ class RecurringData(models.Model):
         editable = False
     )
 
-    readonly_fields=('time','job','machine',)
 
     def get_bucket(self):
         return ''
@@ -91,12 +90,38 @@ class RecurringData(models.Model):
 
         bucket = self.get_bucket()
 
-        Point
+        data_point = Point(str(self))
         for field in self._meta.get_fields():
-            print(field)
-        #return super(RecurringData, self).save(*args, **kwargs)
+            #get object name
+            name = field.name
 
-    
+            #get object value
+            field_object = self._meta.get_field(field.name)
+            value = field_object.value_from_object(self)
+
+            #handle custom points
+            if(name is "time"):
+                data_point.time(value)
+
+            elif(name is "machine"):
+                #TODO Fix this. This should be able to be imported above
+                from machine_management.models import Machine
+
+
+                machine = Machine.objects.get(id=value)
+                data_point.tag("machine_name", machine.machine_name)
+                data_point.tag("machine_type", machine.machine_type.machine_type_name)
+                data_point.tag("machine_id", machine.id)
+
+            elif(name is "job" and value is not None):
+                job = JobInformation.objects.get(id=value)
+                data_point.tag("job", str(job))
+            
+            else:
+                data_point.field(name,value)
+
+        influx_write.write(bucket,INFLUX_ORG, data_point)
+   
     class Meta:
         abstract = True
 
@@ -107,10 +132,9 @@ class ToolTemperature(RecurringData):
     temperature = models.FloatField(editable = False)
     temperature_goal = models.FloatField(editable = False)
 
-    readonly_fields=('name','temperature','temperature_goal',)
 
     def __str__(self):
-        return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.name, self.temperature, self.time)  
+        return "{}'s {} temperature data at {}".format(self.machine.machine_name, self.name, self.time)  
 
 class LocationInformation(RecurringData): 
     # ? Use: Keeps track of temperature at a point in time
@@ -120,10 +144,9 @@ class LocationInformation(RecurringData):
 
     z_location = models.FloatField(editable = False)
 
-    readonly_fields=('layer','max_layer','z_location',)
 
     def __str__(self):
-        return "{} is at layer {} at {}".format(self.machine.machine_name, self.layer,  self.time)  
+        return "{} location data at {}".format(self.machine.machine_name, self.time)  
 
         
         
