@@ -5,6 +5,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
+
+from influxdb_client import Point
+from forge.settings import influx_client
+
 #model imports
 from user_management.models import *
 from machine_management.models import *
@@ -72,13 +76,25 @@ class RecurringData(models.Model):
         null=False
     )
 
+    readonly_fields=('time','job','machine',)
+
+    def get_bucket(self):
+        return ''
+
     def save(self, *args, **kwargs):
         if(self.time is None):
             self.time = datetime.now()
-        
-        return super(RecurringData, self).save(*args, **kwargs)
 
-        
+        self.clean()
+
+        bucket = self.get_bucket()
+
+        Point
+        for field in self._meta.get_fields():
+            print(field)
+        #return super(RecurringData, self).save(*args, **kwargs)
+
+    
     class Meta:
         abstract = True
 
@@ -88,6 +104,8 @@ class ToolTemperature(RecurringData):
     name = models.CharField(max_length=255)
     temperature = models.FloatField()
     temperature_goal = models.FloatField()
+
+    readonly_fields=('name','temperature','temperature_goal',)
 
     def __str__(self):
         return "{}'s {} is {} degrees at {}".format(self.machine.machine_name, self.name, self.temperature, self.time)  
@@ -99,6 +117,8 @@ class LocationInformation(RecurringData):
     max_layer = models.IntegerField()
 
     z_location = models.FloatField()
+
+    readonly_fields=('layer','max_layer','z_location',)
 
     def __str__(self):
         return "{} is at layer {} at {}".format(self.machine.machine_name, self.layer,  self.time)  

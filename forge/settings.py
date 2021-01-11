@@ -143,10 +143,22 @@ LOGIN_URL = '/login'
 CHAT_SITE_URL="127.0.0.1"
 CHAT_SITE_PORT=8001
 
-
 # Allow pages to be loaded in a frame
-#X_FRAME_OPTIONS = 'SAMEORIGIN'l
 X_FRAME_OPTIONS = 'ALLOW-FROM '+CHAT_SITE_URL
+
+
+
+from influxdb_client import InfluxDBClient
+from influxdb_client.client.write_api import SYNCHRONOUS
+INFLUX_URL="10.0.0.71"
+INFLUX_PORT=80806
+INFLUX_TOKEN = "txj6Z-GsYreT756jq01drVhmwRxNnlnzBri-cbFDFP9dgPZU7B0ItT5fhfJJAwebyI8TGAIkwIFlOLV36moLtw=="
+influx_client = InfluxDBClient(url=INFLUX_URL+str(INFLUX_PORT), token=INFLUX_TOKEN)   
+influx_write = influx_client.write_api(write_options=SYNCHRONOUS)
+influx_query = influx_client.query_api()
+
+
+
 
 #initialize google calendar
 try:
