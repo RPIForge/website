@@ -61,19 +61,21 @@ class JobInformation(models.Model):
         return percentage
 
 class RecurringData(models.Model):
-    time = models.DateTimeField()
+    time = models.DateTimeField(editable= False)
     
     job = models.ForeignKey(
         JobInformation,
         on_delete = models.SET_NULL,
         null=True,
-        blank = True
+        blank = True,
+        editable= False
     )
 
     machine = models.ForeignKey(
         "machine_management.Machine",
         on_delete = models.CASCADE,
-        null=False
+        null=False,
+        editable = False
     )
 
     readonly_fields=('time','job','machine',)
@@ -101,9 +103,9 @@ class RecurringData(models.Model):
 class ToolTemperature(RecurringData): 
     # ? Use: Keeps track of temperature at a point in time
     # ! Data: Temperature in Celcius
-    name = models.CharField(max_length=255)
-    temperature = models.FloatField()
-    temperature_goal = models.FloatField()
+    name = models.CharField(max_length=255, editable = False)
+    temperature = models.FloatField(editable = False)
+    temperature_goal = models.FloatField(editable = False)
 
     readonly_fields=('name','temperature','temperature_goal',)
 
@@ -113,10 +115,10 @@ class ToolTemperature(RecurringData):
 class LocationInformation(RecurringData): 
     # ? Use: Keeps track of temperature at a point in time
     # ! Data: Temperature in Celcius
-    layer = models.IntegerField()
-    max_layer = models.IntegerField()
+    layer = models.IntegerField(editable = False)
+    max_layer = models.IntegerField(editable = False)
 
-    z_location = models.FloatField()
+    z_location = models.FloatField(editable = False)
 
     readonly_fields=('layer','max_layer','z_location',)
 
