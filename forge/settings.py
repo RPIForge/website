@@ -84,8 +84,8 @@ DATABASES = {
         'NAME': 'forge_devel',
         'USER': 'postgres',
         'PASSWORD': 'password',
-        'HOST': 'forgedevchannels.eastus.cloudapp.azure.com',
-        'PORT': '1234',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
