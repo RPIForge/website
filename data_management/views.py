@@ -14,7 +14,7 @@ from django.conf import settings # import the settings file
 from machine_usage.views import create_machine_usage
 from forge import utils
 from apis.views import verify_key
-
+from data_management.utils import TemperatureInformation, LocationInformation
 # Importing Models
 from machine_management.models import *
 from django.contrib.auth.models import User, Group
@@ -142,7 +142,7 @@ def handle_temperature(machine, temperature_data):
     print_information = machine.current_print_information
     for tool in data:
         #create new temperature and attach it to machine
-        temperature = ToolTemperature()
+        temperature = TemperatureInformation()
         temperature.machine = machine
         temperature.name = tool
         temperature.temperature = data[tool]["actual"]
@@ -153,7 +153,8 @@ def handle_temperature(machine, temperature_data):
         #if print information then attach it to
         if(print_information):
             temperature.job = print_information
-        temperature.save()
+
+        temperature.submit_data()
 
 # ! type: HELPER
 # ! function: Handle new location informatino
@@ -315,6 +316,12 @@ def machine_status(request):
         else:
             return HttpResponse("Idle.", status=200)
     
+
+
+#
+# TODO: The following two methods are sunset and will have to be rewritten for influxdb
+#
+
 # ! type: GET
 # ! function: View temperature infromation
 # ? required: Machine or Job/Temperature information
@@ -322,8 +329,10 @@ def machine_status(request):
 # TODO: Make Generic
 @csrf_exempt  
 def machine_temperature(request):
+    '''
     #if get
     if(request.method == 'GET'):
+        
         #get varlables from url
         machine_id = request.GET.get("machine_id",None)
         job_id = request.GET.get("job_id",None)
@@ -391,6 +400,7 @@ def machine_temperature(request):
         return HttpResponse("No PrintInformation", status=400)
            
     return HttpResponse("Invalid request", status=405)
+    '''
 
 # ! type: GET
 # ! function: View Height/Layer infromation
@@ -400,6 +410,7 @@ def machine_temperature(request):
 @csrf_exempt  
 def machine_location(request):
     #if get
+    '''
     if(request.method == 'GET'):
         #get varlables from url
         machine_id = request.GET.get("machine_id",None)
@@ -469,3 +480,4 @@ def machine_location(request):
            
    
     return HttpResponse("Invalid request", status=405)
+    '''
