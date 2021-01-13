@@ -7,6 +7,20 @@ services:
       - POSTGRES_DB=forge_devel
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
+    volumes:
+      - database-data:/var/lib/postgresql/data # persist data even if container shuts down
+    ports:
+      - "5432:5432"
+    
+  
+  migration:
+    build: .
+    command: python manage.py migrate --noinput
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+
   web:
     depends_on:
       - db
@@ -16,6 +30,11 @@ services:
       - .:/code
     ports:
       - "8000:8000"
-      - "5432:5432"
     depends_on:
       - db
+      - migration
+
+
+volumes:
+    database-data:
+      driver: local
