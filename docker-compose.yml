@@ -9,8 +9,7 @@ services:
       - POSTGRES_PASSWORD=password
   web:
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
