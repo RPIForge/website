@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'forge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'forge_octoprint',
+        'NAME': 'forge_devel',
         'USER': 'postgres',
         'PASSWORD': 'password',
         'HOST': 'forgedevchannels.eastus.cloudapp.azure.com',
