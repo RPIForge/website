@@ -4,7 +4,7 @@ The Forge's website - tracks machine usage and calculates charges for members.
 ## Installation
 The first step of any install is to clone the repo to your local machine.
 
-### Docker install
+### Docker install (preferred)
 To install using docker you must first install [Docker](https://docs.docker.com/get-docker/) and
 [Docker-Compose](https://docs.docker.com/compose/install/). Then run the following command to start
 up the containers.
@@ -36,7 +36,7 @@ To automatically install requirements run the following command:
 	- pip install -r requirements.txt
 
 #### Postgres
-The app currently expects a database user `postgres@localhost:5432` with password `password`. This behavior will be changed shortly to use environment variables to store database credentials. The program also currently expects a `forge_devel` database to have already been created. These settings can be found in `forge/settings.py`. Contact the web mainters if you are having trouble connecting.
+The app is currently configured for the docker install and should be changed in `forge/setttings.py`. The main change would be to set the database `hostname` to either `localhost` or the ip of your postgres server.  The app will expect a database user `postgres@hostname:5432` with password `password` and a database called "forge_devel". Contact the web mainters if you are having trouble connecting.
 
 ## First time setup
 Before running the app for the first time, you should set up the database through Django. You can do this by running the following commands. If using docker make sure to connect to the container.
