@@ -62,7 +62,7 @@ class RecurringData():
             #get object value
             value = getattr(self, field)
 
-            if(field is 'name'):
+            if(field == 'name'):
                 data_point.tag("name",value)
 
             elif(value is not None):

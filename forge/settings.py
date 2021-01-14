@@ -149,10 +149,10 @@ X_FRAME_OPTIONS = 'ALLOW-FROM '+CHAT_SITE_URL
 try:
     from influxdb_client import InfluxDBClient
     from influxdb_client.client.write_api import SYNCHRONOUS
-    INFLUX_URL="https://eastus-1.azure.cloud2.influxdata.com"
-    INFLUX_PORT=443
-    INFLUX_TOKEN = "Rn9-aojqRGwPYdN-AI35IiQeBv0KEO4-p1YmAAYiDW73DKdTv8RM1RQ6cjuCScgxHhKdmIHxofkV19yjNOyiTQ=="
-    INFLUX_ORG = "mchonaker@gmail.com"
+    INFLUX_URL="http://influx"
+    INFLUX_PORT=8086
+    INFLUX_TOKEN = "chF60UInlV-4CWUL7Po3l4oZKcNPV-E4vQHOW7wydMQFwh9iHtrMcPreRACKuEuYsjLJZ-XoIoLb-CBJ0UETcA=="
+    INFLUX_ORG = "forge"
     influx_client = InfluxDBClient(url=INFLUX_URL+":"+str(INFLUX_PORT), token=INFLUX_TOKEN)   
     influx_write = influx_client.write_api(write_options=SYNCHRONOUS)
     influx_query = influx_client.query_api()
