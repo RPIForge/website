@@ -3,9 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-#django migrations
-migrations/
-
 # C extensions
 *.so
 
