@@ -32,7 +32,7 @@ class JobInformation(models.Model):
     file_id = models.CharField(max_length=36, null=True, blank=True, default=None)
     layer_count = models.IntegerField(null=True, blank=True)
 
-    
+        
     usage = models.ForeignKey(
         "machine_management.Usage",
         on_delete = models.SET_NULL,
