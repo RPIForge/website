@@ -59,7 +59,7 @@ You will want to initialize the database with some values. First go to `/admin/a
 	-volunteers
 	-verified_email
 
-You will also want to create a machine at `/admin/machine_management/machine/` and create slots for it at `/admin/machine_management/machineslot/`. This will allow you to use the site with full functionality
+You will also want to create a machine at `/admin/machine_management/machine/` and create slots for it at `/admin/machine_management/machineslot/`. Finally you will want to create a semester in my forge. This will allow you to use the site with full functionality
 
 ## Contributing
 Take a look at the current issues and the current project to see priorities.
