@@ -6,8 +6,6 @@ from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_date
 
-from influxdb_client import Point
-from forge.settings import INFLUX_ORG, influx_write
 
 #model imports
 from user_management.models import *

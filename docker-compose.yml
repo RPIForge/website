@@ -4,7 +4,7 @@ services:
   db:
     image: postgres
     environment:
-      - POSTGRES_DB=forge_devel_octoprint
+      - POSTGRES_DB=forge_devel_octoprint_influx
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
     volumes:
@@ -22,8 +22,6 @@ services:
       - db
 
   web:
-    depends_on:
-      - db
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:

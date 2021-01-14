@@ -23,16 +23,5 @@ class Migration(migrations.Migration):
             name='usage',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='machine_management.Usage'),
         ),
-        migrations.AddField(
-            model_name='locationinformation',
-            name='machine',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='machine_management.Machine'),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name='tooltemperature',
-            name='machine',
-            field=models.ForeignKey(default='1', on_delete=django.db.models.deletion.CASCADE, to='machine_management.Machine'),
-            preserve_default=False,
-        ),
+
     ]
