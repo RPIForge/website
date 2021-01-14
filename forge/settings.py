@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'forge.apps.APIConfig',
     'forge.apps.BusinessConfig',
     'forge.apps.DataManagementConfig',
-            
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -66,8 +66,7 @@ TEMPLATES = [
             'django.template.context_processors.request',
             'django.contrib.auth.context_processors.auth',
             'django.contrib.messages.context_processors.messages',
-            'forge.context_processors.channels_url',
-            'forge.context_processors.source_url',
+            'forge.context_processors.channels_url'
             ],
         },
     },
@@ -83,11 +82,11 @@ WSGI_APPLICATION = 'forge.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'forge_octoprint',
+        'NAME': 'forge_devel_octoprint',
         'USER': 'postgres',
         'PASSWORD': 'password',
-        'HOST': 'forgedevchannels.eastus.cloudapp.azure.com',
-        'PORT': '1234',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 

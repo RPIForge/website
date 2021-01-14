@@ -49,14 +49,14 @@ def render_change_semesters(request):
                 
                 
             # redirect to a new URL:
-            return render(request, 'myforge/forms/change_semester.html', {'submit': True}) 
+            return render(request, 'business/change_semester.html', {'submit': True}) 
 
     # if a GET (or any other method) we'll create a blank form
     else:
         semester_form = SemesterCreationForm()
         
     
-    return render(request, 'myforge/forms/change_semester.html', {'semester_form': semester_form}) 
+    return render(request, 'business/change_semester.html', {'semester_form': semester_form}) 
     
     
 # ! type:GET
@@ -71,4 +71,4 @@ def render_charge_sheet(request):
     for item in semester:
         semester_list.append({'id': item.id, 'name': str(item)})
     
-    return render(request, 'myforge/forms/charge_sheet.html', {'semester_list':semester_list})
+    return render(request, 'business/charge_sheet.html', {'semester_list':semester_list})
