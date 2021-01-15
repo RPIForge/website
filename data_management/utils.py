@@ -44,20 +44,20 @@ class RecurringData():
             raise ValueError("Machine must not be None")
         
 
-        
+        print(self.time)
         bucket = self.get_bucket()
 
         data_point = Point(self.get_name())
     
         #handle custom points
-        data_point.time(self.time)
+        data_point.time(self.time.isoformat())
         data_point.tag("machine_name", self.machine.machine_name)
         data_point.tag("machine_type", self.machine.machine_type.machine_type_name)
         data_point.tag("machine_id", self.machine.id)
         if(self.job is not None):
             data_point.tag("job", str(self.job))
             data_point.tag("job_id", self.job.id)
-
+        
         for field in self.fields:
             #get object value
             value = getattr(self, field)
@@ -68,8 +68,10 @@ class RecurringData():
             elif(value is not None):
                 data_point.field(field,float(value))
 
-        print(data_point)   
-        influx_write.write(bucket,INFLUX_ORG, data_point)
+        try: 
+            influx_write.write(bucket,INFLUX_ORG, data_point)
+        except:
+            print("Unable to write to {}".format(self.get_bucket()))
             
 
 class TemperatureInformation(RecurringData): 
@@ -90,10 +92,12 @@ class TemperatureInformation(RecurringData):
 class LocationInformation(RecurringData): 
     # ? Use: Keeps track of temperature at a point in time
     # ! Data: Temperature in Celcius
-    layer = forms.IntegerField()
-    max_layer = forms.IntegerField()
+    layer = None
+    max_layer = None
 
-    z_location = forms.FloatField()
+    z_location = None
+
+    fields = RecurringData.fields + ['layer', 'max_layer', 'z_location']
 
     def get_bucket(self):
         return 'location_data'

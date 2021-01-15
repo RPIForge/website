@@ -171,13 +171,13 @@ def handle_location(machine, location):
 
     print_information = machine.current_print_information
 
-    if(current_height is '-'):
+    if(current_height == '-'):
         current_height = 0
 
-    if(current_layer is '-'):
+    if(current_layer == '-'):
         current_layer = 0
 
-    if(max_layer is '-'):
+    if(max_layer == '-'):
         max_layer = 0
 
     location_data = LocationInformation()
@@ -189,7 +189,7 @@ def handle_location(machine, location):
     location_data.machine = machine
     if(print_information):
         location_data.job = print_information
-    location_data.save()
+    location_data.submit_data()
 
 ## This is the format for the data to be recieved
 #{
