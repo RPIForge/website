@@ -150,7 +150,7 @@ try:
     from influxdb_client import InfluxDBClient
     from influxdb_client.client.write_api import SYNCHRONOUS
     INFLUX_URL="http://influx"
-    INFLUX_PORT=8086
+    INFLUX_PORT=10000
     INFLUX_TOKEN = "chF60UInlV-4CWUL7Po3l4oZKcNPV-E4vQHOW7wydMQFwh9iHtrMcPreRACKuEuYsjLJZ-XoIoLb-CBJ0UETcA=="
     INFLUX_ORG = "forge"
     influx_client = InfluxDBClient(url=INFLUX_URL+":"+str(INFLUX_PORT), token=INFLUX_TOKEN)   

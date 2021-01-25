@@ -100,50 +100,36 @@ def fail_machine(request):
 def machine_endpoint(request):
     #get machine information
     if request.method == 'GET':
-        output = []
 
-        machines = Machine.objects.all().order_by("machine_name")
+        #get machine id
+        machine_id = request.GET.get("machine_id",None)
+        if(not machine_id):
+            return HttpResponse("No machine_id provided", status=400)
+        machine_id = int(machine_id)
 
-        #loop through all active machiens
-        for m in machines:
-            if not m.deleted:
-                #get information about the machine
-                machine_entry = {
-                    "name": m.machine_name,
-                    "in_use": m.in_use,
-                    "enabled": m.enabled,
-                    "status": m.status_message,
-                    "usage_policy": m.machine_type.usage_policy,
-                    "hourly_cost": float(m.machine_type.hourly_cost),
-                    "slots": []
-                }
+        #get machine object
+        try:
+            machine = Machine.objects.get(id=machine_id)
+        except ObjectDoesNotExist:
+            return HttpResponse("Machine not found", status=400)
 
-                #get information about all of the slots in the machines
-                slots = m.machine_type.machineslot_set.all()
-                for s in slots:
-                    slot_entry = {
-                        "slot_name": s.slot_name,
-                        "allowed_resources": []
-                    }
+        data = {
+            'name':machine.machine_name,
+            'type':machine.machine_type.machine_type_name,
+            'id':machine.id
+        }
 
-                    for r in s.allowed_resources.all():
-                        if r.in_stock and not r.deleted:
-                            slot_entry["allowed_resources"].append({"name":r.resource_name, "unit":r.unit, "cost":float(r.cost_per)})
+        if(machine.current_print_information is not None):
+            data["job"] = str(machine.current_print_information)
+            data["job_id"] = machine.current_print_information.id
 
-                    machine_entry["slots"].append(slot_entry)
+        return HttpResponse(json.dumps(data))
 
-                output.append(machine_entry)
-
-        return HttpResponse(json.dumps(output))
-
-    #create machine usage
-    elif request.method == 'POST':
-        return create_machine_usage(request) # Make sure this still checks for login!
-    else:
-        return HttpResponse("", status=405) # Method not allowed
-     
-
-
+# ! type: HELPER
+# ! funciton: verify that a request has a valid API key
+# ? required: HTTP Request
+# ? returns: boolean
+# TODO:
 def verify_key(request):
     if("X-Api-Key" in request.headers):
         return Key.objects.filter(key=request.headers["X-Api-Key"]).exists()

@@ -111,7 +111,7 @@ def handle_information(machine, end_time,file_id):
     if(print_information):
         if(end_time):
             time_information = end_time.split('.')[0]
-            print_information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+            print_information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S %Z")
             print_information.save()
         
         if(file_id):
@@ -122,7 +122,7 @@ def handle_information(machine, end_time,file_id):
         
         if(end_time):
             time_information = end_time.split('.')[0]
-            information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S")
+            information.end_time = datetime.strptime(time_information, "%Y-%m-%d %H:%M:%S %Z")
         
         if(file_id):
             information.file_id = file_id
@@ -150,10 +150,11 @@ def handle_temperature(machine, temperature_data):
         temperature.time = time
         
 
-        #if print information then attach it to
+        #if there is a job running then attach it to
         if(print_information):
             temperature.job = print_information
-
+        
+        #submit data to influx
         temperature.submit_data()
 
 # ! type: HELPER
@@ -168,27 +169,24 @@ def handle_location(machine, location):
     current_layer = data["current_layer"]
     max_layer = data["max_layer"]
     
-
+    #get the current print
     print_information = machine.current_print_information
 
-    if(current_height == '-'):
-        current_height = 0
-
-    if(current_layer == '-'):
-        current_layer = 0
-
-    if(max_layer == '-'):
-        max_layer = 0
-
+    #create new location and provide data
     location_data = LocationInformation()
     location_data.layer = current_layer
     location_data.max_layer = max_layer
     location_data.z_location = current_height
     location_data.time = time
-
+    
+    #set up the machine
     location_data.machine = machine
+
+    #if there is a job running then attach to it
     if(print_information):
         location_data.job = print_information
+
+    #submit data to influx
     location_data.submit_data()
 
 ## This is the format for the data to be recieved
@@ -203,22 +201,27 @@ def handle_location(machine, location):
 #            'file_id':string
 #        }
 #        'temperature': [{
-#            'tool_name':{
-#                'time':datetime
-#                'actual':float
-#                'target':float
-#            }
-#            ...
+#                'data':[
+#                   'tool_name':{
+#                       'actual':float
+#                       'target':float
+#                   }
+#                    ...
+#                 ]
+#                'time': datetime
+#
 #        }],
 #
-#        'location': [{
-#            'time':datetime
-#            'current_height':int
-#            'current_layer':int
-#            'max_layer':int
-#            ''
-#        }]
-#    }
+#        'location':[{
+#               'data': {
+#                   'current_height':int
+#                   'current_layer':int
+#                   'max_layer':int
+#                },
+#                'time': datetime
+#         }]
+#    },
+#    'time': time submitted
 #}
 
 # ! type: GET/POST
@@ -267,7 +270,7 @@ def machine_data(request):
         #handle new machine data
         if('machine' in data):
             machine_status = data['machine']['status']
-            machine_status_message = data['machine']['status']
+            machine_status_message = data['machine']['status_message']
             handle_status(machine,machine_status,machine_status_message)
 
         #handle print update information
