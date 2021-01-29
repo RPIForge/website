@@ -28,3 +28,4 @@ sqlparse==0.3.0
 uritemplate==3.0.0
 django-formtools==2.2
 urllib3==1.25.7
+gunicorn==20.0.4
