@@ -12,7 +12,7 @@ httplib2>=0.18.0
 idna==2.8
 oauthlib==3.1.0
 django==2.2.14
-psycopg2==2.8.4
+psycopg2-binary==2.8.4
 pyasn1==0.4.8
 pyasn1-modules==0.2.7
 pycparser==2.19
