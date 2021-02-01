@@ -14,6 +14,7 @@ services:
     
   
   migration:
+    image: local/website:latest
     build: .
     command: python manage.py migrate --noinput
     volumes:
@@ -22,10 +23,10 @@ services:
       - db
 
   web:
+    image: local/website:latest
     depends_on:
       - db
     build: .
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
