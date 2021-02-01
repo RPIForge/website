@@ -14,7 +14,7 @@ services:
     
   
   migration:
-    image: local/website:latest
+    image: forge/website:latest
     build: .
     command: python manage.py migrate --noinput
     volumes:
@@ -23,9 +23,7 @@ services:
       - db
 
   web:
-    image: local/website:latest
-    depends_on:
-      - db
+    image: forge/website:latest
     build: .
     volumes:
       - .:/code
