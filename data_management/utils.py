@@ -115,9 +115,10 @@ class LocationInformation(RecurringData):
     layer = None
     max_layer = None
 
-    z_location = None
+    height = None
+    max_height = None
 
-    fields = RecurringData.fields + ['layer', 'max_layer', 'z_location']
+    fields = RecurringData.fields + ['layer', 'max_layer', 'height','max_height']
 
     def get_bucket(self):
         return 'location_data'
