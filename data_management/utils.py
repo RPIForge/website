@@ -46,16 +46,19 @@ class RecurringData():
     #
     def get_time(self):
         time = self.time
-        if(time is None):
-            time = timezone.now()
+        try:
+            if(time is None or time==''):
+                time = timezone.now()
 
-        if(isinstance(self.time,str)):
-            time = datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S %Z")
+            if(isinstance(self.time,str)):
+                time = datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S %Z")
 
-        if(time.tzinfo is not None):
-            time = make_aware(time)
+            if(time.tzinfo is not None):
+                time = make_aware(time)
 
-        return time
+            return time
+        except:
+            return timezone.now()
 
     #submit data to the InfluxDB
     def submit_data(self):
