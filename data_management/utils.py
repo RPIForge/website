@@ -46,14 +46,14 @@ class RecurringData():
     #
     def get_time(self):
         time = self.time
-        if(self.time is None):
+        if(time is None):
             time = timezone.now()
 
         if(isinstance(self.time,str)):
             time = datetime.strptime(self.time, "%Y-%m-%d %H:%M:%S %Z")
 
-        if(self.time.tzinfo is not None):
-            time = make_aware(self.time)
+        if(time.tzinfo is not None):
+            time = make_aware(time)
 
         return time
 
