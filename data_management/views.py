@@ -136,9 +136,9 @@ def handle_information(machine, end_time,file_id):
 # TODO:
 def handle_temperature(machine, temperature_data):
     time = temperature_data["time"]
-    tool = temperature_data['tool']
+    tool = temperature_data['tool_name']
     actual = temperature_data['actual']
-    target = temperature_data['target']
+    target = temperature_data['goal']
     
 
 
@@ -149,8 +149,8 @@ def handle_temperature(machine, temperature_data):
     temperature = TemperatureInformation()
     temperature.machine = machine
     temperature.name = tool
-    temperature.temperature = data[tool]["actual"]
-    temperature.temperature_goal = data[tool]["target"]
+    temperature.temperature = actual
+    temperature.temperature_goal = target
     temperature.time = time
         
     #if there is a job running then attach it to
