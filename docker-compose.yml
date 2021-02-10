@@ -25,7 +25,6 @@ services:
       - INFLUXDB_ADMIN_PASSWORD="password"
 
   migration:
-    build: .
     image: local/website
     command: python manage.py migrate --noinput
     volumes:
