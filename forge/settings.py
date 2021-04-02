@@ -8,6 +8,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from decouple import config
+from django.core.management.utils import get_random_secret_key
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -17,11 +19,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # To any curious GitHub readers: This isn't actually being used in prod. Don't worry.
-SECRET_KEY = 'u$q*w!hvr(bvie*bo1c^!p!^cq%rsswx6jocx5yz2qw%1dc83$'
+SECRET_KEY = config('SECRET_KEY',default=get_random_secret_key(), cast=str)
 
 # SECURITY WARNING: don't run with debug turned on in production! Also, REMOVE * FROM ALLOWED_HOSTS!
-DEBUG = True
-ALLOWED_HOSTS = ["*"]
+DEBUG = config('DEBUG',default=False, cast=bool)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS',default='*', cast=lambda v: [s.strip() for s in v.split(',')])
 
 
 # Application definition
@@ -81,12 +83,12 @@ WSGI_APPLICATION = 'forge.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'forge_devel_octoprint_influx',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'db',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': config('POSTGRES_DB',default="ruwebsite_db"),
+        'USER': config('POSTGRES_USER',default="postgres"),
+        'PASSWORD': config('POSTGRES_PASSWORD',default="password"),
+        'HOST': config('POSTGRES_HOST',default="db"),
+        'PORT': config('POSTGRES_PORT',default="5432"), 
     }
 }
 
@@ -139,27 +141,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 LOGIN_URL = '/login'
 
 # Chat settings
-CHAT_SITE_URL="127.0.0.1"
-CHAT_SITE_PORT=8001
+CHAT_SITE_URL=config('CHAT_SITE_URL',default="127.0.0.1")
+CHAT_SITE_PORT=config('CHAT_SITE_PORT',default="8001",cast=int)
 
 # Allow pages to be loaded in a frame
 X_FRAME_OPTIONS = 'ALLOW-FROM '+CHAT_SITE_URL
-
-
-try:
-    from influxdb_client import InfluxDBClient
-    from influxdb_client.client.write_api import SYNCHRONOUS
-    INFLUX_URL="http://influx"
-    INFLUX_PORT=10000
-    INFLUX_TOKEN = "chF60UInlV-4CWUL7Po3l4oZKcNPV-E4vQHOW7wydMQFwh9iHtrMcPreRACKuEuYsjLJZ-XoIoLb-CBJ0UETcA=="
-    INFLUX_ORG = "forge"
-    influx_client = InfluxDBClient(url=INFLUX_URL+":"+str(INFLUX_PORT), token=INFLUX_TOKEN)   
-    influx_write = influx_client.write_api(write_options=SYNCHRONOUS)
-    influx_query = influx_client.query_api()
-    print("SUCCESSFULLY CONNECTED TO INFLUX")
-except:
-    print("FAILED TO CONNECT TO INFLUX")
-
 
 
 #initialize google calendar

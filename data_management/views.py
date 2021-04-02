@@ -14,7 +14,7 @@ from django.conf import settings # import the settings file
 from machine_usage.views import create_machine_usage
 from forge import utils
 from apis.views import verify_key
-from data_management.utils import TemperatureInformation, LocationInformation
+
 # Importing Models
 from machine_management.models import *
 from django.contrib.auth.models import User, Group
@@ -129,112 +129,6 @@ def handle_information(machine, end_time,file_id):
             
         information.save()
 
-# ! type: HELPER
-# ! function: Handle new etmperature informatino
-# ? required: Machine, temperature data
-# ? returns: nothing
-# TODO:
-def handle_temperature(machine, temperature_data):
-    time = temperature_data["time"]
-    tool = temperature_data['tool_name']
-    actual = temperature_data['actual']
-    target = temperature_data['goal']
-    
-
-
-    #get print information if there is one
-    print_information = machine.current_print_information
-        
-    #create new temperature and attach it to machine
-    temperature = TemperatureInformation()
-    temperature.machine = machine
-    temperature.name = tool
-    temperature.temperature = actual
-    temperature.temperature_goal = target
-    temperature.time = time
-        
-    #if there is a job running then attach it to
-    if(print_information):
-        temperature.job = print_information
-        
-    #submit data to influx
-    temperature.submit_data()
-
-# ! type: HELPER
-# ! function: Handle new location informatino
-# ? required: Machine, current_height, current_layer, max_layer
-# ? returns: nothing
-# TODO:
-def handle_location(machine, location):
-    time = location["time"]
-    current_height = location["current_height"]
-    max_height = location['max_height']
-
-    current_layer = location["current_layer"]
-    max_layer =location["max_layer"]
-    
-    #get the current print
-    print_information = machine.current_print_information
-
-    #create new location and provide data
-    location_data = LocationInformation()
-    location_data.layer = current_layer
-    location_data.max_layer = max_layer
-    location_data.height = current_height
-    location_data.max_height = max_height
-    location_data.time = time
-    
-    #set up the machine
-    location_data.machine = machine
-
-    #if there is a job running then attach to it
-    if(print_information):
-        location_data.job = print_information
-
-    #submit data to influx
-    location_data.submit_data()
-
-## This is the format for the data to be recieved
-#{
-#    'data':{
-#        'machine':{
-#            'status':string
-#            'status_message':string
-#        },
-#        'print':{
-#            'end_time':datetime
-#            'file_id':string
-#        }
-#        'temperature': [
-#            {
-#                'time': datetime
-#                'tool_name': str
-#                'actual': float
-#                'target': float     
-#            }      
-#
-# !                'data':[
-# !                  'tool_name':{
-# !                      'actual':float
-# !                      'target':float
-# !                  }
-# !                   ...
-# !                ]
-# !               'time': datetime
-#!
-#        ],
-#
-#        'location':[{
-#               'data': {
-#                   'current_height':int
-#                   'current_layer':int
-#                   'max_layer':int
-#                },
-#                'time': datetime
-#         }]
-#    },
-#    'time': time submitted
-#}
 
 # ! type: GET/POST
 # ! function: Update and Receive machine Data
@@ -291,18 +185,6 @@ def machine_data(request):
             machine_status_message = data['status_data']['status_message']
             handle_status(machine,machine_status,machine_status_message)
 
-        #handle new temperature information
-        if('temperature_data' in data):
-            temperature_data = data["temperature_data"]
-            for temperature in temperature_data:
-                handle_temperature(machine,temperature)
-
-        #handle location
-        if('location_data' in data):
-            location_data = data["location_data"]
-
-            for location in location_data:
-                handle_location(machine,location)
         
         return HttpResponse("Data Set", status=200)
     return HttpResponse("Invalid request", status=405)

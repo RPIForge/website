@@ -14,7 +14,7 @@
 	<main class="bg_shade">
 		<div id="card_container" class="center_children">
 			{% for machine in machines %}
-			<div class="card" id="{{machine.id}}_container"  onclick="load_id({{machine.id}})">
+			<div class="card" id="{{machine.id}}_container">
                 <div id="{{machine.id}}_contents">
                     <div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
                     <div class="card_text {{machine.text_type}}">
@@ -23,10 +23,6 @@
                         <div class="status_message">{{ machine.status_message }}</div>
                         <div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
                     </div>
-                </div>
-                <div id="{{machine.id}}_temperature" style="display: none">
-                    <div class="machine_name">{{ machine.name }}</div>
-                    <iframe class="temperature" id="{{machine.id}}_iframe"  src='' scrolling="yes"></iframe>
                 </div>
 			</div>
 			{% endfor %}
@@ -76,35 +72,5 @@
 		}
 
 		refresh_bars();
-    </script>
-    
-    <script>
-        function load_id(id){
-            var machine_container =  document.getElementById(id+"_container");
-            var machine_contents =  document.getElementById(id+"_contents");
-            var machine_temperature =  document.getElementById(id+"_temperature");
-            var machine_iframe =  document.getElementById(id+"_iframe");
-            
-            
-            if(machine_contents.style.display=="block") {
-                console.log(1);
-                machine_container.style.width = "500px"
-                machine_container.style.height = "350px"
-            
-                machine_temperature.style.display = "block"
-                machine_contents.style.display = "none"
-            } else {
-                console.log(2);
-                machine_container.style.width = "200px"
-                machine_container.style.height = "200px"
-                
-                machine_temperature.style.display = "none"
-                machine_contents.style.display = "block"
-                
-            }
-            
-            machine_iframe.src = "/data/machines/print/temperature?machine_id="+id+"&display_graph=1";
-            
-        }
     </script>
 {% endblock scripts %}

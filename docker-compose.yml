@@ -2,49 +2,35 @@ version: "3.9"
    
 services:
   db:
-    image: postgres
+    container_name: postgres_db
+    image: postgres:13
     environment:
-      - POSTGRES_DB=forge_devel_octoprint_influx
+      - POSTGRES_DB=forge_devel
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
     volumes:
       - database-data:/var/lib/postgresql/data # persist data even if container shuts down
     ports:
       - "5432:5432"
-  
-  influx:
-    image: quay.io/influxdb/influxdb:v2.0.3
-    volumes:
-      - database-data:/var/lib/influxdb
-    ports:
-      - "10000:8086"
-      - "20030:2003"
-    environment:
-      - INFLUXDB_DB=db0
-      - INFLUXDB_ADMIN_USER="forge"
-      - INFLUXDB_ADMIN_PASSWORD="password"
-
-  migration:
-    image: local/website
-    command: python manage.py migrate --noinput
-    volumes:
-      - .:/code
-    depends_on:
-      - db
-      - influx
 
   web:
+    container_name: web
     build: .
     image: local/website
-    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
       - "8000:8000"
+    environment:
+      - SECRET_KEY=set_in_prod
+      - DEBUG=True
+      - ALLOWED_HOSTS=*
+      - POSTGRES_DB=forge_devel
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=db
     depends_on:
       - db
-      - influx
-      - migration
 
 
 
