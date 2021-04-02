@@ -47,33 +47,10 @@ def render_status(request):
     output = []
 
     for m in machines:
-        if m.in_use or m.current_print_information:
+        if m.in_use:
             p = m.current_print_information
             u = m.current_job
-            
-            if(not u and not p):
-                continue
-            
-            if(not u):
-                end_time = "Unknown"
-                if(p.end_time):
-                    end_time = p.end_time
-                
-                output.append({
-                    "id": m.id,
-                    "name": m.machine_name,
-                    "bar_type": "bar_in_progress",
-                    "text_type": "text_in_progress",
-                    "bar_progress":round(p.percentage()),
-                    "type":m.machine_type.machine_type_name,
-                    "user":"[Unknown]",
-                    "status_message": p.status_message,
-                    "time_remaining_text": "Estimated Completion:",
-                    "estimated_completion": (end_time),
-                    "time_remaining": ""
-                })
-                continue
-            
+
             if u.failed:
                 bar_type = "bar_failed"
                 text_type = "text_failed"
@@ -93,8 +70,6 @@ def render_status(request):
                 time_remaining = f""
                 
                 end_time = u.end_time
-                if(p and p.end_time):
-                    end_time = p.end_time
                     
                 estimated_completion = end_time
                 
@@ -113,11 +88,6 @@ def render_status(request):
                 
                 start_time = u.start_time
                 end_time = u.end_time
-                if(p):
-                    start_time = p.start_time
-                    print(p.end_time)
-                    if(p.end_time):
-                        end_time = p.end_time
                 
                 duration = end_time - start_time
                 elapsed = timezone.now() - start_time

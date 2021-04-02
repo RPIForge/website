@@ -27,6 +27,8 @@ import json
 from decimal import Decimal
 from datetime import datetime, timedelta
 import csv
+import pytz
+
 
 
 #
@@ -43,13 +45,8 @@ def handle_status(machine, machine_status, machine_status_message):
     usage = machine.current_job
     print_information = machine.current_print_information
 
-
     #if starting print
     if(machine_status=="printing"):
-        #set machine to in use
-        machine.in_use = True
-        machine.save()
-        
         #if paost print and usage is still running clear
         information = create_print(machine)
         information.status = machine_status
@@ -60,19 +57,7 @@ def handle_status(machine, machine_status, machine_status_message):
 
         #if there is a print_information then complete it
         clear_print(machine)
-            
-        #if there is a usage complete it
-        if(usage):
-            usage.complete = True
-            usage.end_time = timezone.now()
-            usage.status_message = "Completed."
-            usage.save()
         
-        #if nothing attached to machine then set it not in use
-        if(not machine.current_print_information and not machine.current_job):
-            machine.in_use = False
-            machine.save()
-    
     #if error then set error messages
     elif(machine_status=="error"):
         if(usage):
@@ -90,7 +75,6 @@ def handle_status(machine, machine_status, machine_status_message):
         
         #update machine status
         machine.status_message = machine_status_message
-        machine.in_use = False
         machine.save()
     
     else:
@@ -101,6 +85,10 @@ def handle_status(machine, machine_status, machine_status_message):
             machine.status_message = machine_status_message
             machine.save()
     
+    machine.status_message = machine_status_message
+    machine.save()
+
+
 # ! type: HELPER
 # ! function: Handle informatino updates
 # ? required: Machine, [end_time, file_id]
@@ -172,7 +160,7 @@ def machine_data(request):
         printer_dict = json.loads(request.body)
         data_time = printer_dict['time']
         data = printer_dict['data']
-
+        
         #handle print update information
         if('print' in data):
             end_time = data['print'].get('end_time',None)
@@ -180,7 +168,7 @@ def machine_data(request):
             handle_information(machine,end_time,file_id)
         
         #handle new machine data
-        if('status_data' in data):
+        if('status_data' in data and data['status_data']):
             machine_status = data['status_data']['status']
             machine_status_message = data['status_data']['status_message']
             handle_status(machine,machine_status,machine_status_message)

@@ -23,8 +23,8 @@ def clear_usage(machine):
     usage.save()
 
     machine.current_job = None
-    machine.current_print_information = None
-    
+    clear_print(machine)
+
     machine.in_use = False
     machine.save()
     
@@ -54,7 +54,6 @@ def clear_print(machine):
     print_information.save()
     
     machine.current_print_information = None
-    machine.in_use = False
     machine.save()
     
     return True
@@ -74,9 +73,6 @@ def create_print(machine):
     
     #if usage was more than a half an hour ago assume it wsa different
     if(usage):
-        if(usage.complete):
-            clear_usage(machine)
-            
         if(usage.start_time < timezone.now() - timedelta(minutes = 30)):
             usage=None
             
