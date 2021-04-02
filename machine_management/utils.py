@@ -23,7 +23,6 @@ def clear_usage(machine):
     usage.save()
 
     machine.current_job = None
-    clear_print(machine)
 
     machine.in_use = False
     machine.save()

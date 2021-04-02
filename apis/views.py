@@ -119,9 +119,14 @@ def machine_endpoint(request):
             'id':machine.id
         }
 
-        if(machine.current_print_information is not None):
+        if(machine.current_print_information):
             data["job"] = str(machine.current_print_information)
             data["job_id"] = machine.current_print_information.id
+        
+        if(machine.current_job):
+            slot_usage = machine.current_job.slotusage_set.all()[0]
+            resource = slot_usage.resource
+            data["material"] = str(resource)
 
         return HttpResponse(json.dumps(data))
 

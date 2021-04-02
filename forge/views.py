@@ -105,8 +105,10 @@ def render_status(request):
             
             status_message = u.status_message
             if (p and p.status_message):
-                status_message = p.status_message
-                
+                status_message = '{},{}'.format(status_message,p.status_message)
+            else:
+                status_message = '{},{}'.format(status_message,m.status_message)
+
             output.append({
                 "id": m.id,
                 "name": m.machine_name,
