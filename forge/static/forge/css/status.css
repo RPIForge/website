@@ -7,6 +7,13 @@
 	color: black;
 }
 
+.temperature {
+    position: relative;
+    top: 10%;
+    height: 85%;
+    width: 100%
+}
+
 .loading_bar {
 	position: relative;
 	/*top: -85px;*/
@@ -86,6 +93,13 @@ main {
 	font-weight: bold;
 	font-size: 15px;
 	color: #000;
+}
+
+.temperature {
+    width: 100%;
+    height: 80%;
+    border: none;
+    margin-top:10px;
 }
 
 .user_name {

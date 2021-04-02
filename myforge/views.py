@@ -429,7 +429,7 @@ def volunteer_dashboard(request):
                 time_remaining_text = "Estimated Completion:"
                 time_remaining = f""
                 estimated_completion = u.end_time
-
+            
             output.append({
                 "id": m.id,
                 "name": m.machine_name,

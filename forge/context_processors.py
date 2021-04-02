@@ -19,3 +19,6 @@ def channels_url(request):
     
     
     return {'CHANNELS_URL': url}
+
+def source_url(request):
+    return {'ROOT_URL':request.get_host()}
