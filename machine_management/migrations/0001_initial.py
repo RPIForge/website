@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('user_management', '0001_initial'),
+        ('user_management', '__first__'),
         ('business','0001_initial'),
     ]
 

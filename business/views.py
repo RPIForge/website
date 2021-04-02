@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 
 from machine_management.models import *
-from machine_management.forms import *
+from .forms import *
 
 
 # Importing Other Libraries
