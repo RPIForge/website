@@ -143,6 +143,12 @@ LOGIN_URL = '/login'
 # Chat settings
 CHAT_SITE_URL=config('CHAT_SITE_URL',default="127.0.0.1")
 CHAT_SITE_PORT=config('CHAT_SITE_PORT',default="8001",cast=int)
+CHAT_SITE_HTTPS = config('CHAT_SITE_HTTPS',default=True,cast=bool)
+
+if(CHAT_SITE_HTTPS):
+    CHAT_SITE = "https://{}:{}".format(CHAT_SITE_URL,CHAT_SITE_PORT)
+else:
+    CHAT_SITE = "http://{}:{}".format(CHAT_SITE_URL,CHAT_SITE_PORT)
 
 # Allow pages to be loaded in a frame
 X_FRAME_OPTIONS = 'ALLOW-FROM '+CHAT_SITE_URL

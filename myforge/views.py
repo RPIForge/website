@@ -46,11 +46,8 @@ def render_myforge(request):
 # ? returns: url as a String
 # TODO:
 def get_chat_url(request, path):
-    if request.is_secure():
-        url="https://"+settings.CHAT_SITE_URL+":443"+path
-    else:
-        url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+path
-
+    url = settings.CHAT_SITE+path
+    
     if request.user.is_authenticated:
         url=url+"?uuid={}".format(request.user.userprofile.uuid)
         url=url+"&name={}".format(request.user.get_full_name())
