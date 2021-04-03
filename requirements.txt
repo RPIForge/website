@@ -8,6 +8,8 @@ google-api-python-client~=1.7
 httplib2>=0.18.0
 idna==2.8
 oauthlib==3.1.0
+django==2.2.14
+psycopg2-binary==2.8.4
 django==2.2.18
 psycopg2==2.8.4
 pyasn1==0.4.8
@@ -26,3 +28,4 @@ uritemplate==3.0.0
 django-formtools==2.2
 urllib3==1.25.7
 python-decouple==3.4
+
