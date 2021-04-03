@@ -46,11 +46,11 @@ Before running the app for the first time, you should set up the database throug
 	- python manage.py create_superuser
 
 
-Afterwards, you can run the app by either restarting the docker-compose or running the following command:
+Afterwards, you can run the app by either restarting the docker-compose or running the following command (depending on how you installed):
 
 	- python manage.py runserver
 
-The site will be accessible at localhost:8000 (unless you specify another ip or port as an argument to runserver). To access the Django admin panel, point your browser to localhost:8000/admin. To access the site, go to localhost:8000/. 
+The site will be accessible at localhost:8000 if using the normal install or localhost:80 if using  docker. To access the Django admin panel, point your browser to site/admin. 
 
 You will want to initialize the database with some values. First go to `/admin/auth/user/` and select your account. You will want to create and add the following groups
 	-admins
