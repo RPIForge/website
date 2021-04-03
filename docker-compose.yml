@@ -2,7 +2,7 @@ version: "3.9"
    
 services:
   db:
-    container_name: postgres_db
+    container_name: forge-db
     image: postgres:13
     environment:
       - POSTGRES_DB=forge_devel
@@ -12,13 +12,25 @@ services:
       - database-data:/var/lib/postgresql/data # persist data even if container shuts down
     ports:
       - "5432:5432"
+  
+  nginx:
+    container_name: forge-nginx
+    image: forge/nginx:latest
+    build: ./nginx
+    restart: unless-stopped
+    volumes:
+      - ./static:/static
+    ports:
+      - "80:80"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
   web:
-    container_name: web
+    container_name: forge-web
     build: .
-    image: local/website
+    image: forge/website:latest
     volumes:
       - .:/code
+      - ./static:/code/static
     ports:
       - "8000:8000"
     environment:
