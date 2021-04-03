@@ -6,7 +6,8 @@ from django.dispatch import receiver
 from django.utils import timezone
 
 #model imports
-from user_management.models import UserProfile
+from user_management.models import *
+from data_management.models import *
 from business.models import *
 
 #general imports
@@ -97,13 +98,25 @@ class Machine(models.Model):
     )
 
     in_use = models.BooleanField(default=False)
-    current_job = models.OneToOneField(
-        "Usage",
-        on_delete=models.CASCADE,
+    
+    current_print_information = models.ForeignKey(
+        JobInformation,
+        on_delete = models.SET_NULL,
         null=True,
         blank=True,
-        related_name="current_machine" # Can we make this None? You can already see a usage's machine from usage.machine.
+        related_name="current_job"
     )
+    
+    current_job = models.OneToOneField(
+        "Usage",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="current_usage" # Can we make this None? You can already see a usage's machine from usage.machine.
+    )
+    
+    
+    
     enabled = models.BooleanField(default=True)
     status_message = models.CharField(max_length=255, default="", blank=True)
     deleted = models.BooleanField(default=False)
@@ -124,6 +137,9 @@ class Machine(models.Model):
             return f"{elapsed_time.days}d {elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
         else:
             return f"{elapsed_time.seconds // 3600}h {int(elapsed_time.seconds // 60 % 60.0)}m"
+    
+    
+    
 
 class Usage(models.Model):
     # ? Use: Keeps track of each usage in the forge
@@ -134,10 +150,18 @@ class Usage(models.Model):
         on_delete = models.SET_NULL,
         null=True
     )
-
+    
+    current_print_information = models.ForeignKey(
+        JobInformation,
+        on_delete = models.SET_NULL,
+        null=True,
+        related_name="job"
+    )
+    
     userprofile = models.ForeignKey(
         UserProfile,
-        on_delete = models.CASCADE
+        on_delete = models.SET_NULL,
+        null=True
     )
 
     semester = models.ForeignKey(
@@ -145,6 +169,9 @@ class Usage(models.Model):
         on_delete=models.SET_NULL,
         null=True
     )
+    
+    
+    
     
     for_class = models.BooleanField(default=False)
     is_reprint = models.BooleanField(default=False)
@@ -168,7 +195,7 @@ class Usage(models.Model):
     failed = models.BooleanField(default=False)
     
     deleted = models.BooleanField(default=False)
-
+    
     def cost(self):
         cost = Decimal(0.00)
 
@@ -235,3 +262,7 @@ class SlotUsage(models.Model):
 
     def cost(self):
         return self.amount * self.resource.cost_per
+
+
+        
+        

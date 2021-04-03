@@ -14,14 +14,16 @@
 	<main class="bg_shade">
 		<div id="card_container" class="center_children">
 			{% for machine in machines %}
-			<div class="card">
-				<div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
-				<div class="card_text {{machine.text_type}}">
-					<div class="machine_name">{{ machine.name }}</div>
-					<div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
-					<div class="status_message">{{ machine.status_message }}</div>
-					<div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
-				</div>
+			<div class="card" id="{{machine.id}}_container">
+                <div id="{{machine.id}}_contents">
+                    <div class="loading_bar {{ machine.bar_type }}" data-value="{{ machine.bar_progress }}" data-machine-name="{{ machine.name }}"></div>
+                    <div class="card_text {{machine.text_type}}">
+                        <div class="machine_name">{{ machine.name }}</div>
+                        <div class="user_name">{{ machine.type }} | {{ machine.user }}</div>
+                        <div class="status_message">{{ machine.status_message }}</div>
+                        <div class="time_remaining">{{machine.time_remaining_text}}<br />{{ machine.estimated_completion }}<br />{{ machine.time_remaining }}</div>
+                    </div>
+                </div>
 			</div>
 			{% endfor %}
 		</div>
@@ -54,7 +56,7 @@
 		}
 
 		function complete(idx, elem) {
-			progress_bar(idx, elem, "#9EA2A2", "#AB2328", "0");
+			progress_bar(idx, elem, "#0A0", "#0A0", "0");
 		}
 
 		function failed(idx, elem) {
@@ -70,5 +72,5 @@
 		}
 
 		refresh_bars();
-</script>
+    </script>
 {% endblock scripts %}

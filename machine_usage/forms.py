@@ -1,6 +1,7 @@
 #django imports
 from django import forms
 from django.shortcuts import redirect, render
+from django.core.exceptions import ValidationError
 
 #class import
 from user_management.models import *
@@ -76,8 +77,16 @@ class MachineSlotUsageForm(forms.Form):
 
 #Usage Length usage
 class MachineUsageLength(forms.Form):
-    usage_hours = forms.IntegerField(required=True, min_value=1, widget=forms.NumberInput(attrs={'placeholder': 'Hours'}))
-    usage_minutes = forms.IntegerField(required=True, min_value=1, max_value=60, widget=forms.NumberInput(attrs={'placeholder': 'Minutes'}))
+    usage_hours = forms.IntegerField(required=True, min_value=0, widget=forms.NumberInput(attrs={'placeholder': 'Hours'}))
+    usage_minutes = forms.IntegerField(required=True, min_value=0, max_value=60, widget=forms.NumberInput(attrs={'placeholder': 'Minutes'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        usage_hours = self.cleaned_data['usage_hours']
+        usage_minutes = self.cleaned_data['usage_minutes']
+        if usage_minutes==0 and usage_hours==0:
+            raise ValidationError("Time cannot be empty")
+        return cleaned_data
 
 class MachinePolicy(forms.Form):
     policy_acceptance = forms.BooleanField(required = True)
@@ -122,7 +131,7 @@ class MachineUsageWizard(SessionWizardView):
         new_usage.is_reprint = data['reprint']
         new_usage.own_material = data['own_material']
         new_usage.save()#to set create_time
-        
+
         new_usage.set_end_time(data['usage_hours'],data['usage_minutes'])
         new_usage.save()
         

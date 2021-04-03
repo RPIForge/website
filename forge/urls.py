@@ -32,6 +32,7 @@ urlpatterns = [
     #other app paths
     path('', include("myforge.urls")),
     path('', include("machine_usage.urls")),
+    path('', include("data_management.urls")),
     path('', include("user_management.urls")),
     path('', include("apis.urls")),
     path('', include("business.urls"))

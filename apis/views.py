@@ -19,7 +19,8 @@ from forge import utils
 from machine_management.models import *
 from django.contrib.auth.models import User, Group
 from user_management.models import *
-
+from apis.models import *
+from machine_management.utils import *
 
 # Importing Other Libraries
 import json
@@ -51,21 +52,12 @@ def clear_machine(request):
         #TODO make sure machine with id exists
         machine = Machine.objects.get(id=int(data["machine_id"]))
 
-        if not machine.in_use:
+        response = clear_usage(machine)
+        response = response or clear_print(machine)
+        
+        if(not response):
             return HttpResponse("Machine was not in use.", status=200)
 
-        #get the current usage and clear it
-        usage = machine.current_job
-        usage.clear_time = timezone.now()
-        usage.complete = True
-        if (not usage.error) and (not usage.failed):
-            usage.status_message = "Cleared."
-        usage.save()
-
-        #clear machine
-        machine.current_job = None
-        machine.in_use = False
-        machine.save()
         return HttpResponse("Machine cleared.", status=200)
     else:
         return HttpResponse("", status=405) # Method not allowed
@@ -89,19 +81,11 @@ def fail_machine(request):
         #get machine from post data
         machine = Machine.objects.get(id=int(data["machine_id"]))
 
-        if not machine.in_use:
+        response = fail_usage(machine)
+        if(not response):
             return HttpResponse("Machine was not in use.", status=200)
 
-        #get and fail machine usage
-        usage = machine.current_job
-        usage.clear_time = timezone.now()
-        usage.failed = True
-        usage.status_message = "Failed."
-        usage.save()
-
-        #send failed print email
-        utils.send_failure_email(usage)
-        return HttpResponse("Machine marked as failed.", status=200)
+        return HttpResponse("Machine cleared.", status=200)
     else:
         return HttpResponse("", status=405) # Method not allowed
 
@@ -116,48 +100,48 @@ def fail_machine(request):
 def machine_endpoint(request):
     #get machine information
     if request.method == 'GET':
-        output = []
 
-        machines = Machine.objects.all().order_by("machine_name")
+        #get machine id
+        machine_id = request.GET.get("machine_id",None)
+        if(not machine_id):
+            return HttpResponse("No machine_id provided", status=400)
+        machine_id = int(machine_id)
 
-        #loop through all active machiens
-        for m in machines:
-            if not m.deleted:
-                #get information about the machine
-                machine_entry = {
-                    "name": m.machine_name,
-                    "in_use": m.in_use,
-                    "enabled": m.enabled,
-                    "status": m.status_message,
-                    "usage_policy": m.machine_type.usage_policy,
-                    "hourly_cost": float(m.machine_type.hourly_cost),
-                    "slots": []
-                }
+        #get machine object
+        try:
+            machine = Machine.objects.get(id=machine_id)
+        except ObjectDoesNotExist:
+            return HttpResponse("Machine not found", status=400)
 
-                #get information about all of the slots in the machines
-                slots = m.machine_type.machineslot_set.all()
-                for s in slots:
-                    slot_entry = {
-                        "slot_name": s.slot_name,
-                        "allowed_resources": []
-                    }
+        data = {
+            'name':machine.machine_name,
+            'type':machine.machine_type.machine_type_name,
+            'id':machine.id
+        }
 
-                    for r in s.allowed_resources.all():
-                        if r.in_stock and not r.deleted:
-                            slot_entry["allowed_resources"].append({"name":r.resource_name, "unit":r.unit, "cost":float(r.cost_per)})
-
-                    machine_entry["slots"].append(slot_entry)
-
-                output.append(machine_entry)
-
-        return HttpResponse(json.dumps(output))
-
-    #create machine usage
-    elif request.method == 'POST':
-        return create_machine_usage(request) # Make sure this still checks for login!
-    else:
-        return HttpResponse("", status=405) # Method not allowed
+        if(machine.current_print_information):
+            data["job"] = str(machine.current_print_information)
+            data["job_id"] = machine.current_print_information.id
         
+        if(machine.current_job):
+            slot_usage = machine.current_job.slotusage_set.all()[0]
+            resource = slot_usage.resource
+            data["material"] = str(resource)
+
+        return HttpResponse(json.dumps(data))
+
+# ! type: HELPER
+# ! funciton: verify that a request has a valid API key
+# ? required: HTTP Request
+# ? returns: boolean
+# TODO:
+def verify_key(request):
+    if("X-Api-Key" in request.headers):
+        return Key.objects.filter(key=request.headers["X-Api-Key"]).exists()
+    return False
+
+
+
 #
 #   Users API
 #

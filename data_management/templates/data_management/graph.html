@@ -1,0 +1,87 @@
+{% load static %}
+
+{% block page_title %}
+<title>Machine Information</title>
+{% endblock page_title %}
+
+{% block custom_styles %}
+<style>
+canvas{
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+</style>
+{% endblock custom_styles %}
+	
+{% block main %}
+	<main>
+        <div id="information">
+            <div id="chart" style="position: relative;">
+                <div id='chart_div'></div>
+            </div>
+            <div id="nodata">
+                No Data Available
+            <div>
+        </div>
+	</main>
+{% endblock main %}
+
+{% block scripts %}
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+	<script>
+	var data_history = {{data_history|safe}}
+    
+    if(Object.keys(data_history).length === 0){
+        var nodata = document.getElementById('nodata');
+        var chart = document.getElementById('chart');
+        nodata.style.display = "block"; 
+        chart.style.display = "none"; 
+    } else {
+        var nodata = document.getElementById('nodata');
+        var chart = document.getElementById('chart');
+        nodata.style.display = "none"; 
+        chart.style.display = "block"; 
+	}
+
+    //get list of time points.
+    var time_list = data_history["time"]
+
+    //put data into traces
+    console.log(data_history)
+    trace_data = []
+    for (const [name, data] of Object.entries(data_history["data"])) {
+        var data_trace = {
+            x: time_list,
+            y: data,
+            name: name,
+            type: 'scatter'
+        };
+        trace_data.push(data_trace)
+    }
+
+    //setup layouut
+    var layout = {
+        title: {
+            text:'{{title}}',
+            xref: 'paper',
+            x: 0.05,
+        },
+        xaxis: {
+            title: {
+                text: 'Time',
+            },
+        },
+        yaxis: {
+            title: {
+                text: '{{units}}',
+            }
+        },
+
+        hovermode: 'x close'
+    };
+
+    Plotly.newPlot('chart_div', trace_data, layout);
+
+	</script>
+{% endblock scripts %}

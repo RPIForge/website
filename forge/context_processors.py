@@ -6,10 +6,7 @@ from django.conf import settings # import the settings file
 # ? returns: Dictionary with channels url
 # TODO: 
 def channels_url(request):
-    if request.is_secure():
-        url="https://"+settings.CHAT_SITE_URL+":443/user/info"
-    else:
-        url="http://"+settings.CHAT_SITE_URL+":"+str(settings.CHAT_SITE_PORT)+"/user/info"
+    url = settings.CHAT_SITE
     
     if request.user.is_authenticated:
         url=url+"?uuid={}".format(request.user.userprofile.uuid)
@@ -19,3 +16,6 @@ def channels_url(request):
     
     
     return {'CHANNELS_URL': url}
+
+def source_url(request):
+    return {'ROOT_URL':request.get_host()}

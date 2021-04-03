@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     #machine endpoints
-    path('api/machines', views.machine_endpoint, name='machine_endpoint'),
+    path('api/machine', views.machine_endpoint, name='machine_endpoint'),
     path('api/machines/clear', views.clear_machine, name='clear_machine'),
     path('api/machines/fail', views.fail_machine, name='fail_machine'),
     

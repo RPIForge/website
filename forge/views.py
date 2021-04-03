@@ -48,7 +48,9 @@ def render_status(request):
 
     for m in machines:
         if m.in_use:
+            p = m.current_print_information
             u = m.current_job
+
             if u.failed:
                 bar_type = "bar_failed"
                 text_type = "text_failed"
@@ -66,7 +68,11 @@ def render_status(request):
                 bar_progress = 100
                 time_remaining_text = "Time of Completion:"
                 time_remaining = f""
-                estimated_completion = u.end_time
+                
+                end_time = u.end_time
+                    
+                estimated_completion = end_time
+                
             elif u.failed:
 
                 fail_time = u.clear_time
@@ -79,45 +85,53 @@ def render_status(request):
                 time_remaining = ""
                 estimated_completion = u.clear_time + timedelta(hours=1)
             else:
-                duration = u.end_time - u.start_time
-                elapsed = timezone.now() - u.start_time
-                if(duration.total_seconds()==0):
-                    percent_complete = 0
-                else:
-                    percent_complete = elapsed.total_seconds() / duration.total_seconds()
-                    
+                
+                start_time = u.start_time
+                end_time = u.end_time
+                
+                duration = end_time - start_time
+                elapsed = timezone.now() - start_time
+                percent_complete = elapsed.total_seconds() / duration.total_seconds()
                 bar_progress = int(100 * percent_complete)
 
                 time_remaining_text = "Estimated Completion:"
                 time_remaining = f""
-                estimated_completion = u.end_time
+                estimated_completion = end_time
 
-            if m.current_job.userprofile.anonymous_usages:
+            if u.userprofile.anonymous_usages:
                 user_name = "[hidden]"
             else:
-                user_name = f"{m.current_job.userprofile.user.first_name} {m.current_job.userprofile.user.last_name[:1].capitalize()}."
+                user_name = f"{u.userprofile.user.first_name} {u.userprofile.user.last_name[:1].capitalize()}."
+            
+            status_message = u.status_message
+            if (p and p.status_message):
+                status_message = '{},{}'.format(status_message,p.status_message)
+            else:
+                status_message = '{},{}'.format(status_message,m.status_message)
 
             output.append({
+                "id": m.id,
                 "name": m.machine_name,
                 "bar_type": bar_type,
                 "text_type": text_type,
                 "bar_progress":bar_progress,
                 "type":m.machine_type.machine_type_name,
                 "user":user_name,
-                "status_message":m.current_job.status_message,
+                "status_message": status_message,
                 "time_remaining_text": time_remaining_text,
                 "estimated_completion": estimated_completion,
                 "time_remaining": time_remaining
             })
         else:
             output.append({
+                "id": m.id,
                 "name": m.machine_name,
                 "bar_type": "bar_in_progress",
                 "text_type": "text_in_progress",
                 "bar_progress": 0,
                 "type":m.machine_type.machine_type_name,
                 "user":f"No User",
-                "status_message":"Not In Use",
+                "status_message":"Not In Use, {}".format(m.status_message),
                 "time_remaining_text": "",
                 "estimated_completion": "",
                 "time_remaining": ""

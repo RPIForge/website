@@ -62,3 +62,19 @@ class ForgeUserAdmin(UserAdmin):
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, ForgeUserAdmin)
+
+class ForgePrintAdmin(admin.ModelAdmin):
+    
+    #fields =('get_temperature',)
+    
+    
+    readonly_fields=('get_temperature',)
+    
+    
+    def get_temperature(self, object):
+        return "<iframe src='/api/machines/print/temperature?job_id={}&display_graph=1' /></iframe>".format(object.id)
+        
+    get_temperature.allow_tags = True 
+    get_temperature.short_description = "Temperature Information"
+
+        
