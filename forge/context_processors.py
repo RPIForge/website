@@ -6,7 +6,7 @@ from django.conf import settings # import the settings file
 # ? returns: Dictionary with channels url
 # TODO: 
 def channels_url(request):
-    url = settings.CHAT_SITE
+    url = settings.CHAT_SITE+'/user/info'
     
     if request.user.is_authenticated:
         url=url+"?uuid={}".format(request.user.userprofile.uuid)
