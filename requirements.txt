@@ -1,7 +1,7 @@
 argon2-cffi==19.2.0
 bcrypt==3.1.7
 google-api-python-client~=1.7
-django==2.2.18
+django==2.2.20
 psycopg2==2.8.4
 requests==2.22.0
 sendgrid==6.1.0
