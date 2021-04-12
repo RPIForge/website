@@ -3,6 +3,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+
+
 # Importing Models
 
 from user_management.models import *
@@ -203,9 +206,10 @@ def render_verify_email(request):
         if(user.groups.filter(name="verified_email")):
             return render(request, 'user_management/verify_email.html', {"has_message":True, "message_type":"info", "message":"Email already verified."})
         else:
-            group = Group.objects.get_or_create(name="verified_email") 
-            user.groups.add(group)
-            user.save()
+            group, created = Group.objects.get_or_create(name="verified_email") 
+            
+            group.user_set.add(user)
+            group.save()
             return render(request, 'user_management/verify_email.html', {"has_message":True, "message_type":"success", "message":"Successfully verified email!"})
 
 
