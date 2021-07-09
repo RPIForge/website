@@ -13,7 +13,7 @@ up the containers.
 
 And then once the containers are up attach to the web container using the following command to the instance
 
-	-  docker-compose exec web bash
+	-  docker exec  -it forge-web bash
 
 ### Normal Install
 #### Python
@@ -43,7 +43,7 @@ Before running the app for the first time, you should set up the database throug
 
 	- python manage.py makemigrations
 	- python manage.py migrate
-	- python manage.py create_superuser
+	- python manage.py createsuperuser
 
 
 Afterwards, you can run the app by either restarting the docker-compose or running the following command (depending on how you installed):

@@ -19,7 +19,7 @@ services:
     build: ./nginx
     restart: unless-stopped
     volumes:
-      - ./static:/static
+      - static-data:/static
     ports:
       - "80:80"
     depends_on:
@@ -32,10 +32,10 @@ services:
     image: forge/website:latest
     volumes:
       - .:/code
-      - ./static:/code/static
+      - static-data:/code/static
     environment:
       - SECRET_KEY=set_in_prod
-      - DEBUG=True
+      - DEBUG=False
       - ALLOWED_HOSTS=*
       - POSTGRES_DB=forge_devel
       - POSTGRES_USER=postgres
@@ -46,4 +46,6 @@ services:
 
 volumes:
     database-data:
+      driver: local
+    static-data:
       driver: local
