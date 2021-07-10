@@ -17,6 +17,10 @@ class Organization(models.AbstractBaseUser):
     name = models.CharField(max_length=255, unique=True, blank=False)
     description = models.CharField(max_length=255, default='')
 
+    #used to identifiy the primary org. This should be the forge
+    default = mdoels.BooleanField(default=False)
+
+
     #how much we charge the organization to use our site/forge resources
     organization_fee = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
     
@@ -40,4 +44,11 @@ class Organization(models.AbstractBaseUser):
        
     def save(self, *args, **kwargs):
         self.org_id =  str(uuid.uuid4())[:6]
+
+        if self.default:
+            orgs = Organization.objects.all().filter(default=True)
+            for org in orgs:
+                org.default = False
+                org.save()
+
         super(Organization, self).save(*args, **kwargs)
