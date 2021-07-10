@@ -94,6 +94,3 @@ class ForgeUserForm(forms.ModelForm):
         model = User 
         exclude = ()
         
-
-
-        

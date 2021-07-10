@@ -39,3 +39,7 @@ class BusinessConfig(AppConfig):
 class DataManagementConfig(AppConfig):
     # ! function: App that handles all interactions with octoprint information
     name = 'data_management'
+
+class OrganizationManagementConfig(AppConfig):
+    # ! function: App that handles all interactions with octoprint information
+    name = 'organization_management'
