@@ -35,7 +35,8 @@ urlpatterns = [
     path('', include("data_management.urls")),
     path('', include("user_management.urls")),
     path('', include("apis.urls")),
-    path('', include("business.urls"))
+    path('', include("business.urls")),
+    path('', include("organization_management.urls"))
 ]
 
 urlpatterns += staticfiles_urlpatterns()

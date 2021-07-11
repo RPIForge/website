@@ -1,6 +1,7 @@
 {% extends "forge/generic.html" %}
 {% load static %}
 {% load in_group %}
+{% load organization %}
 
 {% block page_title %}
 <title>My Forge</title>
@@ -20,6 +21,17 @@
 				<li><a href="javascript:setFrame('https://docs.google.com/forms/d/e/1FAIpQLSfEj3o6wlmHYNSDVT1U8dTkul1DSuRhhokQO5S1YNnTeAYpqw/viewform')">Send Feedback</a></li>
 				<!--<li><a href="">Account Settings</a></li>-->
 				<li><a href="http://rpiforge.slack.com/">Join Our Slack!</a></li>
+			
+			<li class="block_list_header">Organization Functions</li>
+				<li><a href="javascript:setFrame('dyn/org_list_joinable')">Join an Organization</a></li>
+				{% if request.user|in_org %}
+				<li><a href="javascript:setFrame('dyn/org_members')">View Organization Members</a></li>
+				<li><a href="javascript:setFrame('dyn/org_projects')">View Organization Projects</a></li>
+					{% if request.user|is_org_manager %}
+					<li><a href="javascript:setFrame('forms/org_machines')">View Organization Machines</a></li>
+					{% endif %}
+				{% endif %}
+
 
 			{% if request.user|in_group:"volunteers" %}
 			<li class="block_list_header">Volunteer Functions</li>
