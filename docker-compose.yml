@@ -33,6 +33,8 @@ services:
     volumes:
       - .:/code
       - static-data:/code/static
+    ports:
+      - "8000:8000"
     environment:
       - SECRET_KEY=set_in_prod
       - DEBUG=False

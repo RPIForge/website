@@ -1,5 +1,11 @@
 {% load static %}
 {% load js %}
+
+{% block custom_styles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/join_organization.css' %}">
+{% endblock custom_styles %}
+
+
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="{% static 'forge/css/dyn/list.css' %}" />
@@ -44,6 +50,26 @@
 			</tbody>
 		</table>
 
+		<div id="confirmation">
+
+            <p class="title" id="machine_selection_title"><strong>Machine Selection</strong></p>
+
+            <select id="machine_selection">
+                <option value selected disabled>Select a Machine</option>
+                {% for machine_type, machines in available_machines.items %}
+                    <optgroup label="{{ machine_type }}">
+                    {% for machine_name in machines %}
+                        <option value="{{ machine_name }}">{{ machine_name }}</option>
+                    {% endfor %}
+                    </optgroup>
+                {% endfor %}
+            </select>
+
+            <br /><br />
+
+            <button id="available_next">Next</button>
+        </div>
+
 		<script>
 			$(document).ready( function () {
 					$('#data').DataTable({
@@ -65,9 +91,20 @@
 			function join_org(id) {
 				const row = table_rows[id]
 				const org_id = org_ids[row[0]]
-				console.log(org_id)
+				const json = {
+					org_id: org_id
+				}
 
-
+				$.ajax({
+			        url: 'api/organization/join_organization',
+			        type: 'post',
+			        dataType: 'json',
+			        contentType: 'application/json',
+			        data: JSON.stringify(json)
+			    }).done(function(data, statusText, xhr){
+				  var status = xhr.status;                //200
+				  console.log(status)
+				});
 			}
 
 		</script>
