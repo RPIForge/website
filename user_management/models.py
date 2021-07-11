@@ -16,7 +16,7 @@ class UserProfile(models.Model):
     # ! Data: Rin,gender,major, graduating, uuid
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    rin = models.PositiveIntegerField(default=None, null=True, blank=True, unique=True)
+    rin = models.PositiveIntegerField(default=None, unique=True)
     gender = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.gender)
     major = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.major)
 

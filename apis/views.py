@@ -288,3 +288,33 @@ def charge_sheet(request):
         writer.writerows(csv_data)
         
         return response
+
+
+#
+#   Organizations
+#    
+
+# ! type: POST
+# ! function: Add user to organization
+# ? required: None
+# ? returns: HTTP Response 
+# TODO: None
+def join_organization(request):
+    if request.method == 'POST':
+        json_data = json.loads(request.body)
+
+        #get organization
+        org_id = json_data['org_id']
+        org = Organization.objects.filter(org_id=org_id).first()
+
+        #get user
+        user = request.user
+
+        #join organization
+        obj = org.add_user(user)
+        if(obj is None):
+            return HttpResponse('Unable to Add User to Org',status=400)
+
+        return HttpResponse('')
+            
+#

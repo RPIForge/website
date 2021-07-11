@@ -13,6 +13,10 @@ urlpatterns = [
     path('api/volunteers/current', views.current_volunteers, name='current_volunteers'),
     
     #billing endpoints
-    path('api/billing/charge_sheet', views.charge_sheet, name='current_volunteers'),  
+    path('api/billing/charge_sheet', views.charge_sheet, name='charge_sheet'),  
+
+    #organization endpoint
+    path('api/organization/join_organization', views.join_organization, name='join_organization'),  
+
 ]
     

@@ -46,10 +46,21 @@ class Organization(models.Model):
     # IF an organization can be seen in the org list
     visible = models.BooleanField(default=False)
 
+
+    def validate_user(self,user):
+        if(self.membership_fee==0 and not self.bill_member):
+            return True
+
+        return user.rin is not None
+
     def get_membership(self, user):
         return OrganizationMembership.objects.filter(user=user,organization=self).first()
 
     def add_user(self, user):
+        #if user does not have rin
+        if(not self.validate_user(user)):
+            return None
+
         membership = self.get_membership(user)
         if(not membership):
             membership = OrganizationMembership()
