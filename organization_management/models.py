@@ -45,30 +45,7 @@ class Organization(models.Model):
     # IF an organization can be seen in the org list
     visible = models.BooleanField(default=False)
 
-    def set_password(self, raw_password):
-        self.password = make_password(raw_password)
-        self._password = raw_password
 
-    def check_password(self, raw_password):
-        """
-        Return a boolean of whether the raw_password was correct. Handles
-        hashing formats behind the scenes.
-        """
-        def setter(raw_password):
-            self.set_password(raw_password)
-            # Password hash upgrades shouldn't be considered password changes.
-            self._password = None
-            self.save(update_fields=["password"])
-        return check_password(raw_password, self.password, setter)
-
-    def set_unusable_password(self):
-        # Set a value that will never be a valid hash
-        self.password = make_password(None)
-
-
-    def verify_user(self, password):
-        return self.check_password(password)
-       
     def save(self, *args, **kwargs):
         self.org_id =  str(uuid.uuid4())[:6]
 
@@ -79,3 +56,6 @@ class Organization(models.Model):
                 org.save()
 
         super(Organization, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return "{}".format(self.name)
