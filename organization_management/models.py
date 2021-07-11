@@ -1,5 +1,6 @@
 #django imports
 from django.db import models
+from django.contrib.auth.models import User
 from django.contrib.auth.hashers import (
     check_password, is_password_usable, make_password,
 )
@@ -45,7 +46,22 @@ class Organization(models.Model):
     # IF an organization can be seen in the org list
     visible = models.BooleanField(default=False)
 
+    def get_membership(self, user):
+        return OrganizationMembership.objects.filter(user=user,organization=self).first()
 
+    def add_user(self, user):
+        membership = self.get_membership(user)
+        if(not membership):
+            membership = OrganizationMembership()
+            membership.organization = self
+            membership.user = user
+            membership.save()
+
+        return membership
+    
+    def remove_user(self,user):
+        OrganizationMembership.objects.filter(user=user,organization=self).delete()
+    
     def save(self, *args, **kwargs):
         self.org_id =  str(uuid.uuid4())[:6]
 
@@ -59,3 +75,33 @@ class Organization(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
+
+
+
+class OrganizationMembership(models.Model): 
+    # ? Use: Keeps Track of an OrganizationMembership
+    # ! Data:  Organization, user and if they're a manager
+
+
+    #general information
+    organization = models.ForeignKey(
+        Organization,
+        on_delete = models.CASCADE,
+        default = 1,
+        null=False,
+        blank=False,
+        related_name="memberships"
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete = models.CASCADE,
+        default = 1,
+        null=False,
+        blank=False,
+        related_name="machines"
+    )
+
+    #used to identify is a user is a manager of an org
+    manager = models.BooleanField(default=False)
