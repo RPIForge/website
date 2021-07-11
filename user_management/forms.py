@@ -56,7 +56,7 @@ class ForgeProfileCreationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ForgeProfileCreationForm, self).__init__(*args, **kwargs)
         
-        self.fields['rin'].required = True
+        self.fields['rin'].required = False
         self.fields['gender'].required = True
         self.fields['major'].required = True
 
