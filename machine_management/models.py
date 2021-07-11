@@ -8,6 +8,7 @@ from django.utils import timezone
 #model imports
 from user_management.models import *
 from data_management.models import *
+from organization_management.models import *
 from business.models import *
 
 #general imports
@@ -115,7 +116,14 @@ class Machine(models.Model):
         related_name="current_usage" # Can we make this None? You can already see a usage's machine from usage.machine.
     )
     
-    
+    organization = models.ForeignKey(
+        Organization,
+        on_delete = models.PROTECT,
+        default = 1,
+        null=False,
+        blank=False,
+        related_name="machines"
+    )
     
     enabled = models.BooleanField(default=True)
     status_message = models.CharField(max_length=255, default="", blank=True)
