@@ -38,5 +38,6 @@ def list_joinable_organizations(request):
     for org in org_list:
         context["table_rows"].append([org.name, org.description, org.pretty_print_membership_fee()])
         context['org_ids'][org.name]=org.org_id
-    print(context)
+
+
     return render(request, 'organization_management/forms/list_joinable_organizations.html', context)

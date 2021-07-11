@@ -50,24 +50,12 @@
 			</tbody>
 		</table>
 
-		<div id="confirmation">
+        <div id="confirmation" hidden>
+            <p class="no_margin" id="title"><strong>Join Organization:</strong></p><br />
 
-            <p class="title" id="machine_selection_title"><strong>Machine Selection</strong></p>
+            <p class="no_margin" id="text">You are about to join the ---- organizaton. Your busar account will be charged ----. If you have any questions please email William He at hew8@rpi.edus.</p><br /><br />
 
-            <select id="machine_selection">
-                <option value selected disabled>Select a Machine</option>
-                {% for machine_type, machines in available_machines.items %}
-                    <optgroup label="{{ machine_type }}">
-                    {% for machine_name in machines %}
-                        <option value="{{ machine_name }}">{{ machine_name }}</option>
-                    {% endfor %}
-                    </optgroup>
-                {% endfor %}
-            </select>
-
-            <br /><br />
-
-            <button id="available_next">Next</button>
+            <button id="accept_policy">Accept and Continue</button>
         </div>
 
 		<script>
@@ -94,7 +82,7 @@
 				const json = {
 					org_id: org_id
 				}
-
+				/*
 				$.ajax({
 			        url: 'api/organization/join_organization',
 			        type: 'post',
@@ -104,7 +92,7 @@
 			    }).done(function(data, statusText, xhr){
 				  var status = xhr.status;                //200
 				  console.log(status)
-				});
+				});*/
 			}
 
 		</script>
