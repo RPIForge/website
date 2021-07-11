@@ -31,11 +31,12 @@ def list_joinable_organizations(request):
     context = {
         "table_headers":["Name", "Description", "Membership Cost"],
         "table_rows":[],
-        "page_title":"Organizations"
+        "page_title":"Organizations",
+        "org_ids": {}
     }
 
     for org in org_list:
-        context["table_rows"].append([org.name, org.description, org.membership_fee])
-
+        context["table_rows"].append([org.name, org.description, org.pretty_print_membership_fee()])
+        context['org_ids'][org.name]=org.org_id
     print(context)
-    return render(request, 'organization_management/forms/list_items.html', context)
+    return render(request, 'organization_management/forms/list_joinable_organizations.html', context)

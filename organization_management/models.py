@@ -47,6 +47,19 @@ class Organization(models.Model):
     visible = models.BooleanField(default=False)
 
 
+    #
+    # Billing
+    #
+    def pretty_print_membership_fee(self):
+        return "${:,.2f}".format(self.membership_fee) 
+
+    def pretty_print_org_fee(self):
+        return "${:,.2f}".format(self.organization_fee) 
+
+
+    #
+    # Membership
+    #
     def validate_user(self,user):
         if(self.membership_fee==0 and not self.bill_member):
             return True
