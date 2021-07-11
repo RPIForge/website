@@ -29,13 +29,13 @@ def list_joinable_organizations(request):
     org_list = Organization.objects.filter(visible=True).exclude(memberships__user=user)
 
     context = {
-        "table_headers":["Name", "Description", "Membership Cost", "Action"],
+        "table_headers":["Name", "Description", "Membership Cost"],
         "table_rows":[],
         "page_title":"Organizations"
     }
 
     for org in org_list:
-        context["table_rows"].append([org.name, org.description, org.membership_fee, "<button>Test</button>"])
+        context["table_rows"].append([org.name, org.description, org.membership_fee])
 
-
-    return render(request, 'myforge/forms/list_items_readonly.html', context)
+    print(context)
+    return render(request, 'organization_management/forms/list_items.html', context)
