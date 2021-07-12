@@ -25,9 +25,9 @@
 			<li class="block_list_header">Organization Functions</li>
 				<li><a href="javascript:setFrame('dyn/org_list_joinable')">Join an Organization</a></li>
 				{% if request.user|in_org %}
-				<li><a href="javascript:setFrame('dyn/org_members')">View Organization Members</a></li>
-				<li><a href="javascript:setFrame('dyn/org_projects')">View Organization Projects</a></li>
 					{% if request.user|is_org_manager %}
+					<li><a href="javascript:setFrame('dyn/org_members')">View Organization Members</a></li>
+					<li><a href="javascript:setFrame('dyn/org_projects')">View Organization Projects</a></li>
 					<li><a href="javascript:setFrame('forms/org_machines')">View Organization Machines</a></li>
 					{% endif %}
 				{% endif %}
