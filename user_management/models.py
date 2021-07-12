@@ -30,6 +30,11 @@ class UserProfile(models.Model):
     
     uuid = models.UUIDField(default = uuid.uuid4, editable = False) 
     
+    def get_organizations(self):
+        output = set()
+        for membership in self.user.memberships.all().select_related('organization'):
+            output.add(membership.organization)
+        return output
     def calculate_balance(self):
         if(not self.user.groups.filter(name = "member").exists()):
             return Decimal(0.00)

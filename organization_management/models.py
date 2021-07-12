@@ -124,7 +124,7 @@ class OrganizationMembership(models.Model):
         default = 1,
         null=False,
         blank=False,
-        related_name="machines"
+        related_name="memberships"
     )
 
     #used to identify is a user is a manager of an org

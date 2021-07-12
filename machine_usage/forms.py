@@ -10,16 +10,26 @@ from formtools.wizard.views import SessionWizardView
 
 import datetime
 
+# OrganizationPromptForm
+class OrganizationPromptForm(forms.Form):
+    policy_acceptance = forms.BooleanField(required = True)
+    
+    text = "If your print has failed and has consumed less than 50g/7mL of plastic you will not be charged for up to two additional reprint attempts. The volunteer present has final say. If you wish to appeal your claim, please email William He at hew8@rpi.edu"
+    
+
+
 #Machine Selection form
 class MachineSelectionForm(forms.Form):
-    machine = forms.ModelChoiceField(queryset=Machine.objects.filter(in_use=False).order_by("machine_name"))
+    #query set is set in __init__
+    machine = forms.ModelChoiceField(queryset=Machine.objects.all().filter(in_use=False))
+    
     
     def __init__(self, *args, **kwargs):
         super(MachineSelectionForm, self).__init__(*args, **kwargs)
         
         ##incase for grouping
-        
         choice_list = []
+
         for type in MachineType.objects.all():
             typed_choice = []
             for machine in type.machine_set.filter(in_use=False):
@@ -98,9 +108,11 @@ class MachineOptions(forms.Form):
     own_material = forms.BooleanField(required = False)
     reprint = forms.BooleanField(required = False)
 
-machine_usage_templates = ["formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
+machine_usage_templates = ["formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
 
-
+#
+# Conditional Functions
+#
 def machine_has_slots(wizard):
     cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
     if(cleaned_data!={}):
@@ -111,9 +123,14 @@ def machine_has_slots(wizard):
             return False
     return True
     
+def user_in_organization(wizard):
+    user = wizard.request.user
+    return len(user.userprofile.get_organizations())==0
+    
+
 class MachineUsageWizard(SessionWizardView):
     #list form
-    form_list = [MachineSelectionForm, MachineSlotUsageForm, MachineUsageLength, MachinePolicy, MachineOptions]
+    form_list = [OrganizationPromptForm, MachineSelectionForm, MachineSlotUsageForm, MachineUsageLength, MachinePolicy, MachineOptions]
         
         
         
@@ -166,17 +183,17 @@ class MachineUsageWizard(SessionWizardView):
     #set initial variables for the forms. 
     def get_form_kwargs(self, step):
         initial = super(MachineUsageWizard, self).get_form_kwargs(step=step)
-        #if step 1
-        if step == '1':
+        #if step 2
+        if step == '2':
             try:
                 #select machine id from current step
-                machine_id = self.request.POST.get('0-machine')
+                machine_id = self.request.POST.get('1-machine')
                 machine = Machine.objects.get(id=machine_id)
                 initial['machine'] = machine
             except:
                 try:
                     #for machines after
-                    initial = self.get_cleaned_data_for_step("0")
+                    initial = self.get_cleaned_data_for_step("1")
                 except:
                     pass
 
@@ -184,9 +201,9 @@ class MachineUsageWizard(SessionWizardView):
     
     #set template context for forms.
     def get_context_data(self, form, **kwargs):
-        #update template for item 1
+        #update template for item 2
         context = super(MachineUsageWizard, self).get_context_data(form=form, **kwargs)
-        if self.steps.current == '1':
+        if self.steps.current == '2':
             context.update({'slot_name_list': form.slot_name_list})
             context.update({'slot_cost_dict': form.slot_cost_dict})
             context.update({'slot_unit_dict': form.slot_unit_dict})

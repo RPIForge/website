@@ -124,7 +124,7 @@ class Machine(models.Model):
         blank=False,
         related_name="machines"
     )
-    
+
     enabled = models.BooleanField(default=True)
     status_message = models.CharField(max_length=255, default="", blank=True)
     deleted = models.BooleanField(default=False)
