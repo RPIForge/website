@@ -301,8 +301,14 @@ def charge_sheet(request):
 # TODO: None
 def join_organization(request):
     if request.method == 'POST':
-        json_data = json.loads(request.body)
+        print(request.body)
 
+        try:
+            json_data = json.loads(request.body)
+        except json.decoder.JSONDecodeError:
+            return HttpResponse('Invalid Data',status=400)
+
+            
         #get organization
         org_id = json_data['org_id']
         org = Organization.objects.filter(org_id=org_id).first()

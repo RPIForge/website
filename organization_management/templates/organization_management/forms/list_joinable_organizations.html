@@ -57,7 +57,24 @@
 
             <button id="accept_policy">Accept and Continue</button>
         </div>
-
+		<script>
+			function getCookie(name) {
+			    let cookieValue = null;
+			    if (document.cookie && document.cookie !== '') {
+			        const cookies = document.cookie.split(';');
+			        for (let i = 0; i < cookies.length; i++) {
+			            const cookie = cookies[i].trim();
+			            // Does this cookie string begin with the name we want?
+			            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+			                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+			                break;
+			            }
+			        }
+			    }
+			    return cookieValue;
+			}
+			const csrftoken = getCookie('csrftoken');
+		</script>
 		<script>
 			$(document).ready( function () {
 					$('#data').DataTable({
@@ -69,7 +86,10 @@
                         ],
 						"buttons": [
 							'copy', 'csv', 'excel', 'pdf', 'print'
-						]
+						],
+						"language": {
+					      "emptyTable": "No organizations are available to join."
+					    }
 					});
 			} );
 
@@ -82,17 +102,21 @@
 				const json = {
 					org_id: org_id
 				}
-				/*
-				$.ajax({
-			        url: 'api/organization/join_organization',
-			        type: 'post',
-			        dataType: 'json',
+
+				const request = new Request(
+				    '/api/organization/join_organization',
+				    {headers: {'X-CSRFToken': csrftoken}}
+				);
+
+				fetch(request, {
+				    method: 'POST',
+				    mode: 'same-origin',  // Do not send CSRF token to another domain.
+					dataType: 'json',
 			        contentType: 'application/json',
-			        data: JSON.stringify(json)
-			    }).done(function(data, statusText, xhr){
-				  var status = xhr.status;                //200
-				  console.log(status)
-				});*/
+			        body: JSON.stringify(json)
+				}).then(function(response) {
+				    console.log(response)
+				});
 			}
 
 		</script>

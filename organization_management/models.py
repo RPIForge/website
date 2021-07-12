@@ -64,7 +64,7 @@ class Organization(models.Model):
         if(self.membership_fee==0 and not self.bill_member):
             return True
 
-        return user.rin is not None
+        return user.userprofile.rin is not None
 
     def get_membership(self, user):
         return OrganizationMembership.objects.filter(user=user,organization=self).first()
