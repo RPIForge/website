@@ -9,9 +9,10 @@ register = template.Library()
 
 @register.filter(name='in_org')
 def in_org(user):
+    print(user)
     return OrganizationMembership.objects.filter(user=user).first() is not None
 
 @register.filter(name='is_org_manager')
 def is_org_manager(user):
     """Removes all values of arg from the given string"""
-    return OrganizationMembership.objects.fitler(user=user,manager=True).first() is not None
+    return OrganizationMembership.objects.filter(user=user,manager=True).first() is not None
