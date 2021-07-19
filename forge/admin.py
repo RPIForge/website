@@ -23,6 +23,7 @@ admin.site.register(Semester)
 admin.site.register(Usage)
 admin.site.register(SlotUsage)
 admin.site.register(Organization, OrganizationAdmin)
+admin.site.register(OrganizationMembership)
 
 
 admin.site.register(JobInformation, JobInformationAdmin)

@@ -142,3 +142,7 @@ class OrganizationMembership(models.Model):
 
     #used to identify is a user is a manager of an org
     manager = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "{}'s {} membership".format(self.user, self.organization)
