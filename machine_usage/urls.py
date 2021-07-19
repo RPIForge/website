@@ -4,7 +4,7 @@ from . import views
 from .forms import *
 urlpatterns = [
     #machine usage urls
-    path('forms/machine_usage', MachineUsageWizard.as_view(condition_dict={'0':user_in_organization,"2":machine_has_slots}), name='machine_usage'),
+    path('forms/machine_usage', MachineUsageWizard.as_view(condition_dict={'0':user_in_billable_organization, '1':user_in_default,"3":machine_has_slots}), name='machine_usage'),
     path('forms/machine_form', views.generate_machine_form, name='machine_form'),
     path('forms/clear_machine', views.generate_clear_machine_form, name='clear_machine_form'),
     path('forms/failed_usage', views.generate_failed_usage_form, name='failed_usage')

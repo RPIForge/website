@@ -37,7 +37,7 @@ class Organization(models.Model):
     #cost for a user to join the organization
     membership_fee = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
 
-    # bill membe
+    # bill member
     bill_member = models.BooleanField(default=True)
 
     # if organization can be joined by the public
@@ -88,6 +88,17 @@ class Organization(models.Model):
     def remove_user(self,user):
         OrganizationMembership.objects.filter(user=user,organization=self).delete()
     
+    #
+    # Machines
+    #
+    def get_machines(self):
+        machine_list = self.machines
+        for org in self.machine_access:
+            machine_list = machine_list.union(get_machines)
+        return machine_list
+    #
+    # Generic
+    #
     def save(self, *args, **kwargs):
         self.org_id =  str(uuid.uuid4())[:6]
 

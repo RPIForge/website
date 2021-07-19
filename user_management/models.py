@@ -38,6 +38,14 @@ class UserProfile(models.Model):
         for membership in self.user.memberships.all().select_related('organization'):
             output.add(membership.organization)
         return output
+
+    def get_usable_machines(self):
+        orgs = self.get_organizations()
+        machine_list = set()
+        for org in orgs:
+            machine_list = machine_list.union(org.get_machines())
+        return machine_list
+
     def calculate_balance(self):
         if(not self.user.groups.filter(name = "member").exists()):
             return Decimal(0.00)

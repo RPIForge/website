@@ -1,0 +1,18 @@
+{% extends "formtools/wizard/machine_usage/generic_usage.html" %}
+
+{% block title %}Machine Selection {% endblock title %}
+{% block field %} 
+{{ wizard.form.organization_print }} Is this print for a club, class, or organization?
+<div id='organization_dropdown' style='display: None'>
+    {{ wizard.form.organization_selection }} 
+</div>
+{% endblock field %}
+
+{% block custom_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+<script>
+    $("form input[name='0-organization_print']").click(function () { 
+        $("#organization_dropdown").css('display', 'block');
+    });
+</script>
+{% endblock custom_scripts %}

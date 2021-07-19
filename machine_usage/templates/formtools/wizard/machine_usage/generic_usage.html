@@ -7,6 +7,7 @@
 {% endblock header%}
 
 
+
 {% block custom_styles %}
     <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/machine_usage.css' %}">
 {% endblock custom_styles %}
@@ -53,8 +54,14 @@
             </form>
             {% endblock form %}
         </div>
+        {% block custom_scripts %}
+        {% endblock custom_scripts %}
     </main>
 {% endblock %}
+
+
+
+
 
 
 {% block footer %}
