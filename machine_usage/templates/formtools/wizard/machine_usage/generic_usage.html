@@ -33,19 +33,24 @@
                 {% block buttons %}
                     <table style="width:100%;">
                         <tr>
-                            {% if wizard.steps.prev %}
-                            <th style="width:50%;">
-                            <button name="wizard_goto_step" type="submit" id="available_next" value="{{ wizard.steps.prev }}">{% trans "Previous" %}</button>
-                            </th>
-                            {% endif %}
+                            {% block prev-button %}
+                                {% if wizard.steps.prev %}
+                                <th style="width:50%;">
+                                <button name="wizard_goto_step" type="submit" id="available_next" value="{{ wizard.steps.prev }}">{% trans "Previous" %}</button>
+                                </th>
+                                {% endif %}
+                            {% endblock prev-button %}
                             
+                            {% block next-button %}
                             <th style="width:50%;">
-                            {% if wizard.steps.next %}
-                            <button type="submit" id="available_next" value="{% trans 'submit' %}">Next</button>
-                            {% else %}
-                            <button type="submit" id="available_next" value="{% trans 'submit' %}">Submit</button>
-                            {% endif %}
-                            </th>
+                                
+                                {% if wizard.steps.next %}
+                                <button type="submit" id="available_next" value="{% trans 'submit' %}">Next</button>
+                                {% else %}
+                                <button type="submit" id="available_next" value="{% trans 'submit' %}">Submit</button>
+                                {% endif %}
+                                </th>
+                            {% endblock next-button %}
                         </tr>
                     </table>
                 {% endblock buttons %}

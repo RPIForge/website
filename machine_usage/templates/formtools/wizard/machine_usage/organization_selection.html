@@ -1,18 +1,50 @@
 {% extends "formtools/wizard/machine_usage/generic_usage.html" %}
 
-{% block title %}Machine Selection {% endblock title %}
+{% block title %}Organization Selection {% endblock title %}
 {% block field %} 
 {{ wizard.form.organization_print }} Is this print for a club, class, or organization?
-<div id='organization_dropdown' style='display: None'>
-    {{ wizard.form.organization_selection }} 
+<div id='organization_dropdown' style='display: None; margin-top: 1rem'>
+    {% if wizard.form.org_count == 0 %}
+        You are not in any organizations. Please join the organization from the "Join an Organization" tab on the left. 
+    {% else %}
+        Please Select which organization this usage is for:
+        {{ wizard.form.organization_selection }} 
+    {% endif %}
 </div>
 {% endblock field %}
+
+{% block buttons %}
+{% block next-button %}
+<div id='next_button'>
+    {{ block.super }}
+</div>
+{% endblock next-button %}
+{% endblock buttons %}
+
 
 {% block custom_scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
 <script>
+    
+    function set_display_state(state) {
+        const org_count = {{wizard.form.org_count}}
+        if(state){
+            $("#organization_dropdown").css('display', 'block');
+            if(org_count==0){
+                $("#next_button").css('display', 'None');
+            }
+        } else {
+            $("#organization_dropdown").css('display', 'None');
+            $("#next_button").css('display', 'block');
+        }
+    }
+
+
+    var toggled = $("#id_0-organization_print")[0].checked;
+    set_display_state(toggled)
     $("form input[name='0-organization_print']").click(function () { 
-        $("#organization_dropdown").css('display', 'block');
+        toggled = !toggled;
+        set_display_state(toggled)
     });
 </script>
 {% endblock custom_scripts %}

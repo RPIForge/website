@@ -179,9 +179,13 @@ class Usage(models.Model):
     )
     
     
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        null=False,
+        default=1
+    )
     
-    
-    for_class = models.BooleanField(default=False)
     is_reprint = models.BooleanField(default=False)
     own_material = models.BooleanField(default=False)
 

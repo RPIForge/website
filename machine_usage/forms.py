@@ -12,28 +12,27 @@ import datetime
 
 # OrganizationPromptForm
 class OrganizationPromptForm(forms.Form):
-    organization_print = forms.BooleanField(required = True)
+    organization_print = forms.BooleanField(required = False)
     
-    organization_selection = forms.ModelChoiceField(queryset=Organization.objects.all())
+    organization_selection = forms.ModelChoiceField(queryset=Organization.objects.all(), required=False, )
 
+    org_count = 0
     def __init__(self, user, *args, **kwargs):
         super(OrganizationPromptForm, self).__init__(*args, **kwargs)
-        orgs = user.userprofile.get_organizations() 
 
         choice_list = []
-        for org in orgs:
+        for org in user.userprofile.get_organizations():
             if(not org.bill_member):
-                choice_list.append((org.name, org.org_id))
-
+                choice_list.append([org.id,org.name])
         
         self.org_count = len(choice_list)
         self.fields['organization_selection']._set_choices(choice_list)
+
 
 # OrganizationPromptForm
 class OrganizationJoinForm(forms.Form):
     text = ""
     
-
 
 #Machine Selection form
 class MachineSelectionForm(forms.Form):
@@ -125,13 +124,18 @@ class MachineOptions(forms.Form):
     own_material = forms.BooleanField(required = False)
     reprint = forms.BooleanField(required = False)
 
-machine_usage_templates = ["formtools/wizard/machine_usage/organization_selection.html","formtools/wizard/machine_usage/organization_join.html","formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
+machine_usage_templates = ["formtools/wizard/machine_usage/organization_selection.html","formtools/wizard/machine_usage/organization_selection.html","formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
 
 #
 # Conditional Functions
 #
+
+# if a machine has slots (like a prusa)
 def machine_has_slots(wizard):
-    cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
+    # get data from machine selection
+    cleaned_data = wizard.get_cleaned_data_for_step('2') or {}
+
+    # return if machien has slot
     if(cleaned_data!={}):
         machine = cleaned_data['machine']
         if(machine.machine_type.machineslot_set.all()):
@@ -148,10 +152,19 @@ def user_in_billable_organization(wizard):
             return True
     return False
 
-def user_in_default(wizard):
+def user_in_nonbillable_organization(wizard):
+    cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
+    if(cleaned_data!={}):
+        using_organization = cleaned_data['organization_print']
+        if(using_organization):
+            return False
+
     user = wizard.request.user
-    return len(user.userprofile.get_organizations())==0
-    
+    orgs = user.userprofile.get_organizations() 
+    for org in orgs:
+        if(org.bill_member):
+            return True
+    return False
 
 class MachineUsageWizard(SessionWizardView):
     #list form
@@ -208,6 +221,7 @@ class MachineUsageWizard(SessionWizardView):
     #set initial variables for the forms. 
     def get_form_kwargs(self, step):
         initial = super(MachineUsageWizard, self).get_form_kwargs(step=step)
+
         #if step 2
         if step == '0':
             initial['user'] = self.request.user
