@@ -34,7 +34,7 @@ class OrganizationListForm(forms.Form):
 
 class OrganizationPasswordForm(forms.Form):
     org_id = forms.CharField(label='id', max_length=10)
-    org_password = forms.CharField(label='password', max_length=10, widget=forms.PasswordInput)
+    org_password = forms.CharField(label='password', max_length=10, required=False, widget=forms.PasswordInput)
 
 
     def __init__(self, org_id, *args, **kwargs):
@@ -46,11 +46,26 @@ class OrganizationPasswordForm(forms.Form):
         self.fields['org_id'].initial = org_id
         self.fields['org_id'].disabled = True
 
-class OrganizationRINForm(forms.Form):
-    rin = forms.IntegerField(required=True)
 
     def clean(self, *args , **kwargs):
-        super(ForgeProfileCreationForm, self).clean(*args ,**kwargs) 
+        super(OrganizationPasswordForm, self).clean(*args ,**kwargs) 
+
+        org_id = self.cleaned_data['org_id']
+        org_password = self.cleaned_data['org_password']
+
+        org = Organization.objects.filter(org_id=org_id).first()
+        if(not org):
+            raise forms.ValidationError("Unkown Id", code='invalid_orgid')
+
+        if(not org.public and org.password!=org_password):
+            raise forms.ValidationError("Invalid Password", code='invalid_password')
+            
+
+class OrganizationRINForm(forms.Form):
+    rin = forms.IntegerField(required=True, label="", widget=forms.TextInput(attrs={'style':'width: 100%'}))
+
+    def clean(self, *args , **kwargs):
+        super(OrganizationRINForm, self).clean(*args ,**kwargs) 
         
         rin = self.cleaned_data['rin']
 

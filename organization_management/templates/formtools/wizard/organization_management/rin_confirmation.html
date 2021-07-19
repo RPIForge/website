@@ -1,6 +1,9 @@
 {% extends "formtools/wizard/machine_usage/generic_usage.html" %}
 
-{% block title %}Machine Selection {% endblock title %}
-{% block field %} 
+{% block title %}Rin Addition{% endblock title %}
+{% block help_text %}
+You do not have a rin on file. Your RIN is required to submit charges to the buscar. Please enter your rin in the field below:
+{% endblock help_text%}
+{% block table %} 
     {{wizard.form}} 
-{% endblock field %}
+{% endblock table %}

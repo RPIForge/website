@@ -36,7 +36,7 @@
                             {% block prev-button %}
                                 {% if wizard.steps.prev %}
                                 <th style="width:50%;">
-                                <button name="wizard_goto_step" type="submit" id="available_next" value="{{ wizard.steps.prev }}">{% trans "Previous" %}</button>
+                                <button formnovalidate="formnovalidate" name="wizard_goto_step" type="submit" id="available_next" value="{{ wizard.steps.prev }}">{% trans "Previous" %}</button>
                                 </th>
                                 {% endif %}
                             {% endblock prev-button %}
