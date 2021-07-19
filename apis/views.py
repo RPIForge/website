@@ -301,17 +301,17 @@ def charge_sheet(request):
 # TODO: None
 def join_organization(request):
     if request.method == 'POST':
-        print(request.body)
-
         try:
             json_data = json.loads(request.body)
         except json.decoder.JSONDecodeError:
             return HttpResponse('Invalid Data',status=400)
 
-            
         #get organization
         org_id = json_data['org_id']
         org = Organization.objects.filter(org_id=org_id).first()
+
+        if(org is None):
+            return HttpResponse('Org does not exist',status=400)
 
         #get user
         user = request.user
@@ -319,7 +319,7 @@ def join_organization(request):
         #join organization
         obj = org.add_user(user)
         if(obj is None):
-            return HttpResponse('Unable to Add User to Org',status=400)
+            return HttpResponse('rin_required',status=400)
 
         return HttpResponse('')
             
