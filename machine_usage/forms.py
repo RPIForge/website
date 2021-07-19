@@ -39,7 +39,7 @@ class MachineSelectionForm(forms.Form):
     #query set is set in __init__
     machine = forms.ModelChoiceField(queryset=Machine.objects.all().filter(in_use=False))
     
-    
+    machine_count = 0
     def __init__(self, parent, *args, **kwargs):
         super(MachineSelectionForm, self).__init__(*args, **kwargs)
         
@@ -70,6 +70,7 @@ class MachineSelectionForm(forms.Form):
 
             choice_list.append([type,typed_choice])
         
+        self.machine_count = len(choice_list)
         self.fields['machine']._set_choices(choice_list)
 
 #Machine Slot usage
