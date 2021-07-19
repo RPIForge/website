@@ -21,7 +21,6 @@ logout_event = setTimeout(automatic_logout, 1000 * 60 * 10);
 
 
 function update_logout() {
-	console.log("updating");
 	clearTimeout(logout_event);
 	logout_event = setTimeout(automatic_logout, 1000 * 60 * 10);
 }
