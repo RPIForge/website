@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import ValidationError
 
 from decimal import Decimal
 
@@ -16,7 +17,9 @@ class UserProfile(models.Model):
     # ! Data: Rin,gender,major, graduating, uuid
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    rin = models.PositiveIntegerField(default=None, unique=True)
+    # ? uniqueness for rin is checked in save due to allowing multiple null values
+
+    rin = models.PositiveIntegerField(default=None, null=True, blank=True)
     gender = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.gender)
     major = models.CharField(max_length=255, default="", blank=True, choices=user_management.lists.major)
 
@@ -49,6 +52,15 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} ({self.rin})"
     
+ 
+    def save(self, *args, **kwargs):
+        if(self.rin is not None):
+            object_list = UserProfile.objects.all().filter(rin=self.rin)
+            for obj in object_list:
+                if(obj!=self):
+                    raise ValidationError()
+        super(UserProfile, self).save(*args, **kwargs)
+
     class Meta:
         db_table = 'user_management_userprofile'
 

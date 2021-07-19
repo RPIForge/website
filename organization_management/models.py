@@ -15,13 +15,14 @@ class Organization(models.Model):
     # ? Use: Keeps Track of an Organization
     # ! Data: 
 
-
     # identifier
     org_id = models.CharField(max_length=6, editable=False, blank=False)
 
     #general information
     name = models.CharField(max_length=255, unique=True, blank=False)
     description = models.CharField(max_length=255, default='')
+    foapal_fund = models.CharField(max_length=255, default='', null=True,blank=True)
+    foapal_org = models.CharField(max_length=255, default='', null=True,blank=True)
 
     #used to identifiy the primary org. This should be the forge
     default = models.BooleanField(default=False)
@@ -46,6 +47,8 @@ class Organization(models.Model):
     # IF an organization can be seen in the org list
     visible = models.BooleanField(default=False)
 
+    # List of machines you can use if you're in this organization
+    machine_access = models.ManyToManyField("self",blank=True,null=True)
 
     #
     # Billing
