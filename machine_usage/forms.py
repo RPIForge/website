@@ -108,7 +108,7 @@ class MachineOptions(forms.Form):
     own_material = forms.BooleanField(required = False)
     reprint = forms.BooleanField(required = False)
 
-machine_usage_templates = ["formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
+machine_usage_templates = ["formtools/wizard/machine_usage/join_organization.html","formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
 
 #
 # Conditional Functions
