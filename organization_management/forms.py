@@ -21,7 +21,7 @@ class OrganizationListForm(forms.Form):
         super(OrganizationListForm, self).__init__(*args, **kwargs)
 
         org_list = []
-        for org in Organization.objects.all().exclude(memberships__user=user):
+        for org in Organization.objects.filter(visible=True).exclude(memberships__user=user):
             org_list.append({
                 'name': org.name,
                 'id': org.org_id,
@@ -35,6 +35,16 @@ class OrganizationListForm(forms.Form):
 class OrganizationPasswordForm(forms.Form):
     org_id = forms.CharField(label='id', max_length=10)
     org_password = forms.CharField(label='password', max_length=10, widget=forms.PasswordInput)
+
+
+    def __init__(self, org_id, *args, **kwargs):
+        super(OrganizationPasswordForm, self).__init__(*args, **kwargs)
+
+        if(org_id==''):
+            return
+        
+        self.fields['org_id'].initial = org_id
+        self.fields['org_id'].disabled = True
 
 class OrganizationRINForm(forms.Form):
     rin = forms.IntegerField(required=True)
@@ -58,6 +68,18 @@ class OrganizationConfirmationForm(forms.Form):
     pass
 
 
+#
+# Form Checks
+#
+def public_organization(wizard):
+    data = wizard.get_cleaned_data_for_step('0') or {}
+    if(data!={} and 'org_id' in data):
+        org_id=data['org_id']
+        org = Organization.objects.all().filter(org_id=org_id).first()
+        if(org is None):
+            return True
+        return not org.public
+    return True
 
 organization_templates = ["formtools/wizard/organization_management/organization_list.html","formtools/wizard/organization_management/organization_join.html","formtools/wizard/organization_management/rin_confirmation.html","formtools/wizard/organization_management/organization_confirmation.html"]
 
@@ -79,6 +101,9 @@ class JoinOrganizationWizard(SessionWizardView):
             initial['user'] = self.request.user
         if step == '1':
             data = self.get_cleaned_data_for_step('0') or {}
-            print(data)
+            if(data!={} and 'org_id' in data):
+                initial['org_id']=data['org_id']
+            else:
+                initial['org_id']=''
 
         return initial
