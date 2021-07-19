@@ -29,8 +29,7 @@ class Organization(models.Model):
 
     #password to join organization
     # ? this was stolon from https://github.com/django/django/blob/ca9872905559026af82000e46cde6f7dedc897b6/django/contrib/auth/base_user.py
-    password = models.CharField(_('password'), max_length=128)
-
+    password = models.CharField(_('password'), max_length=128, null=True, blank=True)
 
     #how much we charge the organization to use our site/forge resources
     organization_fee = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
@@ -48,7 +47,7 @@ class Organization(models.Model):
     visible = models.BooleanField(default=False)
 
     # List of machines you can use if you're in this organization
-    machine_access = models.ManyToManyField("self",blank=True,null=True)
+    machine_access = models.ManyToManyField("self",related_name='shared_organizations',symmetrical=False)
 
     #
     # Billing
