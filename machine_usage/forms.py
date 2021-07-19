@@ -40,21 +40,35 @@ class MachineSelectionForm(forms.Form):
     machine = forms.ModelChoiceField(queryset=Machine.objects.all().filter(in_use=False))
     
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, parent, *args, **kwargs):
         super(MachineSelectionForm, self).__init__(*args, **kwargs)
         
+        machine_list = parent.get_accessable_machines()
+
+        typed_dict = {}
+        for machine in machine_list:
+            if(machine.in_use):
+                continue
+        
+            machine_type = machine.machine_type
+
+            if(machine_type.machine_type_name not in typed_dict):
+                typed_dict[machine_type.machine_type_name] = []
+            
+            typed_dict[machine_type.machine_type_name].append(machine)
+
         ##incase for grouping
         choice_list = []
 
-        for type in MachineType.objects.all():
+        for type in typed_dict:
             typed_choice = []
-            for machine in type.machine_set.filter(in_use=False):
+            for machine in typed_dict[type]:
                 typed_choice.append((machine.id, machine.machine_name))
                 
             if(not typed_choice):
                 continue
-            choice_list.append([type.machine_type_name,typed_choice])
-        
+
+            choice_list.append([type,typed_choice])
         
         self.fields['machine']._set_choices(choice_list)
 
@@ -124,7 +138,7 @@ class MachineOptions(forms.Form):
     own_material = forms.BooleanField(required = False)
     reprint = forms.BooleanField(required = False)
 
-machine_usage_templates = ["formtools/wizard/machine_usage/organization_selection.html","formtools/wizard/machine_usage/organization_selection.html","formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
+machine_usage_templates = ["formtools/wizard/machine_usage/organization_selection.html","formtools/wizard/machine_usage/organization_join.html","formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
 
 #
 # Conditional Functions
@@ -145,26 +159,34 @@ def machine_has_slots(wizard):
     return True
     
 def user_in_billable_organization(wizard):
+    # get list of organizations
     user = wizard.request.user
     orgs = user.userprofile.get_organizations() 
+
+    #if user is in an organization that **pays for prints** then they can select organization
     for org in orgs:
         if(not org.bill_member):
             return True
     return False
 
-def user_in_nonbillable_organization(wizard):
+def user_requires_organization(wizard):
+    #if user has selected an organization then it is not needed
     cleaned_data = wizard.get_cleaned_data_for_step('0') or {}
     if(cleaned_data!={}):
         using_organization = cleaned_data['organization_print']
         if(using_organization):
             return False
 
+    
+    #get list of users organizations
     user = wizard.request.user
     orgs = user.userprofile.get_organizations() 
+
+    #if user in organization that allows members to pay then this screen is not needed
     for org in orgs:
         if(org.bill_member):
-            return True
-    return False
+            return False
+    return True
 
 class MachineUsageWizard(SessionWizardView):
     #list form
@@ -225,6 +247,17 @@ class MachineUsageWizard(SessionWizardView):
         #if step 2
         if step == '0':
             initial['user'] = self.request.user
+        
+        if step == '2':
+            data = self.get_cleaned_data_for_step("0") or {}
+            if(data != {}):
+                if(data['organization_print']):
+                    initial['parent'] = data['organization_selection']
+                else:
+                    initial['parent'] = self.request.user.userprofile
+            else:
+                initial['parent'] = self.request.user.userprofile
+
         if step == '3':
             try:
                 #select machine id from current step

@@ -92,9 +92,13 @@ class Organization(models.Model):
     # Machines
     #
     def get_machines(self):
-        machine_list = self.machines
-        for org in self.machine_access:
-            machine_list = machine_list.union(get_machines)
+        return set(self.machines.all())
+       
+    
+    def get_accessable_machines(self):
+        machine_list = self.get_machines()
+        for org in self.machine_access.all():
+            machine_list = machine_list.union(org.get_machines())
         return machine_list
     #
     # Generic

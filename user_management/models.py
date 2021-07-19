@@ -39,7 +39,7 @@ class UserProfile(models.Model):
             output.add(membership.organization)
         return output
 
-    def get_usable_machines(self):
+    def get_accessable_machines(self):
         orgs = self.get_organizations()
         machine_list = set()
         for org in orgs:

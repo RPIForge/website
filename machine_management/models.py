@@ -182,8 +182,7 @@ class Usage(models.Model):
     organization = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
-        null=False,
-        default=1
+        null=True,
     )
     
     is_reprint = models.BooleanField(default=False)
