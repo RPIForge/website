@@ -1,0 +1,48 @@
+{% extends "formtools/wizard/machine_usage/generic_usage.html" %}
+
+{% block title %}Join an Organization{% endblock title %}
+{% block form %}
+<form id="organization_list_form" action="" method="post">
+    <div hidden>
+        {{wizard.form.org_id}}
+    </div>
+    {% csrf_token %}
+    {{ wizard.management_form }}
+    <table id="slot_usage_table">
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Joining Fee</th>
+        <th>Action</th>
+    </tr>
+    {% for org in wizard.form.org_list %}
+        <tr>
+            <td>
+                {{org.name}}
+            </td>
+            <td>
+                {{org.description}}
+            </td>
+            <td>
+                {{org.fee}}
+            </td>
+            <td>
+                <button type="button" onclick="join_org('{{org.id}}')">Join!</button>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+</form>
+{% endblock form %}
+
+{% block custom_scripts %}
+<script>
+    function join_org(org_id){
+        let input = $("#id_0-org_id")[0]
+        input.value=org_id
+        let form = $("#organization_list_form")[0]
+        form.submit()
+}
+</script>
+{% endblock custom_scripts %}

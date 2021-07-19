@@ -319,7 +319,9 @@ def join_organization(request):
         #join organization
         obj = org.add_user(user)
         if(obj is None):
-            return HttpResponse('rin_required',status=400)
+            response = HttpResponse('rin_required',status=400)
+            response.reason_phrase = 'rin_required'
+            return response
 
         return HttpResponse('')
             

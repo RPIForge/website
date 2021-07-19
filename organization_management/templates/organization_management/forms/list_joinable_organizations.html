@@ -50,31 +50,17 @@
 			</tbody>
 		</table>
 
-        <div id="confirmation" hidden>
-            <p class="no_margin" id="title"><strong>Join Organization:</strong></p><br />
+		<div id="rin" class="display_box" hidden>
+            <p class="title" id="machine_selection_title"><strong>Text</strong></p>
 
-            <p class="no_margin" id="text">You are about to join the ---- organizaton. Your busar account will be charged ----. If you have any questions please email William He at hew8@rpi.edus.</p><br /><br />
+            <p class="no_margin" id="join_text">You are about to join the {org__name} organizaton. Your busar account will be charged {membership__fee}. </p>
+
+				
+			<p>If you have any questions please email William He at hew8@rpi.edus.</p>
 
             <button id="accept_policy">Accept and Continue</button>
         </div>
-		<script>
-			function getCookie(name) {
-			    let cookieValue = null;
-			    if (document.cookie && document.cookie !== '') {
-			        const cookies = document.cookie.split(';');
-			        for (let i = 0; i < cookies.length; i++) {
-			            const cookie = cookies[i].trim();
-			            // Does this cookie string begin with the name we want?
-			            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-			                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-			                break;
-			            }
-			        }
-			    }
-			    return cookieValue;
-			}
-			const csrftoken = getCookie('csrftoken');
-		</script>
+
 		<script>
 			$(document).ready( function () {
 					$('#data').DataTable({
@@ -92,33 +78,6 @@
 					    }
 					});
 			} );
-
-			const table_rows = {{table_rows|js}};	
-			const org_ids = {{org_ids|js}};	
-
-			function join_org(id) {
-				const row = table_rows[id]
-				const org_id = org_ids[row[0]]
-				const json = {
-					org_id: org_id
-				}
-
-				const request = new Request(
-				    '/api/organization/join_organization',
-				    {headers: {'X-CSRFToken': csrftoken}}
-				);
-
-				fetch(request, {
-				    method: 'POST',
-				    mode: 'same-origin',  // Do not send CSRF token to another domain.
-					dataType: 'json',
-			        contentType: 'application/json',
-			        body: JSON.stringify(json)
-				}).then(function(response) {
-				    console.log(response)
-				});
-			}
-
 		</script>
 	</body>
 </html>
