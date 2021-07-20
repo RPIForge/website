@@ -51,7 +51,7 @@ class OrganizationListForm(forms.Form):
 
 class OrganizationPasswordForm(forms.Form):
     org_id = forms.CharField(label='id', max_length=10)
-    org_password = forms.CharField(label='password', max_length=10, required=False, widget=forms.PasswordInput)
+    org_password = forms.CharField(label='password', max_length=255, required=False, widget=forms.PasswordInput)
 
 
     def __init__(self, org_id, *args, **kwargs):
@@ -161,7 +161,10 @@ class JoinOrganizationWizard(SessionWizardView):
         if(org.public):
             org.add_user(user)
         else:
-            password = data['password']
+            if('org_password' not in data):
+                return render(self.request, "formtools/wizard/organization_management/form_submission.html", {'success':False})
+
+            password = data['org_password']
             if(org.password == password):
                 org.add_user(user)
             else:

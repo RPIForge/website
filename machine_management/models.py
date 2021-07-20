@@ -181,7 +181,7 @@ class Usage(models.Model):
     
     organization = models.ForeignKey(
         Organization,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
     )
     

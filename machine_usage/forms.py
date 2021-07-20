@@ -14,7 +14,7 @@ import datetime
 class OrganizationPromptForm(forms.Form):
     organization_print = forms.BooleanField(required = False)
     
-    organization_selection = forms.ModelChoiceField(queryset=Organization.objects.all(), required=False, )
+    organization_selection = forms.ModelChoiceField(queryset=Organization.objects.all(), required=False)
 
     org_count = 0
     def __init__(self, user, *args, **kwargs):
@@ -208,6 +208,11 @@ class MachineUsageWizard(SessionWizardView):
         new_usage.for_class = data['class_usage']
         new_usage.is_reprint = data['reprint']
         new_usage.own_material = data['own_material']
+
+        if('organization_selection' in data and data['organization_print']):
+            org = data['organization_selection']
+            new_usage.organization = org
+
         new_usage.save()#to set create_time
 
         new_usage.set_end_time(data['usage_hours'],data['usage_minutes'])
