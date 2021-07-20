@@ -1,6 +1,13 @@
 {% extends "formtools/wizard/machine_usage/generic_usage.html" %}
 
-{% block title %}Machine Selection {% endblock title %}
+{% block title %}Organization Information{% endblock title %}
+
+{% block help_text %}
+<div style="max-width: 20rem">
+    <p>Some organizations require a password to join. If you do not know your id or password talk with your organization leadership</p>
+</div>
+{% endblock help_text%}
+
 {% block field %} 
     {{wizard.form}} 
 {% endblock field %}

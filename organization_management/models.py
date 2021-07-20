@@ -71,6 +71,9 @@ class Organization(models.Model):
 
         return user.userprofile.rin is not None
 
+    def is_manager(self, user):
+        return self.get_membership(user).manager
+        
     def get_membership(self, user):
         return OrganizationMembership.objects.filter(user=user,organization=self).first()
 

@@ -22,7 +22,7 @@ class OrganizationPromptForm(forms.Form):
 
         choice_list = []
         for org in user.userprofile.get_organizations():
-            if(not org.bill_member):
+            if(not org.bill_member or org.is_manager(user)):
                 choice_list.append([org.id,org.name])
         
         self.org_count = len(choice_list)

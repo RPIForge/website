@@ -5,7 +5,7 @@
 {{ wizard.form.organization_print }} Is this print for a club, class, or organization?
 <div id='organization_dropdown' style='display: None; margin-top: 1rem'>
     {% if wizard.form.org_count == 0 %}
-        You are not in any organizations. Please join the organization from the "Join an Organization" tab on the left. 
+        You are not in any organizations that support organization prints. Please join the organization from the "Join an Organization" tab on the left or by clicking <a href='/dyn/org_list_joinable'>this link</a>
     {% else %}
         Please Select which organization this usage is for:
         {{ wizard.form.organization_selection }} 
