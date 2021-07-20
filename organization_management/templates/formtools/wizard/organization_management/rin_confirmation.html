@@ -2,8 +2,14 @@
 
 {% block title %}Rin Addition{% endblock title %}
 {% block help_text %}
-You do not have a rin on file. Your RIN is required to submit charges to the buscar. Please enter your rin in the field below:
+<div style="max-width: 20rem">
+    You do not have a rin on file. Your rin is required to submit charges to the buscar at the end of the semester.
+</div>
 {% endblock help_text%}
 {% block table %} 
-    {{wizard.form}} 
+    <div style="margin-top: .5rem;max-width: 20rem">
+        Please enter your rin in the field below:
+        {{wizard.form}} 
+    </div>
+
 {% endblock table %}
