@@ -13,6 +13,7 @@
         <th>Name</th>
         <th>Description</th>
         <th>Joining Fee</th>
+        <th>Access</th>
         <th>Action</th>
     </tr>
     {% for org in wizard.form.org_list %}
@@ -27,6 +28,9 @@
                 {{org.fee}}
             </td>
             <td>
+                {{org.access}}
+            </td>
+            <td>
                 <button type="button" onclick="join_org('{{org.id}}')">Join!</button>
             </td>
         </tr>
@@ -34,7 +38,7 @@
 </table>
 <br>
 If you do not see your organization in the above list but have a Organization ID please click below.
-<button type="submit" id="available_next" >Join Organization</button>
+<button type="button" onclick="join_org('')" id="available_next" >Join Organization</button>
 </form>
 {% endblock form %}
 

@@ -26,6 +26,7 @@ class OrganizationListForm(forms.Form):
                 'name': org.name,
                 'id': org.org_id,
                 'description': org.description,
+                'access':org.access,
                 'fee': org.pretty_print_membership_fee()
             })
 

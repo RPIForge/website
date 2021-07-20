@@ -23,7 +23,10 @@ class Organization(models.Model):
     description = models.CharField(max_length=255, default='')
     foapal_fund = models.CharField(max_length=255, default='', null=True,blank=True)
     foapal_org = models.CharField(max_length=255, default='', null=True,blank=True)
-
+    
+    #descriptor to describe acces
+    access = models.CharField(max_length=255, default='', null=True,blank=True)
+    
     #used to identifiy the primary org. This should be the forge
     default = models.BooleanField(default=False)
 
