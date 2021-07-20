@@ -31,14 +31,18 @@ from datetime import datetime, timedelta
 # ? returns: HTTP Rendered Template
 # TODO:
 @login_required
-def render_myforge(request):
+def render_myforge(request,resource=None):
+    if(resource is None):
+        resource = 'dyn/project_list'
+
+        
     if(not request.user.groups.filter(name = "member").exists()):
         return redirect('/begin_semester')
 
     if not request.user.groups.filter(name="verified_email").exists():
         return redirect('/unverified_email')
 
-    return render(request, 'myforge/myforge.html', {})
+    return render(request, 'myforge/myforge.html', {'base_url':resource})
 
 # ! type: Helper function
 # ! function: Get the current chat url

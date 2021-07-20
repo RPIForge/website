@@ -17,7 +17,7 @@
 				<li><a href="javascript:setFrame('dyn/project_list')">View Your Projects</a></li>
 				<li><a href="javascript:setFrame('dyn/chat_history')">View Your Chat History</a></li>
 				<li><a href="javascript:setFrame('forms/machine_usage')">Use A Machine</a></li>
-				<li><a href="javascript:setFrame('https://docs.google.com/forms/d/e/1FAIpQLSfEj3o6wlmHYNSDVT1U8dTkul1DSuRhhokQO5S1YNnTeAYpqw/viewform')">Send Feedback</a></li>
+				<li><a href="javascript:setFrame('','https://docs.google.com/forms/d/e/1FAIpQLSfEj3o6wlmHYNSDVT1U8dTkul1DSuRhhokQO5S1YNnTeAYpqw/viewform')">Send Feedback</a></li>
 				<!--<li><a href="">Account Settings</a></li>-->
 				<li><a href="http://rpiforge.slack.com/">Join Our Slack!</a></li>
 
@@ -73,6 +73,9 @@
 
 {% block scripts %}
 <script>
+	var full_url = window.location.href
+	var url_parts = full_url.split("/");
+	const base_url = url_parts[0] + "//" + url_parts[2]
 
     var disable_logout = false;
     
@@ -87,9 +90,12 @@
         }
     }
     
-	function setFrame(src) {
-        
-		$("#myforge_frame").attr("src", src);
+	function setFrame(src,url='') {
+		if(url!==''){
+			$("#myforge_frame").attr("src", url);
+		} else {
+			$("#myforge_frame").attr("src", base_url+'/'+src);
+		}
         //$("#myforge_frame").css("display", "none");
         
         if(src == 'dyn/volunteer_chat_join'){
@@ -98,8 +104,14 @@
         } else {
             disable_logout = false;
         }
+		
+		if(url===''){
+			window.history.pushState("", "", '/myforge/'+src);
+		}
         
 	}
-	setFrame('dyn/project_list');
+
+	
+	setFrame('{{base_url}}');
 </script>
 {% endblock scripts %}
