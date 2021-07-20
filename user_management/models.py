@@ -49,7 +49,7 @@ class UserProfile(models.Model):
         orgs = self.get_organizations()
         machine_list = set()
         for org in orgs:
-            machine_list = machine_list.union(org.get_machines())
+            machine_list = machine_list.union(org.get_accessable_machines())
         return machine_list
 
     def calculate_balance(self):
