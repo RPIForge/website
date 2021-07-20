@@ -39,6 +39,12 @@ class UserProfile(models.Model):
             output.add(membership.organization)
         return output
 
+    def get_organization_fees(self):
+        output = float()
+        for org in self.get_organizations():
+            output += float(org.membership_fee)
+        return output
+        
     def get_accessable_machines(self):
         orgs = self.get_organizations()
         machine_list = set()

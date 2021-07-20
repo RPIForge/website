@@ -20,6 +20,13 @@ class Semester(models.Model):
     season = models.CharField(max_length=255,blank=False)
     current = models.BooleanField(default=True)
     
+
+
+
+    def get_usages(self):
+        return self.usage_set.all().select_related('organization')\
+            .prefetch_related('slotusage_set__machine_slot').prefetch_related('slotusage_set__resource')
+  
     def __str__(self):
         if(self.current):
             return f"{self.season} {self.year} (current semester)"

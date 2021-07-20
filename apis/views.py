@@ -216,30 +216,39 @@ def charge_sheet(request):
         #get get paramters
         graduating = request.GET.get('graduating', False)
         semester_id = request.GET.get('semester_id', None)
+        organization_id = request.GET.get('organization_id', None)
 
         
         #semester id is required
         if(not semester_id):
             return HttpResponse("No Semester Provided.", status=400) 
         
-        semester = Semester.objects.get(id=semester_id)
+        org = None
+        if(organization_id is not None):
+            org = Organization.objects.filter(org_id=organization_id).first()
+            if(org is None):
+                return HttpResponse("Invalid Organization Provided", status=400) 
+
+        semester = Semester.objects.filter(id=semester_id).first()
+        if(semester is None):
+            return HttpResponse("Invalid Semester Provided", status=400) 
         
         
         #get the list of users depneidng on if they are graduating
         #We charge memebrs differently if they are graduating or not.
         if(graduating=='true'):
-            usages = semester.usage_set.filter(userprofile__is_graduating=True)
-            
-            remaining_users = list(User.objects.filter(userprofile__is_graduating=True, groups__name='member'))
+            usages = semester.get_usages().filter(userprofile__is_graduating=True)
+            remaining_users = set(User.objects.filter(userprofile__is_graduating=True, groups__name='member'))
             
             graduating_string = 'graduating'
         else:
-            usages = semester.usage_set.filter(userprofile__is_graduating=False)
-            
-            remaining_users = list(User.objects.filter(userprofile__is_graduating=False, groups__name='member'))
+            usages = semester.get_usages().filter(userprofile__is_graduating=False)
+            remaining_users = set(User.objects.filter(userprofile__is_graduating=False, groups__name='member'))
             
             graduating_string = 'nongraduating'
           
+        if(org):
+            usages = usages.filter(organization=org)
         
         
         #if data reading has already been done update
@@ -247,28 +256,49 @@ def charge_sheet(request):
         #set up variables
         total_revenue = 0
         user_dict = {}
+        org_dict = {}
         
         
         #for all usages in the semester
         for usage in usages:
+            user_profile = usage.userprofile
+            user = user_profile.user
+
             #get user name and cost
-            name = usage.userprofile.user.get_full_name()
+            name = user.get_full_name()
             cost = usage.cost()
-            
+
+            if(usage.machine.organization.name not in org_dict):
+                org_dict[usage.machine.organization.name] = 0
+
+            org_dict[usage.machine.organization.name]+=float(cost)
+
             #remove them from the list of users left
-            if(usage.userprofile.user in remaining_users):
-                remaining_users.remove(usage.userprofile.user)
+            if(user in remaining_users):
+                remaining_users.remove(user)
             
+            
+
             #either create dict or update balance
             if(name in user_dict):
-                user_dict[name]['balance'] = float(user_dict[name]['balance']) + float(cost)
+                user_balance = float(user_dict[name]['balance'])
+                user_dict[name]['balance'] =  user_balance + float(cost)
             else:
-                user_dict[name] = {'rin':usage.userprofile.rin, 'balance':float(cost+15)}
+                user_dict[name] = {'rin':usage.userprofile.rin}
                 
-            total_revenue = float(total_revenue) + float(cost) + float(15)
+                if(org):
+                    user_dict[name]['balance'] = float(cost) + org.membership_fee
+                else:
+                    user_dict[name]['balance'] = float(cost) + user_profile.get_organization_fees()
+                
+            total_revenue = float(total_revenue) + float(cost)
         
         for user in remaining_users:
-            user_dict[user.get_full_name()] = {'rin':user.userprofile.rin, 'balance':float(15)}
+            balance = user.userprofile.get_organization_fees()
+            if(org):
+                balance = org.membership_fee
+
+            user_dict[user.get_full_name()] = {'rin':user.userprofile.rin, 'balance':balance}
             
         
         
@@ -279,11 +309,25 @@ def charge_sheet(request):
         writer = csv.writer(response)
         
         #generate csv data from user_dictionary
-        csv_data = [['Full Name','Rin', 'Balance']]
+        if(org):
+            csv_data = [['Organization',org.name]]
+        else:
+            csv_data = []
+        
+        csv_data.append(['Full Name','Rin', 'Balance'])
+
         for user in user_dict:
             user_info = user_dict[user]
             csv_data.append([user, user_info['rin'], user_info['balance']])
             
+        if(org):
+            csv_data.append(['','Organization Fee',org.organization_fee])
+            csv_data.append(['','Total Cost',total_revenue + org.organization_fee])
+        else:
+            csv_data.append(['','Gross Revenue', total_revenue])
+            
+            for org in org_dict:
+                csv_data.append(['',org.strip().title()+' Revenue',org_dict[org]])
         #write rows to csv
         writer.writerows(csv_data)
         
