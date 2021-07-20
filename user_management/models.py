@@ -1,4 +1,5 @@
 from django.db import models
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -51,6 +52,11 @@ class UserProfile(models.Model):
         for org in orgs:
             machine_list = machine_list.union(org.get_accessable_machines())
         return machine_list
+
+
+    def get_usages(self):
+        Usage = apps.get_model('machine_management.Usage')
+        return Usage.all().filter(userprofile=self)
 
     def calculate_balance(self):
         if(not self.user.groups.filter(name = "member").exists()):

@@ -207,6 +207,11 @@ class Usage(models.Model):
     
     deleted = models.BooleanField(default=False)
     
+    @staticmethod
+    def all():
+        return Usage.objects.all().select_related('organization')\
+            .prefetch_related('slotusage_set__machine_slot').prefetch_related('slotusage_set__resource')
+  
     def cost(self):
         cost = Decimal(0.00)
 

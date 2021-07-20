@@ -1,5 +1,6 @@
 #django imports
 from django.db import models
+from django.apps import apps
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import (
     check_password, is_password_usable, make_password,
@@ -94,6 +95,12 @@ class Organization(models.Model):
     def remove_user(self,user):
         OrganizationMembership.objects.filter(user=user,organization=self).delete()
     
+    def get_usages(self, user=None):
+        Usage = apps.get_model('machine_management.Usage')
+        usages = Usage.all().filter(organization=self)
+        if(user):
+            return usages.filter(userprofile__user=user)
+        return usages
     #
     # Machines
     #

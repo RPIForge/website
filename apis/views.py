@@ -218,90 +218,69 @@ def charge_sheet(request):
         semester_id = request.GET.get('semester_id', None)
         organization_id = request.GET.get('organization_id', None)
 
-        
-        #semester id is required
-        if(not semester_id):
-            return HttpResponse("No Semester Provided.", status=400) 
-        
         org = None
         if(organization_id is not None):
             org = Organization.objects.filter(org_id=organization_id).first()
             if(org is None):
                 return HttpResponse("Invalid Organization Provided", status=400) 
-
+        
         semester = Semester.objects.filter(id=semester_id).first()
-        if(semester is None):
-            return HttpResponse("Invalid Semester Provided", status=400) 
         
-        
-        #get the list of users depneidng on if they are graduating
-        #We charge memebrs differently if they are graduating or not.
         if(graduating=='true'):
-            usages = semester.get_usages().filter(userprofile__is_graduating=True)
-            remaining_users = set(User.objects.filter(userprofile__is_graduating=True, groups__name='member'))
-            
+            user_list = User.objects.filter(userprofile__is_graduating=True, groups__name='member')
             graduating_string = 'graduating'
         else:
-            usages = semester.get_usages().filter(userprofile__is_graduating=False)
-            remaining_users = set(User.objects.filter(userprofile__is_graduating=False, groups__name='member'))
-            
+            user_list = User.objects.filter(userprofile__is_graduating=False, groups__name='member')
             graduating_string = 'nongraduating'
-          
+
         if(org):
-            usages = usages.filter(organization=org)
-        
-        
-        #if data reading has already been done update
-        
-        #set up variables
+            user_list = user_list.filter(memberships__organization=org)
+
         total_revenue = 0
         user_dict = {}
         org_dict = {}
-        
-        
-        #for all usages in the semester
-        for usage in usages:
-            user_profile = usage.userprofile
-            user = user_profile.user
-
-            #get user name and cost
-            name = user.get_full_name()
-            cost = usage.cost()
-
-            if(usage.machine.organization.name not in org_dict):
-                org_dict[usage.machine.organization.name] = 0
-
-            org_dict[usage.machine.organization.name]+=float(cost)
-
-            #remove them from the list of users left
-            if(user in remaining_users):
-                remaining_users.remove(user)
-            
-            
-
-            #either create dict or update balance
-            if(name in user_dict):
-                user_balance = float(user_dict[name]['balance'])
-                user_dict[name]['balance'] =  user_balance + float(cost)
-            else:
-                user_dict[name] = {'rin':usage.userprofile.rin}
-                
-                if(org):
-                    user_dict[name]['balance'] = float(cost) + org.membership_fee
-                else:
-                    user_dict[name]['balance'] = float(cost) + user_profile.get_organization_fees()
-                
-            total_revenue = float(total_revenue) + float(cost)
-        
-        for user in remaining_users:
-            balance = user.userprofile.get_organization_fees()
+        for user in user_list:
+            userprofile = user.userprofile
             if(org):
-                balance = org.membership_fee
-
-            user_dict[user.get_full_name()] = {'rin':user.userprofile.rin, 'balance':balance}
+                usage_list = org.get_usages(user)
+            else:
+                usage_list = userprofile.get_usages()
             
-        
-        
+            if(semester):
+                usage_list = usage_list.filter(semester=semester)
+
+            if(org):
+                # user pays membership fee to organization not to forge
+                user_dict[user] = float(-1 * org.membership_fee)
+                
+            else:
+                user_dict[user] = 0
+                tc = 0
+                for organization in userprofile.get_organizations():
+                    tc += float(organization.membership_fee)
+                    user_dict[user] += float(organization.membership_fee)
+
+                    if(organization.name not in org_dict):
+                        org_dict[organization.name] = 0
+                    
+                    org_dict[organization.name] += float(organization.membership_fee)
+                    total_revenue += float(organization.membership_fee)
+
+            total_cost = 0
+            for usage in usage_list:
+                cost = float(usage.cost())
+                total_cost=total_cost+cost
+
+                org_name = usage.machine.organization.name
+                if(org_name not in org_dict):
+                    org_dict[org_name] = 0
+
+                org_dict[org_name]+=cost
+
+            
+            user_dict[user] += total_cost
+            total_revenue += total_cost
+
         #set up csv response
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}_{}_{}.csv"'.format(semester.season, semester.year, graduating_string)
@@ -317,12 +296,12 @@ def charge_sheet(request):
         csv_data.append(['Full Name','Rin', 'Balance'])
 
         for user in user_dict:
-            user_info = user_dict[user]
-            csv_data.append([user, user_info['rin'], user_info['balance']])
+            balance = user_dict[user]
+            csv_data.append([user.get_full_name(), user.userprofile.rin, balance])
             
         if(org):
             csv_data.append(['','Organization Fee',org.organization_fee])
-            csv_data.append(['','Total Cost',total_revenue + org.organization_fee])
+            csv_data.append(['','Total Cost',total_revenue + float(org.organization_fee)])
         else:
             csv_data.append(['','Gross Revenue', total_revenue])
             
