@@ -81,7 +81,16 @@ class OrganizationRINForm(forms.Form):
         return self.cleaned_data
 
 class OrganizationConfirmationForm(forms.Form):
-    pass
+    org = None
+    pretty_cost = ''
+    cost = 0
+
+    def __init__(self, org, *args, **kwargs):
+        self.org = org
+        if(org):
+            self.cost = org.membership_fee
+            self.pretty_cost = org.pretty_print_membership_fee()
+
 
 
 #
@@ -103,7 +112,6 @@ class JoinOrganizationWizard(SessionWizardView):
     # ? Use: Form to create user
     form_list = [OrganizationListForm, OrganizationPasswordForm, OrganizationRINForm, OrganizationConfirmationForm]
 
-
     def get_template_names(self):
         #select display template via current step
         return [organization_templates[int(self.steps.current)]]
@@ -121,5 +129,11 @@ class JoinOrganizationWizard(SessionWizardView):
                 initial['org_id']=data['org_id']
             else:
                 initial['org_id']=''
+        if step == '3':
+            data = self.get_cleaned_data_for_step('0') or {}
+            if(data!={} and 'org_id' in data):
+                initial['org']=Organization.objects.filter(org_id=data['org_id']).first()
+            else:
+                initial['org']=None
 
         return initial

@@ -2,5 +2,9 @@
 
 {% block title %}Confirmation{% endblock title %}
 {% block field %} 
-    {{wizard.form}} 
+    <p>You are about to join the {{wizard.form.org.name}} Organization.</p>
+    {% if wizard.form.org.cost != 0 %}
+        <p>You will be charged {{wizard.form.pretty_cost}} at the end of the semester. If you have any questions about billing please email William He at hew8@rpi.edu</p>
+    {% endif %}
+    <p>Please click submit to finishing joining the organization. </p>
 {% endblock field %}
