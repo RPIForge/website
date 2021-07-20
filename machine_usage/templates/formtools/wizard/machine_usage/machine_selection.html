@@ -1,6 +1,9 @@
 {% extends "formtools/wizard/machine_usage/generic_usage.html" %}
 
 {% block title %}Machine Selection {% endblock title %}
-{% block field %} 
-    {{wizard.form}} 
+{% block field %}
+    <div style="width:100%">
+        {{wizard.form}} 
+    </div>
+    <div style="max-width: 20rem">If you do not see a machine listed. Please make sure you've joined the correct organization under the "Join an Organization Tab"</div>
 {% endblock field %}
