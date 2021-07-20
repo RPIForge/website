@@ -5,6 +5,7 @@ from . import views
 urlpatterns = [
     #initial myforge path
     path('myforge', views.render_myforge, name='myforge'),
+    path('myforge/<path:resource>', views.render_myforge, name='myforge'),
     
     #myforge table lists
     path('dyn/project_list', views.list_projects, name='project_list'),
