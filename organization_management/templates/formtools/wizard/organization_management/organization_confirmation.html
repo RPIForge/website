@@ -1,12 +1,16 @@
 {% extends "formtools/wizard/machine_usage/generic_usage.html" %}
 
 {% block title %}Confirmation{% endblock title %}
-{% block field %} 
+{% block table %} 
     <div style="max-width:20rem">
         <p>You are about to join the {{wizard.form.org.name}} Organization.</p>
         {% if wizard.form.org.cost != 0 %}
             <p>You will be charged {{wizard.form.pretty_cost}} at the end of the semester. If you have any questions about billing please email William He at hew8@rpi.edu</p>
         {% endif %}
-        <p>Please click submit to finishing joining the organization. </p>
+        <p>
+            {{wizard.form.policy_acceptance}}
+            Please check this box to ackownledge the charges.
+        </p>
+        
     </div>
-{% endblock field %}
+{% endblock table %}

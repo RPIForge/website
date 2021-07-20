@@ -1,8 +1,11 @@
 #django imports
 from django import forms
+from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models.base import ObjectDoesNotExist 
+from django.shortcuts import render
+
 
 #class import
 from organization_management.models import *
@@ -17,6 +20,19 @@ class OrganizationListForm(forms.Form):
     org_id = forms.CharField(max_length=8,required=False)
 
     org_count = 0
+
+    def clean(self, *args , **kwargs):
+        super(OrganizationListForm, self).clean(*args ,**kwargs) 
+
+        org_id = self.cleaned_data['org_id']
+        if(org_id==''):
+            return
+
+        org = Organization.objects.filter(org_id=org_id).first()
+        if(not org):
+            raise forms.ValidationError("Unkown Id", code='invalid_orgid')
+
+
     def __init__(self, user, *args, **kwargs):
         super(OrganizationListForm, self).__init__(*args, **kwargs)
 
@@ -81,11 +97,15 @@ class OrganizationRINForm(forms.Form):
         return self.cleaned_data
 
 class OrganizationConfirmationForm(forms.Form):
+    policy_acceptance = forms.BooleanField(required = True)
+
     org = None
     pretty_cost = ''
     cost = 0
 
     def __init__(self, org, *args, **kwargs):
+        super(OrganizationConfirmationForm, self).__init__(*args, **kwargs)
+
         self.org = org
         if(org):
             self.cost = org.membership_fee
@@ -106,11 +126,49 @@ def public_organization(wizard):
         return not org.public
     return True
 
+def has_rin(wizard):
+    user = wizard.request.user
+    return user.userprofile.rin is None
+
 organization_templates = ["formtools/wizard/organization_management/organization_list.html","formtools/wizard/organization_management/organization_join.html","formtools/wizard/organization_management/rin_confirmation.html","formtools/wizard/organization_management/organization_confirmation.html"]
 
 class JoinOrganizationWizard(SessionWizardView):
     # ? Use: Form to create user
     form_list = [OrganizationListForm, OrganizationPasswordForm, OrganizationRINForm, OrganizationConfirmationForm]
+
+    def done(self, form_list, **kwargs):
+        data = self.get_all_cleaned_data()
+        user = self.request.user
+        userprofile = user.userprofile
+
+        org_id = data['org_id']
+        org = Organization.objects.filter(org_id=org_id).first()
+
+        if(org is None):
+            return render(self.request, "formtools/wizard/organization_management/form_submission.html", {'success':False})
+        
+        for form in form_list:
+            # if RIN Form is in formlist which means the user set their rin
+            if(isinstance(form, OrganizationRINForm)):
+                rin = data['rin']
+                userprofile.rin = rin
+                try:
+                    userprofile.save()
+                except IntegrityError:
+                    return render(self.request, "formtools/wizard/organization_management/form_submission.html", {'success':False})
+                break
+
+        if(org.public):
+            org.add_user(user)
+        else:
+            password = data['password']
+            if(org.password == password):
+                org.add_user(user)
+            else:
+                return render(self.request, "formtools/wizard/organization_management/form_submission.html", {'success':False})
+
+        
+        return render(self.request, "formtools/wizard/organization_management/form_submission.html", {'success':True})
 
     def get_template_names(self):
         #select display template via current step
