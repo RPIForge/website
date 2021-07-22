@@ -8,6 +8,7 @@ from django.conf import settings
 
 # Importing Models
 from organization_management.models import *
+from machine_management.models import *
 
 # Importing Other Libraries
 
@@ -18,26 +19,37 @@ from organization_management.models import *
 #
 
 # ! type: GET
-# ! function: Generate join organization list
+# ! function: View list of Organization Memberships
 # ? required: None
 # ? returns: HTTP Rendered Template
 # TODO:
 @login_required
-def list_joinable_organizations(request):
+def list_organization_membership(request):
     user = request.user
 
-    org_list = Organization.objects.filter(visible=True).exclude(memberships__user=user)
+    org_list = Organization.objects.filter(memberships__user=user,memberships__manager=True)
 
     context = {
-        "table_headers":["Name", "Description", "Membership Cost"],
-        "table_rows":[],
-        "page_title":"Organizations",
-        "org_ids": {}
+        "table_headers":["Name","Number of Projects","Total Expense"],
+        "org_data":{},
+        "org_ids": {},
+        "page_title":"Organization Memberships"
     }
 
     for org in org_list:
-        context["table_rows"].append([org.name, org.description, org.pretty_print_membership_fee()])
         context['org_ids'][org.name]=org.org_id
+        context['org_data'][org.name]=[]
+        for user in org.get_users():
+            userprofile = user.userprofile
+            
+            
+            usage_list = org.get_current_usages(user)
+            total_cost = 0
+            for usage in usage_list:
+                total_cost = total_cost + float(usage.cost())
+            
+            usage_count = usage_list.count()
 
+            context['org_data'][org.name].append([user.get_full_name(),usage_count,"%.2f" % total_cost])
 
-    return render(request, 'organization_management/forms/list_joinable_organizations.html', context)
+    return render(request, 'organization_management/list_organization_membership.html', context)

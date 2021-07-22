@@ -8,6 +8,7 @@ from django.contrib.auth.hashers import (
 from django.utils.translation import gettext_lazy as _
 
 #model imports
+from business.models import *
 
 #general imports
 import uuid
@@ -78,6 +79,12 @@ class Organization(models.Model):
     def get_membership(self, user):
         return OrganizationMembership.objects.filter(user=user,organization=self).first()
 
+    def get_users(self):
+        output_set = set()
+        for membership in OrganizationMembership.objects.filter(organization=self).select_related('user'):
+            output_set.add(membership.user)
+        return output_set
+        
     def add_user(self, user):
         #if user does not have rin
         if(not self.validate_user(user)):
@@ -101,6 +108,9 @@ class Organization(models.Model):
         if(user):
             return usages.filter(userprofile__user=user)
         return usages
+    
+    def get_current_usages(self, user=None):
+        return self.get_usages(user).filter(semester=Semester.objects.get(current=True))
     #
     # Machines
     #

@@ -2,7 +2,7 @@
 {% load js %}
 
 {% block custom_styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/join_organization.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/list_organization.css' %}">
 {% endblock custom_styles %}
 
 
@@ -25,59 +25,60 @@
 	</head>
 
 	<body>
+		{% block organization_header %}
+		<div id="org_choice">
+			{% block org_select %}
+			<label for='orgnization_select'>Select which Organization to view:</label>
+			<select name="organization" id="orgnization_select">
+				{% for org in org_data %}
+					<option value="{{org}}">{{org}}</option>
+				{% endfor %}
+			</select>
+			{% endblock org_select %}
+		</div>
+		{% endblock organization_header %}
 		<table id="data" class="display">
 			<thead>
 			<tr>
 			{% for header in table_headers %}
 				<th>{{ header }}</th>
 			{% endfor %}
-				<th>Actions</th>
 			</tr>
 			</thead>
-
 			<tbody>
-			{% for row in table_rows %}
-			<tr>
-                {% for item in row %}
-                    <td>{{ item }}</td>
-                {% endfor %}
-				<td>
-					<a class="edit_link" onclick="join_org({{ forloop.counter0 }})"><i class="fa fa-sign-in" title="Join"></i></a>
-					<!-- <i class="fas fa-eye"></i> to view usages etc -->
-				</td>
-			</tr>
-			{% endfor %}
 			</tbody>
 		</table>
 
-		<div id="rin" class="display_box" hidden>
-            <p class="title" id="machine_selection_title"><strong>Text</strong></p>
-
-            <p class="no_margin" id="join_text">You are about to join the {org__name} organizaton. Your busar account will be charged {membership__fee}. </p>
-
-				
-			<p>If you have any questions please email William He at hew8@rpi.edus.</p>
-
-            <button id="accept_policy">Accept and Continue</button>
-        </div>
 
 		<script>
+			var dataTable = null;
+			var org_data = {{org_data | js}}
+
 			$(document).ready( function () {
-					$('#data').DataTable({
+					dataTable =$('#data').DataTable({
 						"aLengthMenu": [[20, 50, 100, -1], [20, 50, 100, "All"]],
 						"iDisplayLength": 20,
-						"dom": 'Bfrtip',
+						"bFilter": false,
+						"bPaginate": false,
                         "columnDefs": [
                             { "type": "datetime-moment", targets: 1 }
                         ],
-						"buttons": [
-							'copy', 'csv', 'excel', 'pdf', 'print'
-						],
 						"language": {
-					      "emptyTable": "No organizations are available to join."
+					      "emptyTable": "No Users in Organization"
 					    }
 					});
+					change_data(Object.keys(org_data)[0])
 			} );
+
+			$("select#orgnization_select").change(function(){
+				change_data($(this).val())
+			});
+
+			
+			function change_data(org_name){
+				dataTable.clear()
+				dataTable.rows.add( org_data[org_name] ).draw();
+			}
 		</script>
 	</body>
 </html>

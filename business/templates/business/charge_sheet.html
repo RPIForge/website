@@ -29,20 +29,22 @@
                         <option value="{{semester.id}}">{{semester.name}}</option>
                     {% endfor %}
                 </select>
-                <p> Select Specific Organization</p>
-                <select name="organization" id="orgnization_select">
-                    <option value="">All Usage Charge Sheet</option>
-                    {% for organization in organization_list %}
-                        <option value="{{organization.id}}">{{organization.name}}</option>
-                    {% endfor %}
-                </select>
+                <input type="checkbox" id="toggle_button" onclick="toggle_organization()"> Would you like to download a specific organization's report?</input>
+                <div style="display: none" id="org_box">
+                    <p> Select Organization</p>
+                    <select name="organization" id="orgnization_select">
+                        {% for organization in organization_list %}
+                            <option value="{{organization.id}}">{{organization.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
             </div>
             <div>
-                <input type="button" onclick="download_sheet('/api/billing/charge_sheet',false)" value="Download NonGraduating CSV"></input>
+                <button onclick="download_sheet('/api/billing/charge_sheet',false)" value="">Download NonGraduating CSV</button>
             </div>
             <div>
-                <input type="button" onclick="download_sheet('/api/billing/charge_sheet', true)" value="Download Graduating CSV"></input>
+                <button onclick="download_sheet('/api/billing/charge_sheet', true)" value="">Download Graduating CSV</button>
             </div>
         </div>
     </main>
@@ -59,7 +61,9 @@
         if(semester_id !== ''){
             link.href  = link.href  + "&semester_id="+semester_id
         }
-        if(organization_id !== ''){
+
+        checkbox = $('#toggle_button')[0];
+        if(organization_id !== '' && checkbox.checked){
             link.href  = link.href  + "&organization_id="+organization_id
         }
 
@@ -71,7 +75,23 @@
         
         var download_text = document.getElementById("download_id");
         download_text.style.display = "block";
-        
+    }
+
+    function toggle_organization(element){
+        checkbox = $('#toggle_button')[0];
+        org_box = $("#org_box")
+        console.log(org_box)
+        if(checkbox.checked){
+            checkbox.checked = true;
+            
+            org_box.css('display', 'Block');
+        } else {
+            checkbox.checkbox= false;
+            org_box.css('display', 'None');
+
+        }
+
+
     }
     </script>
 {% endblock main %}
