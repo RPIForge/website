@@ -6,6 +6,7 @@ urlpatterns = [
     #User functions
     path('begin_semester', views.render_begin_semester, name='begin_semester'),
     path('forms/create_user', views.create_user, name='create_user'),
+    path('forms/create_profile', views.create_user, name='create_user'),
     
     #email urls
     path('verify_email', views.render_verify_email, name='verify_email'),

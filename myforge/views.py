@@ -32,14 +32,19 @@ from datetime import datetime, timedelta
 # TODO:
 @login_required
 def render_myforge(request,resource=None):
+    user = request.user
+    userprofile = user.userprofile
+
     if(resource is None):
         resource = 'dyn/project_list'
 
+    if(not userprofile.profile_created):
+        return redirect('/forms/create_profile')
         
-    if(not request.user.groups.filter(name = "member").exists()):
+    if(not user.groups.filter(name = "member").exists()):
         return redirect('/begin_semester')
 
-    if not request.user.groups.filter(name="verified_email").exists():
+    if not user.groups.filter(name="verified_email").exists():
         return redirect('/unverified_email')
 
     return render(request, 'myforge/myforge.html', {'base_url':resource})

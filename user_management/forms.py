@@ -11,16 +11,23 @@ from user_management.models import UserProfile
 
 class ForgeUserCreationForm(UserCreationForm):
     # ? Use: Form to create user
-     
-    def __init__(self, *args, **kwargs):
+    created = False
+
+    def __init__(self, *args,created=False,  **kwargs):
         super(ForgeUserCreationForm, self).__init__(*args, **kwargs)
 
-        self.fields['first_name'].required = True
-        self.fields['last_name'].required = True
-        self.fields['email'].required = True
+
+        self.created = created
 
         self.fields['username'].label = "RCS ID (e.g. roberr5)"
         self.fields['password2'].label = "Confirm Password"
+
+        if(created):
+            self.fields['username'].required = False
+            self.fields['username'].disabled = True
+            self.fields['email'].required = False
+            self.fields['email'].disabled = True
+
 
         for f in self.fields.values():
             f.widget.attrs = {"placeholder":f.label}
@@ -29,13 +36,13 @@ class ForgeUserCreationForm(UserCreationForm):
     def clean(self, *args, **kwargs):
         super(ForgeUserCreationForm , self).clean(*args, **kwargs)
         
-        email = self.cleaned_data.get('email')
         username = self.cleaned_data.get('username')
+        email = self.cleaned_data.get('email')
 
         # See: https://stackoverflow.com/questions/1160030/how-to-make-email-field-unique-in-model-user-from-contrib-auth-in-django
         if email and User.objects.filter(email=email).exclude(username=username).exists():
             raise forms.ValidationError('Email addresses must be unique.', code='duplicate_email')
-        
+    
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email')
@@ -66,7 +73,7 @@ class ForgeProfileCreationForm(forms.ModelForm):
 
 
         for f in self.fields.values():
-            f.widget.attrs = {"placeholder":f.label}
+            f.widget.attrs["placeholder"]=f.label
             f.label = ""
    
     def clean(self, *args , **kwargs):
@@ -79,8 +86,27 @@ class ForgeProfileCreationForm(forms.ModelForm):
             if(len(str(rin)) != 9):
                 raise forms.ValidationError("Invalid Rin", code='invalid_rin')
             
+            # if rin exists and does not equal itself
+            user = None
+            try:
+                user = self.instance.user
+            except UserProfile.user.RelatedObjectDoesNotExist:
+                pass
+               
+
+            if(UserProfile.objects.filter(rin=rin).exclude(user=user).first() is not None):
+                raise forms.ValidationError("Rin Already Exists",code='duplicate_rin')
+            
         return self.cleaned_data
-    
+
+    def save(self, commit=True):
+        userprofile = super(ForgeProfileCreationForm, self).save(commit=False)
+        userprofile.profile_created = True
+        if(commit):
+            userprofile.save()
+        return userprofile
+
+
     class Meta:                                 
         model = UserProfile 
         fields = ('rin','gender','major')

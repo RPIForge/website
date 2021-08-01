@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-
+from django.forms.models import model_to_dict
 
 # Importing Models
 
@@ -135,23 +135,19 @@ def log_out(request):
 # TODO: 
 def create_user(request):
     if request.method == 'POST':
-        user_form = ForgeUserCreationForm(request.POST)
-        profile_form = ForgeProfileCreationForm(request.POST)
+        user = None
+        userprofile = None
+        if not request.user.is_anonymous:
+            user = request.user
+            userprofile = user.userprofile
+
+        user_form = ForgeUserCreationForm(request.POST, created=user is not None, instance=user)
+        profile_form = ForgeProfileCreationForm(request.POST, instance=userprofile)
 
         if(user_form.is_valid() and profile_form.is_valid()):
             # Save user and get values from user form
-            user = user_form.save()
-
-            user_rin = profile_form.cleaned_data.get('rin')
-            user_gender = profile_form.cleaned_data.get('gender')
-            user_major = profile_form.cleaned_data.get('major')
-
-            # Update and save profile
-            user.userprofile.rin = user_rin
-            user.userprofile.gender = user_gender
-            user.userprofile.major = user_major
-
-            user.username = user.username.lower()
+            user_form.save()
+            user.userprofile = profile_form.save()
 
             if ("is_graduating" in request.POST) and (request.POST["is_graduating"] == "on"):
                 user.userprofile.is_graduating = True
@@ -162,11 +158,7 @@ def create_user(request):
                 user.userprofile.is_active = True
             else:
                 user.userprofile.is_active = False
-
-            user.save()
-
-            email = profile_form.cleaned_data.get('email')
-
+            
             if not user.groups.filter(name="verified_email").exists():
                 print(f"Sending verification email to {user.email}")
                 utils.send_verification_email(user)
@@ -174,12 +166,29 @@ def create_user(request):
             login(request, user)
             return redirect('/myforge')
         else:
+            if(user and 'username' in user_form.fields):
+                user_form.fields['username'].disabled = True
+
+            if(user and 'email' in user_form.fields):
+                user_form.fields['email'].disabled = True
+
             return render(request, 'user_management/forms/create_user.html', {'user_form': user_form, 'profile_form': profile_form})
     else:
-        user_form = ForgeUserCreationForm()
-        profile_form = ForgeProfileCreationForm()
+        user = None
+        userprofile = None
+        initial_data = {}
+        if(not request.user.is_anonymous):
+            user = request.user
+            userprofile = user.userprofile
+            initial_data = model_to_dict(user)
+
+
+        user_form = ForgeUserCreationForm(created=user is not None,instance=user, initial=initial_data)
+        profile_form = ForgeProfileCreationForm(instance=userprofile)
 
         return render(request, 'user_management/forms/create_user.html', {'user_form': user_form, 'profile_form': profile_form})
+
+
 
 # ! type: GET
 # ! function: Verify users email

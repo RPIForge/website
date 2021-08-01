@@ -34,6 +34,8 @@ class UserProfile(models.Model):
     
     uuid = models.UUIDField(default = uuid.uuid4, editable = False) 
     
+    profile_created =  models.BooleanField(default=False)
+
     def get_organizations(self):
         output = set()
         for membership in self.user.memberships.all().select_related('organization'):
@@ -78,7 +80,8 @@ class UserProfile(models.Model):
             object_list = UserProfile.objects.all().filter(rin=self.rin)
             for obj in object_list:
                 if(obj!=self):
-                    raise ValidationError()
+                    raise ValidationError('Rin allready exists')
+                    
         super(UserProfile, self).save(*args, **kwargs)
 
     class Meta:
