@@ -34,12 +34,8 @@ def render_begin_semester(request):
     elif request.method == "POST":
         profile = request.user.userprofile
 
-        if request.POST.get("accepts_charges","") == "yes":
-            member_group, created = Group.objects.get_or_create(name='member')
-            member_group.user_set.add(request.user)
-            profile.is_active = True
-        else:
-            profile.is_active = False
+        member_group, created = Group.objects.get_or_create(name='member')
+        member_group.user_set.add(request.user)
 
         if request.POST.get("is_graduating","") == "yes":
             profile.is_graduating = True
@@ -96,6 +92,19 @@ def render_unverified_email(request):
 # TODO: 
 def render_login(request):
     if request.method == 'GET':
+        token = request.GET.get("token", None)
+        user_profile = UserProfile.objects.filter(email_verification_token=token).first()
+        if(user_profile is not None):
+            user = userprofile.user
+
+            #verify user email if not already
+            group = Group.objects.get_or_create(name="verified_email") 
+            group.user_set.add(user)
+            group.save()
+
+
+            login(request, user)
+            return redirect('/myforge')
 
         if request.user.is_authenticated:
             return redirect('/myforge')
@@ -148,16 +157,8 @@ def create_user(request):
             # Save user and get values from user form
             user_form.save()
             user.userprofile = profile_form.save()
-
-            if ("is_graduating" in request.POST) and (request.POST["is_graduating"] == "on"):
-                user.userprofile.is_graduating = True
-            else:
-                user.userprofile.is_graduating = False
-
-            if ("accepts_charges" in request.POST) and (request.POST["accepts_charges"] == "on"):
-                user.userprofile.is_active = True
-            else:
-                user.userprofile.is_active = False
+            user.userprofile.is_active = True
+            user.userprofile.save()
             
             if not user.groups.filter(name="verified_email").exists():
                 print(f"Sending verification email to {user.email}")
