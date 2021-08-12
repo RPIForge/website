@@ -307,6 +307,7 @@ def charge_sheet(request):
             
             for org in org_dict:
                 csv_data.append(['',org.strip().title()+' Revenue',org_dict[org]])
+                
         #write rows to csv
         writer.writerows(csv_data)
         

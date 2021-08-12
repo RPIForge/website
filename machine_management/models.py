@@ -120,7 +120,7 @@ class Machine(models.Model):
         Organization,
         on_delete = models.PROTECT,
         default = 1,
-        null=False,
+        null=True,
         blank=False,
         related_name="machines"
     )

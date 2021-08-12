@@ -52,7 +52,7 @@ class Organization(models.Model):
     visible = models.BooleanField(default=False)
 
     # List of machines you can use if you're in this organization
-    machine_access = models.ManyToManyField("self",related_name='shared_organizations',symmetrical=False)
+    machine_access = models.ManyToManyField("self",related_name='shared_organizations',symmetrical=False,null=True,blank=True)
 
     #
     # Billing
