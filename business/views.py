@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 
 from machine_management.models import *
+from organization_management.models import *
 from .forms import *
 
 
@@ -66,9 +67,14 @@ def render_change_semesters(request):
 # TODO: 
 @login_required
 def render_charge_sheet(request):
-    semester = Semester.objects.all().order_by("-current")
+    semesters = Semester.objects.all().order_by("-current")
     semester_list = []
-    for item in semester:
-        semester_list.append({'id': item.id, 'name': str(item)})
+    for semester in semesters:
+        semester_list.append({'id':semester.id,'name':str(semester)})
+
+    organizations = Organization.objects.all()
+    organization_list = []
+    for organization in organizations:
+        organization_list.append({'id':organization.org_id,'name':organization.name})
     
-    return render(request, 'business/charge_sheet.html', {'semester_list':semester_list})
+    return render(request, 'business/charge_sheet.html', {'semester_list':semester_list, 'organization_list':organization_list})
