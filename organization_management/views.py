@@ -41,3 +41,24 @@ def list_joinable_organizations(request):
 
 
     return render(request, 'organization_management/forms/list_joinable_organizations.html', context)
+    
+# ! type: GET
+# ! function: Generate table for organziation projects
+# ? required: None
+# ? returns: HTTP Rendered Template
+@login_required
+def list_oragnization_projects(request):
+    user = request.user
+    user_profile = user.userprofile
+
+    context = {
+        "table_headers":["Semester","Date", "Machine", "Cost"],
+        "table_rows":[],
+        "page_title":"Projects"
+    }
+
+    usages = user_profile.usage_set.all()
+    for u in usages:
+        context["table_rows"].append([u.semester, u.start_time, u.machine.machine_name, format_usd(u.cost())])
+
+    return render(request, 'myforge/forms/list_items_readonly.html', context)
