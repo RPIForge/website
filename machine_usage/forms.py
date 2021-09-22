@@ -98,6 +98,15 @@ class MachineOptions(forms.Form):
     own_material = forms.BooleanField(required = False)
     reprint = forms.BooleanField(required = False)
 
+    def __init__(self, machine, *args, **kwargs):  
+        super(MachineOptions, self).__init__(*args, **kwargs)
+
+        if(not machine.personal_material_allowed):
+            self.fields.pop("own_material")
+
+        
+
+
 machine_usage_templates = ["formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
 
 
@@ -129,7 +138,10 @@ class MachineUsageWizard(SessionWizardView):
         new_usage.userprofile = self.request.user.userprofile
         new_usage.for_class = data['class_usage']
         new_usage.is_reprint = data['reprint']
-        new_usage.own_material = data['own_material']
+        new_usage.own_material = False
+        if("own_material" in data):
+            new_usage.own_material = data['own_material']
+            
         new_usage.save()#to set create_time
 
         new_usage.set_end_time(data['usage_hours'],data['usage_minutes'])
@@ -167,7 +179,7 @@ class MachineUsageWizard(SessionWizardView):
     def get_form_kwargs(self, step):
         initial = super(MachineUsageWizard, self).get_form_kwargs(step=step)
         #if step 1
-        if step == '1':
+        if step == '1' or step == '4':
             try:
                 #select machine id from current step
                 machine_id = self.request.POST.get('0-machine')
