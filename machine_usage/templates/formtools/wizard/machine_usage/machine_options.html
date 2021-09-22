@@ -3,6 +3,8 @@
 {% block title %}Machine Options {% endblock title %}
 {% block field %} 
     <div>{{ wizard.form.class_usage }} Is this machine usage for a class?</div>
-    <div>{{ wizard.form.own_material }} Are you using your own material?</div>
+    {% if wizard.form.own_material %}
+        <div>{{ wizard.form.own_material }} Are you using your own material?</div>
+    {% endif %}
     <div>{{ wizard.form.reprint }} Is this a reprint?</div>
 {% endblock field %}

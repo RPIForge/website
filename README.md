@@ -11,7 +11,7 @@ up the containers.
 
 	- docker-compose up -d
 
-And then once the containers are up attach to the web container using the following command to the instance
+And then once the containers are up attach to the web container using the following command
 
 	-  docker exec  -it forge-web bash
 

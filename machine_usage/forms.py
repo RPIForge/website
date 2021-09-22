@@ -139,6 +139,12 @@ class MachineOptions(forms.Form):
     own_material = forms.BooleanField(required = False)
     reprint = forms.BooleanField(required = False)
 
+    def __init__(self, machine, *args, **kwargs):  
+        super(MachineOptions, self).__init__(*args, **kwargs)
+
+        if(not machine.personal_material_allowed):
+            self.fields.pop("own_material")
+
 machine_usage_templates = ["formtools/wizard/machine_usage/organization_selection.html","formtools/wizard/machine_usage/organization_join.html","formtools/wizard/machine_usage/machine_selection.html","formtools/wizard/machine_usage/resource_selection.html","formtools/wizard/machine_usage/usage_duration.html","formtools/wizard/machine_usage/machine_policy.html", "formtools/wizard/machine_usage/machine_options.html" ]
 
 #
@@ -207,7 +213,10 @@ class MachineUsageWizard(SessionWizardView):
         new_usage.userprofile = self.request.user.userprofile
         new_usage.for_class = data['class_usage']
         new_usage.is_reprint = data['reprint']
-        new_usage.own_material = data['own_material']
+        new_usage.own_material = False
+        if("own_material" in data):
+            new_usage.own_material = data['own_material']
+
 
         if('organization_selection' in data and data['organization_print']):
             org = data['organization_selection']
@@ -264,7 +273,8 @@ class MachineUsageWizard(SessionWizardView):
             else:
                 initial['parent'] = self.request.user.userprofile
 
-        if step == '3':
+        if step == '3' or step == '6':
+
             try:
                 #select machine id from current step
                 machine_id = self.request.POST.get('1-machine')
