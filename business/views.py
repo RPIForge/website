@@ -8,7 +8,7 @@ from django.conf import settings
 
 # Importing Models
 from django.contrib.auth.models import User, Group
-
+from business.models import Semester
 from machine_management.models import *
 from .forms import *
 
@@ -18,6 +18,33 @@ import json
 from datetime import datetime
 from decimal import Decimal
 from datetime import datetime, timedelta
+
+
+
+
+
+# ! type: GET
+# ! function: Generate table of all usages this semester
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO: 
+@login_required     
+def list_semesters(request):
+    context = {
+        "table_headers":["Semester"],
+        "table_rows":[],
+        "page_title":"Semesters",
+        "edit_root":"business/semester"
+    }
+
+    semesters = Semester.objects.all()
+    for s in semesters:
+        context["table_rows"].append({
+            "row":[s],
+            "id":s.id
+        })
+
+    return render(request, 'myforge/forms/list_items.html', context)
 
 # ! type: GET/POST 
 # ! function: Render page to create/end semester 

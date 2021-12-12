@@ -117,6 +117,7 @@ class Machine(models.Model):
     
     
     
+
     enabled = models.BooleanField(default=True)
     status_message = models.CharField(max_length=255, default="", blank=True)
     deleted = models.BooleanField(default=False)
@@ -156,6 +157,7 @@ class Usage(models.Model):
         JobInformation,
         on_delete = models.SET_NULL,
         null=True,
+        blank=True,
         related_name="job"
     )
     
