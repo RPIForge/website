@@ -228,14 +228,18 @@ def charge_sheet(request):
         #get the list of users depneidng on if they are graduating
         #We charge memebrs differently if they are graduating or not.
         if(graduating=='true'):
-            usages = semester.usage_set.filter(userprofile__is_graduating=True)
+            usages = semester.usage_set.filter(userprofile__is_graduating=True)\
+                .prefetch_related('machine').prefetch_related('machine__machine_type')\
+                .prefetch_related('slotusage_set').prefetch_related('slotusage_set__resource')
             
             remaining_users = list(User.objects.filter(userprofile__is_graduating=True, groups__name='member'))
             
             graduating_string = 'graduating'
         else:
-            usages = semester.usage_set.filter(userprofile__is_graduating=False)
-            
+            usages = semester.usage_set.filter(userprofile__is_graduating=False)\
+                .prefetch_related('machine').prefetch_related('machine__machine_type')\
+                .prefetch_related('slotusage_set').prefetch_related('slotusage_set__resource')
+
             remaining_users = list(User.objects.filter(userprofile__is_graduating=False, groups__name='member'))
             
             graduating_string = 'nongraduating'
