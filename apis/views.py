@@ -259,6 +259,9 @@ def charge_sheet(request):
             name = usage.userprofile.user.get_full_name()
             cost = usage.cost()
             
+            if(cost is None):
+                continue
+            
             #remove them from the list of users left
             if(usage.userprofile.user in remaining_users):
                 remaining_users.remove(usage.userprofile.user)
