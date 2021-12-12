@@ -20,6 +20,9 @@ class Semester(models.Model):
     season = models.CharField(max_length=255,blank=False)
     current = models.BooleanField(default=True)
     
+    # message used for machine usaage policy
+    buisness_message = models.TextField(default="")
+
     def __str__(self):
         if(self.current):
             return f"{self.season} {self.year} (current semester)"

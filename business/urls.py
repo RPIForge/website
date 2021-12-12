@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     #Buisness Paths
+    path('dyn/billing/list_semester', views.list_semesters, name='list_semester'),
     path('dyn/billing/change_semesters', views.render_change_semesters, name='change_semesters'),
     path('dyn/billing/charge_sheets', views.render_charge_sheet, name='charge_sheet'),
 ]
