@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 #class import
 from user_management.models import *
 from machine_management.models import *
+from business.utils import get_current_semester
 from formtools.wizard.views import SessionWizardView
 
 import datetime
@@ -47,7 +48,7 @@ class MachineSelectionForm(forms.Form):
 
         typed_dict = {}
         for machine in machine_list:
-            if(machine.in_use):
+            if(machine.in_use or not machine.enabled):
                 continue
         
             machine_type = machine.machine_type
@@ -132,8 +133,12 @@ class MachineUsageLength(forms.Form):
 class MachinePolicy(forms.Form):
     policy_acceptance = forms.BooleanField(required = True)
     
-    text = "If your print has failed and has consumed less than 50g/7mL of plastic you will not be charged for up to two additional reprint attempts. The volunteer present has final say. If you wish to appeal your claim, please email William He at hew8@rpi.edu"
+    text = "default"
     
+    def __init__(self, *args, **kwargs):
+        self.text = get_current_semester().buisness_message
+        super(MachinePolicy, self).__init__(*args, **kwargs)
+
 class MachineOptions(forms.Form):
     class_usage = forms.BooleanField(required = False)
     own_material = forms.BooleanField(required = False)

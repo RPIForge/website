@@ -47,7 +47,7 @@ def render_status(request):
     output = []
 
     for m in machines:
-        if m.in_use:
+        if m.in_use and not m.deleted and not m.enabled:
             p = m.current_print_information
             u = m.current_job
 
