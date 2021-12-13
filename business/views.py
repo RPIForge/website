@@ -12,7 +12,7 @@ from business.models import Semester
 from machine_management.models import *
 from organization_management.models import *
 from .forms import *
-
+from .utils import get_user_semester_cost
 
 # Importing Other Libraries
 import json
@@ -105,3 +105,65 @@ def render_charge_sheet(request):
         organization_list.append({'id':organization.org_id,'name':organization.name})
     
     return render(request, 'business/charge_sheet.html', {'semester_list':semester_list, 'organization_list':organization_list})
+
+
+
+# ! type: GET
+# ! function: Get list of charges for the semester for either graduating or nongraduating students
+# ? required: semester_id
+# ? returns: csv of charges
+# TODO: Improve speed as this strains the server. Change how membership cost is applied.
+def user_charge_sheet(request):
+    if request.method == 'GET':
+        #get get paramters
+        graduating = request.GET.get('graduating', False)
+        semester_id = request.GET.get('semester_id', None)
+
+        semester = Semester.objects.filter(id=semester_id).first()
+        
+        if(graduating=='true'):
+            user_list = User.objects.filter(userprofile__is_graduating=True, groups__name='member').prefetch_related('userprofile')
+            graduating_string = 'graduating'
+        else:
+            user_list = User.objects.filter(userprofile__is_graduating=False, groups__name='member').prefetch_related('userprofile')
+            graduating_string = 'nongraduating'
+
+        total_revenue = 0
+        user_dict = {}
+        for user in user_list:
+            userprofile = user.userprofile
+
+            user_dict[user] = get_user_semester_cost(user, semester)            
+            total_revenue += user_dict[user]
+
+        #set up csv response
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}_{}_{}.csv"'.format(semester.season, semester.year, graduating_string)
+        
+        writer = csv.writer(response)
+        
+        #generate csv data from user_dictionary
+        if(org):
+            csv_data = [['Organization',org.name]]
+        else:
+            csv_data = []
+        
+        csv_data.append(['Full Name','Rin', 'Balance'])
+
+        for user in user_dict:
+            balance = user_dict[user]
+            csv_data.append([user.get_full_name(), user.userprofile.rin, balance])
+            
+        if(org):
+            csv_data.append(['','Organization Fee',org.organization_fee])
+            csv_data.append(['','Total Cost',total_revenue + float(org.organization_fee)])
+        else:
+            csv_data.append(['','Gross Revenue', total_revenue])
+            
+            for org in org_dict:
+                csv_data.append(['',org.strip().title()+' Revenue',org_dict[org]])
+                
+        #write rows to csv
+        writer.writerows(csv_data)
+        
+        return response

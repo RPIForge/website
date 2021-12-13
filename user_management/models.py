@@ -60,16 +60,9 @@ class UserProfile(models.Model):
         Usage = apps.get_model('machine_management.Usage')
         return Usage.all().filter(userprofile=self)
 
-    def calculate_balance(self):
-        if(not self.user.groups.filter(name = "member").exists()):
-            return Decimal(0.00)
-            
-        balance = Decimal(15.00) # TODO: Make the cost per semester a constant somewhere.
-        for usage in self.usage_set.all():
-            if(usage.semester.current):
-                balance += usage.cost()
-                
-        return balance
+
+    def get_total_cost(self):
+        return 0
 
     def __str__(self):
         return f"{self.user.username} ({self.rin})"

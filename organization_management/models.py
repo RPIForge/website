@@ -42,7 +42,7 @@ class Organization(models.Model):
     #cost for a user to join the organization
     membership_fee = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
 
-    # bill member
+    # weather the orgnization pays for its members prints or bills the member
     bill_member = models.BooleanField(default=True)
 
     # if organization can be joined by the public
@@ -52,7 +52,7 @@ class Organization(models.Model):
     visible = models.BooleanField(default=False)
 
     # List of machines you can use if you're in this organization
-    machine_access = models.ManyToManyField("self",related_name='shared_organizations',symmetrical=False,null=True,blank=True)
+    machine_access = models.ManyToManyField("self",related_name='shared_organizations',symmetrical=False,blank=True)
 
     #
     # Billing

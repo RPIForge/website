@@ -18,6 +18,30 @@ from machine_management.models import *
 #  MyForge Organization
 #
 
+
+
+# ! type: GET
+# ! function: View list of users organizations
+# ? required: None
+# ? returns: HTTP Rendered Template
+# TODO:
+
+@login_required
+def user_list_organizations(request):
+    context = {
+        "table_headers":["Organization", "Description", "Access", "Membership Fee"],
+        "table_rows":[],
+        "page_title":"Joined Organization",
+    }
+
+    user = request.user
+    userprofile = user.userprofile
+
+    for org in userprofile.get_organizations():
+	    context["table_rows"].append([org.name, org.description, org.access, org.membership_fee])
+
+    return render(request, 'myforge/forms/list_items_readonly.html', context)
+
 # ! type: GET
 # ! function: View list of Organization Memberships
 # ? required: None

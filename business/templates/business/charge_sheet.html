@@ -22,13 +22,27 @@
                 <div id='download_id' style="display:none;">
                     Downloading Sheet. It may take a while. Please don't click again
                 </div>
-                <p> Select Semester</p>
+
+                <p> Select Semester you would like to view</p>
                 <select name="semester" id="semester_select">
                     <option value="">All Semesters</option>
                     {% for semester in semester_list %}
                         <option value="{{semester.id}}">{{semester.name}}</option>
                     {% endfor %}
                 </select>
+
+                <p>Would you like to download User Charge Sheets? <input type="checkbox" id="charge_sheet_button" onclick="toggle_user()"></input></p>
+                <div id="grad_box" style="display: None">
+                    <div>
+                        <button onclick="download_user_sheet('/api/billing/user_charge_sheet',false)" value="">Download NonGraduating CSV</button>
+                    </div>
+                    <div>
+                        <button onclick="download_user_sheet('/api/billing/user_charge_sheet', true)" value="">Download Graduating CSV</button>
+                    </div>
+                </div>
+                
+
+
                 <input type="checkbox" id="toggle_button" onclick="toggle_organization()"> Would you like to download a specific organization's report?</input>
                 <div style="display: none" id="org_box">
                     <p> Select Organization</p>
@@ -40,16 +54,11 @@
                 </div>
 
             </div>
-            <div>
-                <button onclick="download_sheet('/api/billing/charge_sheet',false)" value="">Download NonGraduating CSV</button>
-            </div>
-            <div>
-                <button onclick="download_sheet('/api/billing/charge_sheet', true)" value="">Download Graduating CSV</button>
-            </div>
+
         </div>
     </main>
     <script>
-    function download_sheet(url,graduating){
+    function download_user_sheet(url,graduating){
         var semester_id = document.getElementById("semester_select").value;
         var organization_id = document.getElementById("orgnization_select").value;
 
@@ -77,6 +86,20 @@
         download_text.style.display = "block";
     }
 
+    function toggle_user(element){
+        checkbox = $('#charge_sheet_button')[0];
+        grad_box = $("#grad_box");
+        console.log(grad_box)
+        if(checkbox.checked){
+            
+            grad_box.css('display', 'Block');
+        } else {
+            grad_box.css('display', 'None');
+
+        }
+
+    }
+
     function toggle_organization(element){
         checkbox = $('#toggle_button')[0];
         org_box = $("#org_box")
@@ -90,7 +113,6 @@
             org_box.css('display', 'None');
 
         }
-
 
     }
     </script>
