@@ -202,7 +202,10 @@ class Usage(models.Model):
     def cost(self):
         cost = Decimal(0.00)
 
+
         if self.cost_override:
+            if(self.overridden_cost is None):
+                return cost
             return self.overridden_cost
 
         if self.own_material:
