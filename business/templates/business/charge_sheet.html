@@ -43,7 +43,7 @@
                 
 
 
-                <input type="checkbox" id="toggle_button" onclick="toggle_organization()"> Would you like to download a specific organization's report?</input>
+                Would you like to download a specific organization's report?<input type="checkbox" id="toggle_button" onclick="toggle_organization()"> </input>
                 <div style="display: none" id="org_box">
                     <p> Select Organization</p>
                     <select name="organization" id="orgnization_select">
@@ -51,6 +51,9 @@
                             <option value="{{organization.id}}">{{organization.name}}</option>
                         {% endfor %}
                     </select>
+                    <div>
+                        <button onclick="download_org_sheet('/api/billing/org_charge_sheet', true)" value="">Download  CSV</button>
+                    </div>
                 </div>
 
             </div>
@@ -58,7 +61,7 @@
         </div>
     </main>
     <script>
-    function download_user_sheet(url,graduating){
+    function download_org_sheet(url,graduating){
         var semester_id = document.getElementById("semester_select").value;
         var organization_id = document.getElementById("orgnization_select").value;
 
@@ -76,6 +79,27 @@
             link.href  = link.href  + "&organization_id="+organization_id
         }
 
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        delete link;
+        
+        var download_text = document.getElementById("download_id");
+        download_text.style.display = "block";
+    }
+
+    function download_user_sheet(url,graduating){
+        var semester_id = document.getElementById("semester_select").value;
+
+
+        var link = document.createElement("a");
+        link.download = name;
+        link.href = url+"?graduating="+graduating;
+
+        if(semester_id !== ''){
+            link.href  = link.href  + "&semester_id="+semester_id
+        }
 
         document.body.appendChild(link);
         link.click();

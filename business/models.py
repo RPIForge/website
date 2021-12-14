@@ -5,9 +5,6 @@ from django.dispatch import receiver
 from django.utils import timezone
 
 from decimal import Decimal
-
-from user_management.models import UserProfile
-
 import uuid
 
 from datetime import datetime, timedelta

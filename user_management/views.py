@@ -64,8 +64,7 @@ def render_force_email_verification(request):
             user = User.objects.get(username=request.POST.get("rcs_id",""))
         except User.DoesNotExist:
         
-            return render(request, "user_management/forms/force_email_verification.html", {'outcome':'failure'})
-        
+            return render(request, "user_management/forms/force_email_verification.html", {'outcome':'failure'})        
 
         group.user_set.add(user)
 

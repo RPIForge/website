@@ -61,8 +61,7 @@ class UserProfile(models.Model):
         return Usage.all().filter(userprofile=self)
 
 
-    def get_total_cost(self):
-        return 0
+
 
     def __str__(self):
         return f"{self.user.username} ({self.rin})"

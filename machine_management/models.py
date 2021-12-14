@@ -215,13 +215,13 @@ class Usage(models.Model):
             .prefetch_related('slotusage_set__machine_slot').prefetch_related('slotusage_set__resource')
   
     def cost(self):
-        cost = Decimal(0.00)
+        cost = 0
 
 
         if self.cost_override:
             if(self.overridden_cost is None):
                 return cost
-            return self.overridden_cost
+            return float(self.overridden_cost)
 
         if self.own_material:
             return cost
@@ -230,14 +230,14 @@ class Usage(models.Model):
             return cost
 
         for slot in self.slotusage_set.all():
-            cost += Decimal(slot.cost())
+            cost += float(slot.cost())
 
         if self.end_time is not None:
             usage_time = (self.end_time - self.start_time).total_seconds()
         else:
             usage_time = 0
 
-        cost += Decimal(self.machine.machine_type.hourly_cost / (60 * 60)) * Decimal(usage_time)
+        cost += (float(self.machine.machine_type.hourly_cost) / (60 * 60)) * (usage_time)
 
         return cost
 
