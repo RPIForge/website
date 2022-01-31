@@ -47,7 +47,7 @@ def render_status(request):
     output = []
 
     for m in machines:
-        if m.in_use and not m.deleted and not m.enabled:
+        if m.in_use and not m.deleted and  m.enabled:
             p = m.current_print_information
             u = m.current_job
 
@@ -122,19 +122,20 @@ def render_status(request):
                 "estimated_completion": estimated_completion,
                 "time_remaining": time_remaining
             })
-        else:
-            output.append({
-                "id": m.id,
-                "name": m.machine_name,
-                "bar_type": "bar_in_progress",
-                "text_type": "text_in_progress",
-                "bar_progress": 0,
-                "type":m.machine_type.machine_type_name,
-                "user":f"No User",
-                "status_message":"Not In Use, {}".format(m.status_message),
-                "time_remaining_text": "",
-                "estimated_completion": "",
-                "time_remaining": ""
-                })
+        else:            
+            if(m.enabled):
+                output.append({
+                    "id": m.id,
+                    "name": m.machine_name,
+                    "bar_type": "bar_in_progress",
+                    "text_type": "text_in_progress",
+                    "bar_progress": 0,
+                    "type":m.machine_type.machine_type_name,
+                    "user":f"No User",
+                    "status_message":"Not In Use, {}".format(m.status_message),
+                    "time_remaining_text": "",
+                    "estimated_completion": "",
+                    "time_remaining": ""
+                    })
 
     return render(request, 'forge/status.html', {"machines":output})

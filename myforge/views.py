@@ -390,7 +390,7 @@ def volunteer_dashboard(request):
     output = []
 
     for m in machines:
-        if m.in_use and not m.deleted and not m.enabled:
+        if m.in_use and not m.deleted and m.enabled:
             u = m.current_job
             if u.failed:
                 bar_type = "bar_failed"
@@ -447,20 +447,21 @@ def volunteer_dashboard(request):
                 "in_use": True
             })
         else:
-            output.append({
-                "id": m.id,
-                "name": m.machine_name,
-                "bar_type": "bar_in_progress",
-                "text_type": "text_in_progress",
-                "bar_progress": 0,
-                "type": m.machine_type.machine_type_name,
-                "user": f"No User",
-                "status_message": "Not In Use",
-                "time_remaining_text": "",
-                "estimated_completion": "",
-                "time_remaining": "",
-                "current_usage_id": "",
-                "in_use": False
-                })
+            if(m.enabled):
+                output.append({
+                    "id": m.id,
+                    "name": m.machine_name,
+                    "bar_type": "bar_in_progress",
+                    "text_type": "text_in_progress",
+                    "bar_progress": 0,
+                    "type": m.machine_type.machine_type_name,
+                    "user": f"No User",
+                    "status_message": "Not In Use",
+                    "time_remaining_text": "",
+                    "estimated_completion": "",
+                    "time_remaining": "",
+                    "current_usage_id": "",
+                    "in_use": False
+                    })
 
     return render(request, 'myforge/forms/volunteer_dashboard.html', {"machines":output})
