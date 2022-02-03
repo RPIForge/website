@@ -390,7 +390,7 @@ def volunteer_dashboard(request):
     output = []
 
     for m in machines:
-        if m.in_use and not m.deleted and m.enabled:
+        if m.in_use and m.current_job and not m.deleted and  m.enabled:
             u = m.current_job
             if u.failed:
                 bar_type = "bar_failed"
