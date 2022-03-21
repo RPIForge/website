@@ -61,5 +61,17 @@ You will want to initialize the database with some values. First go to `/admin/a
 
 You will also want to create a machine at `/admin/machine_management/machine/` and create slots for it at `/admin/machine_management/machineslot/`. This will allow you to use the site with full functionality
 
+## Organization
+The django app is split into the multiple apps with their own specific purposes.
+
+* apis - in charge of generic api functionality
+* business - implements business, purchasing, and semester logic
+* data_management (In Progress) - data collection integration
+* forge - root django app with generic pages and settings
+* machine_management - controls models and machine functionality
+* machine_usage - in charge of the machine forms/interactions with machines
+* myforge - controls functionality of the login section
+* use_management - implements user capabilities and permissions 
+
 ## Contributing
 Take a look at the current issues and the current project to see priorities.
