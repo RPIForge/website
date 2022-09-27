@@ -47,6 +47,11 @@
 		</script>
 	</head>
 	<body>
+		<div class="top_link_list">
+			<a target="_parent" id="failure-form-link" class="block_link" href="">
+				<i class="fas fa-dumpster-fire"></i> Machine Failure Form
+			</a>
+		</div>
 		<main>
 			{% for machine in machines %}
 				<div class="card">
@@ -59,13 +64,8 @@
 						{% if machine.in_use %}
 						<div class="toolbox">
 							<a class="toolbox_button" href="javascript:clear_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-broom" title="Clear"></i></a><br /><br />
-							<a class="toolbox_button" href="javascript:fail_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-dumpster-fire" title="Fail"></i></a><br /><br />
 							<a class="toolbox_button" href="javascript:edit_usage({{ machine.current_usage_id }})"><i class="fas fa-edit" title="Edit"></i></a><br /><br />
-						</div>
-						<div class="toolbox_right">
 							<a class="toolbox_button" href="javascript:clear_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-exclamation-triangle" title="Error"></i></a><br /><br />
-							<!--<a class="toolbox_button" href="javascript:fail_usage({{ machine.id }}, '{{ machine.name }}')"><i class="fas fa-fire" title="Fail"></i></a><br /><br />
-							<a class="toolbox_button" href="javascript:edit_usage({{ machine.current_usage_id }})"><i class="fas fa-edit" title="Edit"></i></a><br /><br /> TODO: Send email to user, change estimated completion time-->
 						</div>
 						{% endif %}
 					</div>
@@ -110,9 +110,20 @@
 			$(".bar_complete").each(complete);
 			$(".bar_failed").each(failed);
 			$(".bar_error").each(error);
-
 		}
 
 		refresh_bars();
-</script>
+
+		function set_failure_url(hostname) {
+			document.getElementById("failure-form-link").href = hostname + "/myforge/forms/failed_usage";
+		}
+
+		function set_urls() {
+			var host = window.location.protocol + "//" + window.location.host;
+
+			set_failure_url(host);
+		}
+
+		set_urls();
+	</script>
 </html>

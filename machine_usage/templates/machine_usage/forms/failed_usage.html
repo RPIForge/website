@@ -1,16 +1,13 @@
-{% extends "machine_usage/generic.html" %}
+{% extends "machine_usage/forms/machine_form.html" %}
 {% load static %}
 
 {% block page_title %}
-<title>Use A Machine</title>
+<title>Machine Failure Form</title>
 {% endblock page_title %}
 
 {% block custom_styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/clear_machine.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/failure_form.css' %}">
 {% endblock custom_styles %}
-    
-{% block header %}
-{% endblock header%}
 
 {% block main %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
