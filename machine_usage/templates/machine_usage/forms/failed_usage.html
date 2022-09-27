@@ -17,7 +17,7 @@
             <form action="/forms/failed_usage" method="POST">
                 {% csrf_token %}
                 <p class="no_margin"><strong>Failed Usage Form</strong></p><br />
-                <select id="machine_selection" name="machine_name">
+                <select id="machine_selection" name="machine_name" required>
                     <option value selected disabled>Select a Machine</option>
                     {% for machine_type, machines in machines_in_use.items %}
                         <optgroup label="{{ machine_type }}">
@@ -30,7 +30,7 @@
 
                 <br /><br />
 
-                <select id="filament_selection" name="filament_type">
+                <select id="filament_selection" name="filament_type" required>
                     <option value selected disabled>Filament Type</option>
                     <optgroup label="Standard">
                         <option value="pla">PLA</option>
@@ -52,7 +52,7 @@
 
                 <br /><br />
 
-                <input type="number" min="0" max="100" placeholder="Estimated percent complete" name="percentage">
+                <input type="number" min="0" max="100" placeholder="Estimated percent complete" name="percentage" required>
 
                 <br /><br />
 
