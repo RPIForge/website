@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models.base import ObjectDoesNotExist
 from django.utils import timezone
+from django.conf import settings
 
 # Importing Models
 from machine_management.models import *
@@ -21,7 +22,8 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from machine_management import utils
 
-
+from apis.views import verify_key
+import requests
 
 # ! type: Helper Function
 # ! function: Validates a machine usage's json  
@@ -290,14 +292,25 @@ def generate_failed_usage_form(request):
 
         return render(request, 'machine_usage/forms/failed_usage.html', {"machines_in_use":output})
     else:
+        if(not verify_key(request)):
+            return HttpResponse("Invalid or missing API Key", status=403)
+
         machine_name = request.POST["machine_name"]
         machine = Machine.objects.get(machine_name=machine_name)
 
-        usage = machine.current_job
-        usage.clear_time = timezone.now()
-        usage.failed = True
-        usage.status_message = "Failed."
-        usage.save()
+        fail_log = {
+            "machine": machine_name,
+            "user": request.user.get_username(),
+            "filament": request.POST["filament_type"],
+            "percentage": request.POST["percentage"],
+            "error_msg": request.POST["error_msg"],
+            "observed_failure": request.POST.getlist("failure_type")
+        }
 
-        utils.send_failure_email(usage)
-        return redirect('/forms/failed_usage')
+        try:
+            r = requests.post(settings.FAILURE_FORM_URL, json = fail_log)
+        except requests.exceptions.RequestException as e:
+            print(e)
+
+        utils.fail_usage(machine)
+        return redirect('/dyn/volunteer_dashboard')

@@ -1,16 +1,13 @@
-{% extends "machine_usage/generic.html" %}
 {% load static %}
 
 {% block page_title %}
-<title>Use A Machine</title>
+<title>Machine Failure Form</title>
 {% endblock page_title %}
 
 {% block custom_styles %}
-    <link rel="stylesheet" type="text/css" href="{% static 'machine_usage/css/forms/clear_machine.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'forge/css/forms/failure_form.css' %}">
 {% endblock custom_styles %}
-    
-{% block header %}
-{% endblock header%}
 
 {% block main %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
@@ -20,7 +17,7 @@
             <form action="/forms/failed_usage" method="POST">
                 {% csrf_token %}
                 <p class="no_margin"><strong>Failed Usage Form</strong></p><br />
-                <select id="machine_selection" name="machine_name">
+                <select id="machine_selection" name="machine_name" required>
                     <option value selected disabled>Select a Machine</option>
                     {% for machine_type, machines in machines_in_use.items %}
                         <optgroup label="{{ machine_type }}">
@@ -31,11 +28,78 @@
                     {% endfor %}
                 </select>
 
-                <!-- TODO: Cause of Failure -->
+                <br /><br />
+
+                <select id="filament_selection" name="filament_type" required>
+                    <option value selected disabled>Filament Type</option>
+                    <optgroup label="Standard">
+                        <option value="pla">PLA</option>
+                        <option value="pet">PETG</option>
+                        <option value="tpu">TPU</option>
+                        <option value="abs">ABS</option>
+                        <option value="pva">PVA</option>
+                    </optgroup>
+                    <optgroup label="Specialty">
+                        <option value="res">Resin</option>
+                        <option value="cfb">Carbon Fiber</option>
+                        <option value="fbg">Fiberglass</option>
+                        <option value="hsh">HSHT Fiberglass</option>
+                        <option value="kev">Kevlar</option>
+                        <option value="nyl">Nylon</option>
+                        <option value="onx">Onyx</option>
+                    </optgroup>
+                </select>
 
                 <br /><br />
 
-                <input type="submit" value="Send Email" />
+                <input type="number" min="0" max="100" placeholder="Estimated percent complete" name="percentage" required>
+
+                <br /><br />
+
+                <input type="text" placeholder="Printer error message" name="error_msg">
+
+                <br /><br />
+
+                <p class="no_margin small"><strong>Noticeable Faults</strong></p><br />
+
+                <table>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="failure_type" value="layer shift">
+                        </td>
+                        <td>
+                            <label for="failure_type">Layer Shift</label><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="failure_type" value="filament jam">
+                        </td>
+                        <td>
+                            <label for="failure_type">Filament Jam</label><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="failure_type" value="lack of bed adhesion">
+                        </td>
+                        <td>
+                            <label for="failure_type">Lack of Bed Adhesion</label><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="failure_type" value="fire">
+                        </td>
+                        <td>
+                            <label for="failure_type">Fire</label><br>
+                        </td>
+                    </tr>
+                </table>
+
+                <br />
+
+                <input type="submit" id="submit_button" value="Send Email" />
             </form>
         </div>
     </main>

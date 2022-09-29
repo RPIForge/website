@@ -147,6 +147,7 @@ LOGIN_URL = '/login'
 CHAT_SITE_URL=config('CHAT_SITE_URL',default="127.0.0.1")
 CHAT_SITE_PORT=config('CHAT_SITE_PORT',default="8001",cast=int)
 CHAT_SITE_HTTPS = config('CHAT_SITE_HTTPS',default=True,cast=bool)
+FAILURE_FORM_URL=config('FAILURE_FORM_URL',default='https://t0tfudyw7g.execute-api.us-east-1.amazonaws.com/main')
 
 if(CHAT_SITE_HTTPS):
     CHAT_SITE = "https://{}:{}".format(CHAT_SITE_URL,CHAT_SITE_PORT)
