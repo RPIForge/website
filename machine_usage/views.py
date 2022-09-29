@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models.base import ObjectDoesNotExist
 from django.utils import timezone
+from django.conf import settings
 
 # Importing Models
 from machine_management.models import *
@@ -21,6 +22,7 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from machine_management import utils
 
+from apis.views import verify_key
 import requests
 
 # ! type: Helper Function
@@ -280,7 +282,6 @@ def generate_clear_machine_form(request):
 def generate_failed_usage_form(request):
     if request.method == 'GET':
         machines_in_use = Machine.objects.filter(in_use=True).filter(current_job__failed=False)
-        # machines_idle = Machine.objects.filter(in_use=False)
         output = {}
 
         for m in machines_in_use:
@@ -289,14 +290,11 @@ def generate_failed_usage_form(request):
                 output[type_name] = []
             output[type_name].append(m.machine_name)
 
-        # for m in machines_idle:
-        #     type_name = m.machine_type.machine_type_name
-        #     if type_name not in output:
-        #         output[type_name] = []
-        #     output[type_name].append(m.machine_name)
-
         return render(request, 'machine_usage/forms/failed_usage.html', {"machines_in_use":output})
     else:
+        if(not verify_key(request)):
+            return HttpResponse("Invalid or missing API Key", status=403)
+
         machine_name = request.POST["machine_name"]
         machine = Machine.objects.get(machine_name=machine_name)
 
@@ -309,7 +307,7 @@ def generate_failed_usage_form(request):
             "observed_failure": request.POST.getlist("failure_type")
         }
 
-        r = requests.post('https://t0tfudyw7g.execute-api.us-east-1.amazonaws.com/main', json = fail_log)
+        r = requests.post(settings.FAILURE_FORM_URL, json = fail_log)
         
         if r.status_code == 200:
             print("Successfully logged failure")
