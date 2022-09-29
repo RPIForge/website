@@ -22,7 +22,6 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from machine_management import utils
 
-from apis.views import verify_key
 import requests
 
 # ! type: Helper Function
@@ -292,9 +291,6 @@ def generate_failed_usage_form(request):
 
         return render(request, 'machine_usage/forms/failed_usage.html', {"machines_in_use":output})
     else:
-        if(not verify_key(request)):
-            return HttpResponse("Invalid or missing API Key", status=403)
-
         machine_name = request.POST["machine_name"]
         machine = Machine.objects.get(machine_name=machine_name)
 
