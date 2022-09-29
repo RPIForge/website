@@ -205,3 +205,7 @@ label {
     margin-top: 5px;
     width: 100%;
 }
+
+.stretch_input {
+  width: 250px;
+}
