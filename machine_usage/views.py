@@ -307,12 +307,10 @@ def generate_failed_usage_form(request):
             "observed_failure": request.POST.getlist("failure_type")
         }
 
-        r = requests.post(settings.FAILURE_FORM_URL, json = fail_log)
-        
-        if r.status_code == 200:
-            print("Successfully logged failure")
-        else:
-            print("Failed to log failure")
+        try:
+            r = requests.post(settings.FAILURE_FORM_URL, json = fail_log)
+        except requests.exceptions.RequestException as e:
+            print(e)
 
         utils.fail_usage(machine)
         return redirect('/dyn/volunteer_dashboard')
