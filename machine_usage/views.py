@@ -22,7 +22,6 @@ from decimal import Decimal
 from datetime import datetime, timedelta
 from machine_management import utils
 
-from apis.views import verify_key
 import requests
 
 # ! type: Helper Function
@@ -306,6 +305,9 @@ def generate_failed_usage_form(request):
             "error_msg": request.POST["error_msg"],
             "observed_failure": request.POST.getlist("failure_type")
         }
+
+        if request.POST.getlist("failure_type").count("other") > 0:
+            fail_log["observed_failure"] += request.POST["other_failure"]
 
         try:
             r = requests.post(settings.FAILURE_FORM_URL, json = fail_log)

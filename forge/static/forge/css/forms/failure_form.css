@@ -209,3 +209,15 @@ label {
 .stretch_input {
   width: 250px;
 }
+
+.checkbox_input {
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  border-bottom: 1px solid gray !important;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
