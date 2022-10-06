@@ -52,11 +52,11 @@
 
                 <br /><br />
 
-                <input type="number" min="0" max="100" placeholder="Estimated percent complete" name="percentage" required>
+                <input class="stretch_input" type="number" min="0" max="100" placeholder="Estimated percent complete" name="percentage" required>
 
                 <br /><br />
 
-                <input type="text" placeholder="Printer error message" name="error_msg">
+                <input class="stretch_input" type="text" placeholder="Printer error message" name="error_msg">
 
                 <br /><br />
 
@@ -93,6 +93,17 @@
                         </td>
                         <td>
                             <label for="failure_type">Fire</label><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="failure_type" value="other">
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <label for="failure_type">Other:</label><br>
+                                <input class="checkbox_input" type="text" name="other_failure">
+                            </div>
                         </td>
                     </tr>
                 </table>
