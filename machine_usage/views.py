@@ -307,7 +307,7 @@ def generate_failed_usage_form(request):
         }
 
         if request.POST.getlist("failure_type").count("other") > 0:
-            fail_log["observed_failure"] += request.POST["other_failure"]
+            fail_log["observed_failure"].append(request.POST["other_failure"])
 
         try:
             r = requests.post(settings.FAILURE_FORM_URL, json = fail_log)
