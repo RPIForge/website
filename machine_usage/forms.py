@@ -78,25 +78,15 @@ class MachineSlotUsageForm(forms.Form):
 
 #Usage Length usage
 class MachineUsageLength(forms.Form):
-    usage_hours = forms.IntegerField(required=False, min_value=0, widget=forms.NumberInput(attrs={'placeholder': 'Hours'}))
-    usage_minutes = forms.IntegerField(required=False, min_value=0, max_value=60, widget=forms.NumberInput(attrs={'placeholder': 'Minutes'}))
+    usage_hours = forms.IntegerField(required=True, min_value=0, initial=0, widget=forms.NumberInput(attrs={'placeholder': 'Hours'}))
+    usage_minutes = forms.IntegerField(required=True, min_value=0, max_value=60, initial=0, widget=forms.NumberInput(attrs={'placeholder': 'Minutes'}))
 
     def clean(self):
         cleaned_data = super().clean()
         usage_hours = self.cleaned_data['usage_hours']
         usage_minutes = self.cleaned_data['usage_minutes']
-        
-        if not usage_minutes and not usage_hours:
+        if usage_minutes==0 and usage_hours==0:
             raise ValidationError("Time cannot be empty")
-        if usage_minutes <= 0 and usage_hours <= 0:
-            raise ValidationError("Time cannot be empty")
-        if not usage_minutes and usage_hours > 0:
-            usage_minutes = 0
-        if not usage_hours and usage_minutes > 0:
-            usage_hours = 0
-            
-        self.cleaned_data['usage_hours'] = usage_hours
-        self.cleaned_data['usage_minutes'] = usage_minutes
         return cleaned_data
 
 class MachinePolicy(forms.Form):
