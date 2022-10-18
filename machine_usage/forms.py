@@ -78,8 +78,8 @@ class MachineSlotUsageForm(forms.Form):
 
 #Usage Length usage
 class MachineUsageLength(forms.Form):
-    usage_hours = forms.IntegerField(required=True, min_value=0, widget=forms.NumberInput(attrs={'placeholder': 'Hours'}))
-    usage_minutes = forms.IntegerField(required=True, min_value=0, max_value=60, widget=forms.NumberInput(attrs={'placeholder': 'Minutes'}))
+    usage_hours = forms.IntegerField(required=True, min_value=0, initial=0, widget=forms.NumberInput(attrs={'placeholder': 'Hours'}))
+    usage_minutes = forms.IntegerField(required=True, min_value=0, max_value=60, initial=0, widget=forms.NumberInput(attrs={'placeholder': 'Minutes'}))
 
     def clean(self):
         cleaned_data = super().clean()
