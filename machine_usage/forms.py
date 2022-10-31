@@ -88,12 +88,12 @@ class MachineUsageLength(forms.Form):
         
         if not usage_minutes and not usage_hours:
             raise ValidationError("Time cannot be empty")
-        if usage_minutes <= 0 and usage_hours <= 0:
-            raise ValidationError("Time cannot be empty")
         if not usage_minutes and usage_hours > 0:
             usage_minutes = 0
         if not usage_hours and usage_minutes > 0:
             usage_hours = 0
+        if usage_minutes <= 0 and usage_hours <= 0:
+            raise ValidationError("Time cannot be empty")
             
         self.cleaned_data['usage_hours'] = usage_hours
         self.cleaned_data['usage_minutes'] = usage_minutes
