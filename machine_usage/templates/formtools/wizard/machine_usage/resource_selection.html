@@ -18,7 +18,7 @@
             <tr>
                 <td class="resource_select" id="{{forloop.counter}}" onchange="update_cost({{forloop.counter}});"> {{field}} </td>
             {% else %}
-                <td class="resource_input" id="{{forloop.counter0}}_input" onchange="update_cost({{forloop.counter0}});"> {{field}} </td>
+                <td class="resource_input" id="{{forloop.counter0}}_input" onkeydown="update_cost({{forloop.counter0}});"> {{field}} </td>
             </tr>
             {% endif %}
         {% endfor %}
