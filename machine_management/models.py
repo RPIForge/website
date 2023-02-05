@@ -8,35 +8,13 @@ from django.utils import timezone
 #model imports
 from user_management.models import *
 from data_management.models import *
+from inventory_management.models import *
 from business.models import *
 
 #general imports
 from decimal import Decimal
 import uuid
 from datetime import datetime, timedelta
-
-#resource model
-class Resource(models.Model):
-    # ? Use: Keeps data on the resources that the forge uses
-    # ! Data: Tracks name, unit type, and cost per unit
-
-    resource_name = models.CharField(max_length=255, unique=True)
-    unit = models.CharField(max_length=255)
-    cost_per = models.DecimalField(max_digits=5, decimal_places=2)
-
-    in_stock = models.BooleanField(default=True)
-    deleted = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.resource_name
-
-    def units_used(self):
-        used = 0
-
-        for slotusage in self.slotusage_set.all():
-            used += slotusage.amount
-
-        return used
 
 class MachineType(models.Model):
     # ? Use: Keeps track of the different types of machines
@@ -77,7 +55,7 @@ class MachineSlot(models.Model):
         on_delete = models.CASCADE
     )
 
-    allowed_resources = models.ManyToManyField(Resource)
+    allowed_resources = models.ManyToManyField(ResourceCategory)
     deleted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -256,7 +234,7 @@ class SlotUsage(models.Model):
     )
 
     resource = models.ForeignKey(
-        Resource,
+        ResourceCategory,
         on_delete = models.CASCADE
     )
 

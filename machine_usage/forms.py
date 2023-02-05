@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 #class import
 from user_management.models import *
 from machine_management.models import *
+from inventory_management.models import *
 from business.utils import get_current_semester
 from formtools.wizard.views import SessionWizardView
 
@@ -60,13 +61,24 @@ class MachineSlotUsageForm(forms.Form):
             choice_list = []
             unit_text = ''
             resource_name = ''
-            for resource in slot.allowed_resources.all():
-                choice_list.append((resource.id, resource.resource_name))
-                self.slot_cost_dict[resource.resource_name] = float(resource.cost_per)
-                self.slot_unit_dict[resource.resource_name] = resource.unit
+            for resource_type in slot.allowed_resources.all():
+                typed_choice = []
+                for resource in resource_type.resources:
+                    resource_str = resource.__repr__()
+                    typed_choice.append((resource.id,resource_str))
+                    if resource.cost_override:
+                        self.slot_cost_dict[resource_str] = float(resource.cost_override)
+                    else:
+                        self.slot_cost_dict[resource_str] = float(resource_type.cost_per)
+                
+                    self.slot_unit_dict[resource_str] = resource_type.unit
+                    
+
+                choice_list.append((resource_type.resource_name, typed_choice))
+
                 if(unit_text==''):
-                    unit_text=resource.unit
-                    resource_name = resource.resource_name
+                    unit_text=resource_type.unit
+                    resource_name = resource_type.resource_name
             
             if(choice_list):
                 choice_list.sort(key = lambda x: x[1])
@@ -177,7 +189,7 @@ class MachineUsageWizard(SessionWizardView):
             
             new_slot_usage = SlotUsage()
             new_slot_usage.machine_slot = slot
-            new_slot_usage.resource = Resource.objects.get(id=resource_id)
+            new_slot_usage.resource = ResourceCategory.objects.get(id=resource_id)
             new_slot_usage.amount = amount
             new_slot_usage.usage = new_usage
             new_slot_usage.save()

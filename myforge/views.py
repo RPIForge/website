@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 
 from machine_management.models import *
+from inventory_management.models import *
 from business.forms import *
 
 
@@ -269,11 +270,11 @@ def list_resources(request):
     context = {
 	    "table_headers":["Name", "Unit of Measure", "Cost per Unit", "Units Used", "In Stock?"],
 	    "table_rows":[],
-        "page_title":"Resources",
+        "page_title":"Resource Categories",
         "edit_root":"machine_management/resource"
     }
 
-    resources = Resource.objects.all()
+    resources = ResourceCategory.objects.all()
     for r in resources:
 	    context["table_rows"].append({
             "row":[r.resource_name, r.unit, format_usd(r.cost_per), f"{r.units_used():.2f} {r.unit}", r.in_stock],

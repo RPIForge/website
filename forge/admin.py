@@ -3,6 +3,7 @@ from django.contrib import admin
 from machine_management.models import *
 from business.models import *
 from data_management.models import *
+from inventory_management.models import *
 from user_management.models import *
 from apis.models import *
 
@@ -14,7 +15,10 @@ from django.contrib.auth.models import User, Group
 
 #register models to Admin
 admin.site.register(UserProfile, UserProfileAdmin)
-admin.site.register(Resource)
+admin.site.register(ResourceCategory)
+admin.site.register(QuantityResource)
+admin.site.register(IndividualResource)
+admin.site.register(ResourceCondition)
 admin.site.register(MachineType)
 admin.site.register(MachineSlot)
 admin.site.register(Machine)
